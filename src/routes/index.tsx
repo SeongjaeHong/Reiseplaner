@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { IoIosAddCircleOutline } from 'react-icons/io';
-import NewPlanPopupBox from '../components/NewPlanGroupPopupBox';
 import { useReducer } from 'react';
+import NewPlanGroupPopupBox from '../components/NewPlanGroupPopupBox';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -27,7 +27,9 @@ function Index() {
           <IoIosAddCircleOutline className='text-3xl text-reiseorange' />
         </button>
       </div>
-      {showCreatePlanBox && <NewPlanPopupBox />}
+      {showCreatePlanBox && (
+        <NewPlanGroupPopupBox onClose={toggleShowCreatePlanBox} />
+      )}
     </>
   );
 }
