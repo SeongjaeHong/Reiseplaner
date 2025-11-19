@@ -1,4 +1,9 @@
-export default function NewPlanPopupBox() {
+export default function NewPlanGroupPopupBox() {
+  const handleCreatePlan = () => {
+    // 1. Save the plan item
+    // 2. Move to the plan page
+  };
+
   return (
     <div className='fixed top-50 left-1/2 -translate-x-1/2 py-2 px-3 w-70 bg-zinc-100 border-2 border-reiseorange rounded-md'>
       <div>
@@ -12,7 +17,12 @@ export default function NewPlanPopupBox() {
         placeholder='Titel'
       />
       <div className='flex justify-center pt-3 w-full'>
-        <button className='py-1 px-5 rounded-lg bg-reisered'>OK</button>
+        <button
+          className='py-1 px-5 rounded-lg bg-reisered'
+          onClick={handleCreatePlan}
+        >
+          OK
+        </button>
       </div>
     </div>
   );

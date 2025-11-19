@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { IoIosAddCircleOutline } from 'react-icons/io';
-import NewPlanPopupBox from '../components/NewPlanPopupBox';
+import NewPlanPopupBox from '../components/NewPlanGroupPopupBox';
 import { useReducer } from 'react';
 
 export const Route = createFileRoute('/')({
