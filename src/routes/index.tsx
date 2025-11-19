@@ -24,7 +24,7 @@ function Index() {
           className='absolute right-5 bottom-5'
           onClick={handleCreatePlan}
         >
-          <IoIosAddCircleOutline className='text-3xl' />
+          <IoIosAddCircleOutline className='text-3xl text-reiseorange' />
         </button>
       </div>
       {showCreatePlanBox && <NewPlanPopupBox />}
