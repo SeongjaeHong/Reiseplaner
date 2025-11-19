@@ -1,7 +1,34 @@
-export default function NewPlanGroupPopupBox() {
+import { useMutation } from '@tanstack/react-query';
+import { savePlanGroup } from '../apis/supabaseAPI';
+import { useState } from 'react';
+
+type NewPlanGroupPopupBoxParam = {
+  onClose: () => void;
+};
+
+export default function NewPlanGroupPopupBox({
+  onClose,
+}: NewPlanGroupPopupBoxParam) {
+  const [title, setTitle] = useState('');
+  const { error, isError, mutate } = useMutation({
+    mutationFn: (title: string) => savePlanGroup(title),
+    onSuccess: () => onClose(),
+  });
+
+  if (isError) console.log(error);
+
   const handleCreatePlan = () => {
-    // 1. Save the plan item
-    // 2. Move to the plan page
+    mutate(title);
+  };
+
+  const handleClick = () => {
+    handleCreatePlan();
+  };
+
+  const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleCreatePlan();
+    }
   };
 
   return (
@@ -15,11 +42,15 @@ export default function NewPlanGroupPopupBox() {
         className='w-full text-xl border-1 border-zinc-300 rounded-sm text-zinc-500'
         type='text'
         placeholder='Titel'
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        onKeyDown={handleEnterPress}
       />
       <div className='flex justify-center pt-3 w-full'>
         <button
           className='py-1 px-5 rounded-lg bg-reisered'
-          onClick={handleCreatePlan}
+          type='submit'
+          onClick={handleClick}
         >
           OK
         </button>
