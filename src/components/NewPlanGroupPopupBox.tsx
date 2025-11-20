@@ -3,7 +3,7 @@ import { savePlanGroup } from '../apis/supabaseAPI';
 import { useState } from 'react';
 
 type NewPlanGroupPopupBoxParam = {
-  onClose: () => void;
+  onClose: (isRefetch?: boolean) => void;
 };
 
 export default function NewPlanGroupPopupBox({
@@ -12,7 +12,7 @@ export default function NewPlanGroupPopupBox({
   const [title, setTitle] = useState('');
   const { error, isError, mutate } = useMutation({
     mutationFn: (title: string) => savePlanGroup(title),
-    onSuccess: () => onClose(),
+    onSuccess: () => onClose(true),
   });
 
   if (isError) console.log(error);

@@ -10,3 +10,11 @@ export const savePlanGroup = async (title: string) => {
 
   return data;
 };
+
+export const getPlanGroups = async () => {
+  const { data, error } = await supabase.from('plans').select();
+
+  if (error) console.error(error);
+
+  return data;
+};
