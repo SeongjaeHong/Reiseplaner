@@ -17,17 +17,25 @@ export default function NewPlanGroupPopupBox({
 
   if (isError) console.log(error);
 
-  const handleCreatePlan = () => {
+  const handleSavePlanGroup = () => {
     mutate(title);
   };
 
   const handleClick = () => {
-    handleCreatePlan();
+    if (title) {
+      handleSavePlanGroup();
+    } else {
+      onClose();
+    }
   };
 
   const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleCreatePlan();
+    if (e.key === 'Enter' && title) {
+      if (title) {
+        handleSavePlanGroup();
+      } else {
+        onClose();
+      }
     }
   };
 
