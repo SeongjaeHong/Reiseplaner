@@ -1,4 +1,4 @@
-import { deletePlanGroups } from '../apis/supabaseAPI';
+import { deletePlanGroups } from '../apis/supabase/planGroups';
 
 type DeletePlanGroupPopupBoxParam = {
   planId: number;

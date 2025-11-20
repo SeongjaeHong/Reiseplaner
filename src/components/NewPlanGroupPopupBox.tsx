@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { savePlanGroup } from '../apis/supabaseAPI';
+import { savePlanGroup } from '@/apis/supabase/planGroups';
 import { useState } from 'react';
 
 type NewPlanGroupPopupBoxParam = {
