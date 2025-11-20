@@ -3,7 +3,7 @@ import supabase from '../supabaseClient';
 
 export const savePlanGroup = async (title: string) => {
   const { data, error } = await supabase
-    .from('plans')
+    .from('plangroups')
     .insert([{ title }])
     .select();
 
@@ -13,7 +13,7 @@ export const savePlanGroup = async (title: string) => {
 };
 
 export const getPlanGroups = async () => {
-  const { data, error } = await supabase.from('plans').select();
+  const { data, error } = await supabase.from('plangroups').select();
 
   if (error) console.error(error);
 
@@ -24,7 +24,7 @@ type typeDeletePlanGroups = (
   id: number
 ) => Promise<PostgrestSingleResponse<null>>;
 export const deletePlanGroups: typeDeletePlanGroups = async (id) => {
-  const response = await supabase.from('plans').delete().eq('id', id);
+  const response = await supabase.from('plangroups').delete().eq('id', id);
 
   return response;
 };
