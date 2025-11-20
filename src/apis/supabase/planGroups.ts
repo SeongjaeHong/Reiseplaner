@@ -1,5 +1,5 @@
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
-import supabase from '../supabaseClient';
+import supabase from '@/supabaseClient';
 
 export const savePlanGroup = async (title: string) => {
   const { data, error } = await supabase
