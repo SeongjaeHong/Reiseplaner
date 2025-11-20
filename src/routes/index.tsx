@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { useEffect, useReducer, useState } from 'react';
-import NewPlanGroupPopupBox from '@/components/NewPlanGroupPopupBox';
+import NewPlanGroupPopupBox from '@/components/CreatePopupBox';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getPlanGroups } from '@/apis/supabase/planGroups';
+import { getPlanGroups, savePlanGroup } from '@/apis/supabase/planGroups';
 import DeletePlanGroupPopupBox from '@/components/DeletePlanGroupPopupBox';
 import { PLAN_GROUP } from './-constant';
 
@@ -96,7 +96,12 @@ function Index() {
           <FaCirclePlus className='text-3xl text-reiseorange' />
         </button>
       </div>
-      {showCreatePlanBox && <NewPlanGroupPopupBox onClose={onCloseRefetch} />}
+      {showCreatePlanBox && (
+        <NewPlanGroupPopupBox
+          onCreate={savePlanGroup}
+          onClose={onCloseRefetch}
+        />
+      )}
       {showDeletePlanBox && deleteID && (
         <DeletePlanGroupPopupBox planId={deleteID} onClose={onCloseRefetch} />
       )}
