@@ -1,10 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { IoIosAddCircleOutline } from 'react-icons/io';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { FaCirclePlus } from 'react-icons/fa6';
 import { useEffect, useReducer, useState } from 'react';
 import NewPlanGroupPopupBox from '../components/NewPlanGroupPopupBox';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getPlanGroups } from '../apis/supabaseAPI';
 import DeletePlanGroupPopupBox from '../components/DeletePlanGroupPopupBox';
+import { PLAN_GROUP } from './-constant';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -74,20 +75,25 @@ function Index() {
     <>
       <div className='relative p-2 min-h-100 bg-reiseyellow'>
         {planGroups?.map((planGroup) => (
-          <div
-            className='w-full my-1 h-20 bg-zinc-300'
-            id={planGroup.id}
+          <Link
+            to={PLAN_GROUP}
+            search={{ group_id: planGroup.id }}
             key={planGroup.id}
-            onContextMenu={handleClickDelete} // run on right-click
           >
-            <h1>{planGroup.title}</h1>
-          </div>
+            <div
+              className='w-full my-1 h-20 bg-zinc-300'
+              id={planGroup.id}
+              onContextMenu={handleClickDelete} // run on right-click
+            >
+              <h1>{planGroup.title}</h1>
+            </div>
+          </Link>
         ))}
         <button
           className='absolute right-5 bottom-5'
           onClick={handleCreatePlan}
         >
-          <IoIosAddCircleOutline className='text-3xl text-reiseorange' />
+          <FaCirclePlus className='text-3xl text-reiseorange' />
         </button>
       </div>
       {showCreatePlanBox && <NewPlanGroupPopupBox onClose={onCloseRefetch} />}
