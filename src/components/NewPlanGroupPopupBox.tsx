@@ -57,7 +57,6 @@ export default function NewPlanGroupPopupBox({
       <div className='flex justify-center pt-3 w-full'>
         <button
           className='py-1 px-5 rounded-lg bg-reisered'
-          type='submit'
           onClick={handleClick}
         >
           OK
