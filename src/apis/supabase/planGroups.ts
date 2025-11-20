@@ -20,6 +20,20 @@ export const getPlanGroups = async () => {
   return data;
 };
 
+type typeGetPlanGroupByGroupId = (groupId: number) => Promise<any | null>;
+export const getPlanGroupByGroupId: typeGetPlanGroupByGroupId = async (
+  groupId
+) => {
+  const { data } = await supabase
+    .from('plangroups')
+    .select()
+    .eq('id', groupId)
+    .single()
+    .throwOnError();
+
+  return data;
+};
+
 type typeDeletePlanGroups = (
   id: number
 ) => Promise<PostgrestSingleResponse<null>>;
