@@ -2,7 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 
 type createPopupBoxParam = {
-  onCreate: (title: string) => Promise<any[] | null>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-redundant-type-constituents
+  onCreate: (title: string) => Promise<any | null>;
   onClose: (isRefetch?: boolean) => void;
 };
 
