@@ -6,6 +6,8 @@ import tseslint from 'typescript-eslint';
 import { defineConfig } from 'eslint/config';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 
+const queryRules = pluginQuery.configs.recommended.rules;
+
 export default defineConfig([
   {
     ignores: ['dist', 'routeTree.gen.ts'],
@@ -17,10 +19,13 @@ export default defineConfig([
       tseslint.configs.recommendedTypeChecked,
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
-      pluginQuery.configs.recommended,
     ],
+    plugins: {
+      '@tanstack/query': pluginQuery,
+    },
     rules: {
       '@typescript-eslint/consistent-type-imports': 'error',
+      ...queryRules,
     },
     languageOptions: {
       ecmaVersion: 2020,
