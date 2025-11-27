@@ -45,9 +45,11 @@ function Index() {
     if (showDeletePlanBox) toggleShowDeletePlanBox();
 
     if (isRefetch) {
-      queryClient.invalidateQueries({ queryKey: ['getPlanGroups'] });
+      queryClient
+        .invalidateQueries({ queryKey: ['getPlanGroups'] })
+        .then(() => refetch())
+        .catch(() => {});
       setDeleteID(undefined);
-      refetch();
     }
   };
 
@@ -82,7 +84,7 @@ function Index() {
           >
             <div
               className='w-full my-1 h-20 bg-zinc-300'
-              id={planGroup.id}
+              id={planGroup.id.toString()}
               onContextMenu={handleClickDelete} // run on right-click
             >
               <h1>{planGroup.title}</h1>

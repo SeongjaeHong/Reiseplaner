@@ -10,7 +10,6 @@ import { z } from 'zod';
 
 const planGroupParam = z.object({
   group_id: z.number(),
-  plan_id: z.number(),
 });
 
 type PlanGroupParam = z.infer<typeof planGroupParam>;
@@ -54,7 +53,10 @@ function Index() {
             search={{ group_id: group_id, plan_id: plan.id }}
             key={plan.id}
           >
-            <div className='w-full my-1 h-20 bg-zinc-300' id={plan.id}>
+            <div
+              className='w-full my-1 h-20 bg-zinc-300'
+              id={plan.id.toString()}
+            >
               <h1>{plan.title}</h1>
             </div>
           </Link>

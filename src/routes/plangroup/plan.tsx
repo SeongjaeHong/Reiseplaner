@@ -19,7 +19,7 @@ function Plan() {
 
   return (
     <>
-      <Link to={PLAN_GROUP} search={{ group_id, plan_id }}>
+      <Link to={PLAN_GROUP} search={{ group_id }}>
         <div className='bg-reiseorange min-h-30'>
           <h1>
             {group_id} - {plan_id}
