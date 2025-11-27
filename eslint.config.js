@@ -3,11 +3,13 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
-import { defineConfig, globalIgnores } from 'eslint/config';
+import { defineConfig } from 'eslint/config';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 
 export default defineConfig([
-  globalIgnores(['dist', 'routeTree.gen.ts']),
+  {
+    ignores: ['dist', 'routeTree.gen.ts'],
+  },
   {
     files: ['src/**/*.{ts,tsx}'],
     extends: [
@@ -17,6 +19,9 @@ export default defineConfig([
       reactRefresh.configs.vite,
       pluginQuery.configs.recommended,
     ],
+    rules: {
+      '@typescript-eslint/consistent-type-imports': 'error',
+    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
