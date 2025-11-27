@@ -1,4 +1,5 @@
 import supabase from '@/supabaseClient';
+import z from 'zod';
 
 type typeuploadImage = (file: File) => Promise<string>;
 export const uploadImage: typeuploadImage = async (file) => {
@@ -13,23 +14,16 @@ export const uploadImage: typeuploadImage = async (file) => {
   return data.fullPath;
 };
 
-type typeGetPlansByGroup = (groupId: number) => Promise<any[] | null>;
-export const getPlansByGroupId: typeGetPlansByGroup = async (groupId) => {
-  const { data, error } = await supabase
-    .from('plans')
-    .select()
-    .eq('group_id', groupId);
-
-  if (error) console.error(error);
-
-  return data;
-};
-
-type typeCreatePlan = (
-  group_id: number,
-  title: string
-) => Promise<any[] | null>;
-export const createPlan: typeCreatePlan = async (group_id, title) => {
+const Plan = z.object({
+  id: z.number(),
+  created_at: z.string(),
+  title: z.string(),
+  contents: z.json(),
+  group_id: z.number(),
+});
+type TypePlan = z.infer<typeof Plan>;
+type CreatePlan = (group_id: number, title: string) => Promise<TypePlan | null>;
+export const createPlan: CreatePlan = async (group_id, title) => {
   const { data, error } = await supabase
     .from('plans')
     .insert({ group_id, title })
@@ -38,5 +32,19 @@ export const createPlan: typeCreatePlan = async (group_id, title) => {
 
   if (error) throw error;
 
-  return data;
+  return Plan.parse(data);
+};
+
+const Plans = z.array(Plan);
+type TypePlans = z.infer<typeof Plans>;
+type GetPlansByGroup = (groupId: number) => Promise<TypePlans | null>;
+export const getPlansByGroupId: GetPlansByGroup = async (groupId) => {
+  const { data, error } = await supabase
+    .from('plans')
+    .select()
+    .eq('group_id', groupId);
+
+  if (error) console.error(error);
+
+  return Plans.parse(data);
 };

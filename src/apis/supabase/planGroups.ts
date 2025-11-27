@@ -1,5 +1,6 @@
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 import supabase from '@/supabaseClient';
+import { z } from 'zod';
 
 export const savePlanGroup = async (title: string) => {
   const { data, error } = await supabase
@@ -20,10 +21,15 @@ export const getPlanGroups = async () => {
   return data;
 };
 
-type typeGetPlanGroupByGroupId = (groupId: number) => Promise<any | null>;
-export const getPlanGroupByGroupId: typeGetPlanGroupByGroupId = async (
-  groupId
-) => {
+const plangroupsById = z.object({
+  id: z.number(),
+  created_at: z.string(),
+  title: z.string(),
+});
+type GetPlanGroupByGroupId = (
+  groupId: number
+) => Promise<z.infer<typeof plangroupsById> | null>;
+export const getPlanGroupByGroupId: GetPlanGroupByGroupId = async (groupId) => {
   const { data } = await supabase
     .from('plangroups')
     .select()
@@ -31,7 +37,7 @@ export const getPlanGroupByGroupId: typeGetPlanGroupByGroupId = async (
     .single()
     .throwOnError();
 
-  return data;
+  return plangroupsById.parse(data);
 };
 
 type typeDeletePlanGroups = (
