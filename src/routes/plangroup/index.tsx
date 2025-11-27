@@ -6,12 +6,21 @@ import { FaPenToSquare } from 'react-icons/fa6';
 import { PLAN } from '../-constant';
 import { useReducer } from 'react';
 import NewPlanGroupPopupBox from '@/components/CreatePopupBox';
+import { z } from 'zod';
 
-export const Route = createFileRoute('/plangroup/')({
-  component: RouteComponent,
+const planGroupParam = z.object({
+  group_id: z.number(),
+  plan_id: z.number(),
 });
 
-function RouteComponent() {
+type PlanGroupParam = z.infer<typeof planGroupParam>;
+
+export const Route = createFileRoute('/plangroup/')({
+  validateSearch: (search): PlanGroupParam => planGroupParam.parse(search),
+  component: Index,
+});
+
+function Index() {
   const queryClient = useQueryClient();
   const { group_id } = Route.useSearch();
   const { data: plans, refetch: refetchPlans } = useFetchPlans(group_id);
@@ -26,8 +35,10 @@ function RouteComponent() {
     if (showCreatePlanBox) toggleShowCreatePlanBox();
 
     if (isRefetch) {
-      queryClient.invalidateQueries({ queryKey: ['fetchPlans'] });
-      refetchPlans();
+      queryClient
+        .invalidateQueries({ queryKey: ['fetchPlans'] })
+        .then(() => refetchPlans())
+        .catch(() => {});
     }
   };
 
