@@ -23,10 +23,10 @@ const Plan = z.object({
 });
 type TypePlan = z.infer<typeof Plan>;
 type CreatePlan = (group_id: number, title: string) => Promise<TypePlan | null>;
-export const createPlan: CreatePlan = async (group_id, title) => {
+export const createPlan: CreatePlan = async (groupId, title) => {
   const { data, error } = await supabase
     .from('plans')
-    .insert({ group_id, title })
+    .insert({ group_id: groupId, title: title })
     .select()
     .single();
 
