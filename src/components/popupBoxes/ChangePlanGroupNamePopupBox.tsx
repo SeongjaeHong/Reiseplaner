@@ -1,0 +1,31 @@
+import { renamePlanGroupByGroupId } from '@/apis/supabase/planGroups';
+import InputPopupBox from './InputPopupBox';
+import { useMutation } from '@tanstack/react-query';
+
+type ChangePlanGroupNamePopupBoxParams = {
+  planGroupId: number;
+  onClose: () => void;
+  onSuccess: () => Promise<void>;
+};
+
+export default function ChangePlanGroupNamePopupBox({
+  planGroupId,
+  onClose,
+  onSuccess,
+}: ChangePlanGroupNamePopupBoxParams) {
+  const { mutate: changePlanGroupName } = useMutation({
+    mutationFn: (title: string) => renamePlanGroupByGroupId(planGroupId, title),
+    onSuccess: async () => {
+      await onSuccess();
+      onClose();
+    },
+  });
+
+  return (
+    <InputPopupBox
+      title='Change the title'
+      onAccept={changePlanGroupName}
+      onClose={onClose}
+    />
+  );
+}
