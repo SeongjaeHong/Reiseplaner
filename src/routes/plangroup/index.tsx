@@ -1,12 +1,12 @@
-import { createPlan, getPlansByGroupId } from '@/apis/supabase/plans';
+import { getPlansByGroupId } from '@/apis/supabase/plans';
 import { getPlanGroupByGroupId } from '@/apis/supabase/planGroups';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { FaPenToSquare } from 'react-icons/fa6';
+import { FaEllipsisVertical, FaPenToSquare } from 'react-icons/fa6';
 import { PLAN } from '../-constant';
 import { useReducer } from 'react';
-import NewPlanGroupPopupBox from '@/components/CreatePopupBox';
 import { z } from 'zod';
+import CreatePlanPopupBox from '@/components/popupBoxes/CreatePlanPopupBox';
 
 const planGroupParam = z.object({
   group_id: z.number(),
@@ -21,24 +21,20 @@ export const Route = createFileRoute('/plangroup/')({
 
 function Index() {
   const queryClient = useQueryClient();
-  const { group_id } = Route.useSearch();
-  const { data: plans, refetch: refetchPlans } = useFetchPlans(group_id);
-  const { data: groupTitle } = useFetchGroupTitle(group_id);
+  const { group_id: groupId } = Route.useSearch();
+  const { data: plans } = useFetchPlans(groupId);
+  const { data: groupTitle } = useFetchGroupTitle(groupId);
 
   const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer(
     (prev) => !prev,
     false
   );
 
-  const onCloseRefetch = (isRefetch: boolean = false) => {
-    if (showCreatePlanBox) toggleShowCreatePlanBox();
-
-    if (isRefetch) {
-      queryClient
-        .invalidateQueries({ queryKey: ['fetchPlans'] })
-        .then(() => refetchPlans())
-        .catch(() => {});
-    }
+  const handleRefetchPlans = async () => {
+    await queryClient.refetchQueries({
+      queryKey: ['fetchPlans'],
+      exact: true,
+    });
   };
 
   return (
@@ -50,13 +46,16 @@ function Index() {
         {plans?.map((plan) => (
           <Link
             to={PLAN}
-            search={{ group_id: group_id, plan_id: plan.id }}
+            search={{ group_id: groupId, plan_id: plan.id }}
             key={plan.id}
           >
             <div
               className='w-full my-1 h-20 bg-zinc-300'
               id={plan.id.toString()}
             >
+              <div>
+                <FaEllipsisVertical />
+              </div>
               <h1>{plan.title}</h1>
             </div>
           </Link>
@@ -69,9 +68,10 @@ function Index() {
         </button>
       </div>
       {showCreatePlanBox && (
-        <NewPlanGroupPopupBox
-          onCreate={(title) => createPlan(group_id, title)}
-          onClose={onCloseRefetch}
+        <CreatePlanPopupBox
+          groupId={groupId}
+          onSuccess={handleRefetchPlans}
+          onClose={toggleShowCreatePlanBox}
         />
       )}
     </>
