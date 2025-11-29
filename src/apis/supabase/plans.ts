@@ -1,4 +1,8 @@
 import supabase from '@/supabaseClient';
+import type {
+  PostgrestResponse,
+  PostgrestSingleResponse,
+} from '@supabase/supabase-js';
 import z from 'zod';
 
 type typeuploadImage = (file: File) => Promise<string>;
@@ -47,4 +51,31 @@ export const getPlansByGroupId: GetPlansByGroup = async (groupId) => {
   if (error) console.error(error);
 
   return Plans.parse(data);
+};
+
+type typeDeletePlan = (
+  planId: number
+) => Promise<PostgrestSingleResponse<null>>;
+export const deletePlan: typeDeletePlan = async (planId) => {
+  const response = await supabase.from('plans').delete().eq('id', planId);
+
+  return response;
+};
+
+type RenamePlanByPlanId = (
+  planId: number,
+  newTitle: string
+) => Promise<PostgrestResponse<never> | null>;
+export const renamePlanByPlanId: RenamePlanByPlanId = async (
+  planId,
+  newTitle
+) => {
+  const res = await supabase
+    .from('plans')
+    .update({ title: newTitle })
+    .eq('id', planId)
+    .single()
+    .throwOnError();
+
+  return res;
 };
