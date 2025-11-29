@@ -1,7 +1,5 @@
 import { getPlansByGroupId } from '@/apis/supabase/plans';
-import { getPlanGroupByGroupId } from '@/apis/supabase/planGroups';
-import type { QueryClient } from '@tanstack/react-query';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { FaPenToSquare } from 'react-icons/fa6';
 import { PLAN } from '../-constant';
@@ -12,6 +10,7 @@ import Plan from '@/components/Plan';
 
 const planGroupParam = z.object({
   group_id: z.number(),
+  group_title: z.string(),
 });
 type PlanGroupParam = z.infer<typeof planGroupParam>;
 
@@ -21,17 +20,13 @@ export const Route = createFileRoute('/plangroup/')({
 });
 
 function Index() {
-  const queryClient = useQueryClient();
-  const { group_id: groupId } = Route.useSearch();
-  const { data: groupTitle } = useFetchGroupTitle(groupId);
-  const { data: plans } = useFetchPlans(groupId);
+  const { group_id: groupId, group_title: groupTitle } = Route.useSearch();
+  const { data: plans, refetch } = useFetchPlans(groupId);
 
   const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer(
     (prev) => !prev,
     false
   );
-
-  const handleRefetchPlans = useRefetchPlans(queryClient, groupId);
 
   return (
     <>
@@ -43,9 +38,11 @@ function Index() {
           <Plan
             to={PLAN}
             groupId={groupId}
+            groupTitle={groupTitle}
             planId={plan.id}
-            title={plan.title}
-            refetch={handleRefetchPlans}
+            planTitle={plan.title}
+            fetchKey={['fetchGroupTitle', groupId.toString()]}
+            refetch={refetch}
             key={plan.id}
           />
         ))}
@@ -60,7 +57,7 @@ function Index() {
         <CreatePlanPopupBox
           groupId={groupId}
           onClose={toggleShowCreatePlanBox}
-          onSuccess={handleRefetchPlans}
+          refetch={refetch}
         />
       )}
     </>
@@ -76,29 +73,4 @@ function useFetchPlans(groupId: number) {
   });
 
   return { data, refetch };
-}
-
-function useFetchGroupTitle(groupId: number) {
-  const { data, refetch } = useQuery({
-    queryKey: ['fetchGroupTitle', groupId],
-    queryFn: () => getPlanGroupByGroupId(groupId),
-    throwOnError: true,
-    staleTime: Infinity,
-  });
-
-  if (!data) return { data: null, refetch };
-
-  return { data: data.title, refetch };
-}
-
-function useRefetchPlans(queryClient: QueryClient, groupId: number) {
-  const { mutate } = useMutation({
-    mutationFn: () =>
-      queryClient.refetchQueries({
-        queryKey: ['fetchPlans', groupId],
-        exact: true,
-      }),
-  });
-
-  return () => mutate();
 }

@@ -6,17 +6,21 @@ import ChangePlanNamePopupBox from './popupBoxes/ChangePlanNamePopupBox';
 
 type PlanParams = {
   to: string;
+  fetchKey: string[];
   groupId: number;
+  groupTitle: string;
   planId: number;
-  title: string;
-  refetch: () => void;
+  planTitle: string;
+  refetch: () => Promise<unknown>;
 };
 
 export default function Plan({
   to,
+  fetchKey,
   groupId,
+  groupTitle,
   planId,
-  title,
+  planTitle,
   refetch,
 }: PlanParams) {
   const [showMenu, setShowMenu] = useState(false);
@@ -51,14 +55,26 @@ export default function Plan({
     <>
       <Link
         to={to}
-        search={{ group_id: groupId, plan_id: planId }}
+        search={{
+          group_id: groupId,
+          plan_id: planId,
+          group_title: groupTitle,
+          plan_title: planTitle,
+        }}
+        mask={{
+          to: to,
+          search: {
+            group_id: groupId,
+            plan_id: planId,
+          },
+        }}
         key={groupId}
       >
         <div
           className='group relative flex justify-between w-full my-1 p-3 h-20 bg-zinc-300 truncate'
           id={groupId.toString()}
         >
-          <h1>{title}</h1>
+          <h1>{planTitle}</h1>
           <div className='absolute right-1 invisible group-hover:visible'>
             <button
               className='hover:bg-green-300 rounded-full p-2'
@@ -82,8 +98,9 @@ export default function Plan({
       {showChangeNameBox && (
         <ChangePlanNamePopupBox
           planId={planId}
+          fetchKey={fetchKey}
           onClose={toggleShowChangeNameBox}
-          onSuccess={refetch}
+          refetch={refetch}
         />
       )}
 
@@ -91,7 +108,7 @@ export default function Plan({
         <DeletePlanPopupBox
           planId={planId}
           onClose={toggleShowDeleteBox}
-          onSuccess={refetch}
+          refetch={refetch}
         />
       )}
     </>

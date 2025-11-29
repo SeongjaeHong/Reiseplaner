@@ -8,7 +8,8 @@ type typePlanGroup = {
   to: string;
   groupId: number;
   title: string;
-  refetch: () => void;
+  refetch: () => Promise<unknown>;
+  fetchKey: string[];
 };
 
 export default function PlanGroup({
@@ -16,6 +17,7 @@ export default function PlanGroup({
   groupId,
   title,
   refetch,
+  fetchKey,
 }: typePlanGroup) {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteBox, toggleShowDeleteBox] = useReducer(
@@ -47,7 +49,12 @@ export default function PlanGroup({
 
   return (
     <>
-      <Link to={to} search={{ group_id: groupId }} key={groupId}>
+      <Link
+        to={to}
+        search={{ group_id: groupId, group_title: title }}
+        mask={{ to: to, search: { group_id: groupId } }}
+        key={groupId}
+      >
         <div
           className='group relative flex justify-between w-full my-1 p-3 h-20 bg-zinc-300 truncate'
           id={groupId.toString()}
@@ -77,7 +84,7 @@ export default function PlanGroup({
         <ChangePlanGroupNamePopupBox
           planGroupId={groupId}
           onClose={toggleShowChangeNameBox}
-          onSuccess={refetch}
+          fetchKey={fetchKey}
         />
       )}
 
@@ -85,7 +92,7 @@ export default function PlanGroup({
         <DeletePlanGroupPopupBox
           planGroupId={groupId}
           onClose={toggleShowDeleteBox}
-          onSuccess={refetch}
+          refetch={refetch}
         />
       )}
     </>
