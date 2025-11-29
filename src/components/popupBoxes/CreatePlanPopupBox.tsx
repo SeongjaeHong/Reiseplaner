@@ -2,21 +2,21 @@ import { createPlan } from '@/apis/supabase/plans';
 import { useMutation } from '@tanstack/react-query';
 import InputPopupBox from './InputPopupBox';
 
-type createPopupBoxParam = {
+type createPlanPopupBoxParam = {
   groupId: number;
   onClose: () => void;
-  onSuccess: () => Promise<void>;
+  onSuccess: () => void;
 };
 
 export default function CreatePlanPopupBox({
   groupId,
   onClose,
   onSuccess,
-}: createPopupBoxParam) {
+}: createPlanPopupBoxParam) {
   const { mutate } = useMutation({
     mutationFn: (title: string) => createPlan(groupId, title),
-    onSuccess: async () => {
-      await onSuccess();
+    onSuccess: () => {
+      onSuccess();
       onClose();
     },
     throwOnError: true,

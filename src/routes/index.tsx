@@ -2,7 +2,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { useReducer } from 'react';
 import CreatePlanGroupPopupBox from '@/components/popupBoxes/CreatePlanGroupPopupBox';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import type { QueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getPlanGroups } from '@/apis/supabase/planGroups';
 import { PLAN_GROUP } from './-constant';
 import PlanGroup from '@/components/PlanGroup';
@@ -32,12 +33,7 @@ function Index() {
   console.log('- - - - - - - -  -');
   console.log(planGroups); // Bug: 제목 update치고 refetch하면 update친 애가 array 제일 뒤로 이동함(id는 동일한데 array 내에서만)
 
-  const handleRefetchPlanGroups = async () => {
-    await queryClient.refetchQueries({
-      queryKey: ['getPlanGroups'],
-      exact: true,
-    });
-  };
+  const handleRefetchPlanGroups = useRefetchPlanGroups(queryClient);
 
   return (
     <>
@@ -67,4 +63,16 @@ function Index() {
       )}
     </>
   );
+}
+
+function useRefetchPlanGroups(queryClient: QueryClient) {
+  const { mutate } = useMutation({
+    mutationFn: () =>
+      queryClient.refetchQueries({
+        queryKey: ['getPlanGroups'],
+        exact: true,
+      }),
+  });
+
+  return () => mutate();
 }

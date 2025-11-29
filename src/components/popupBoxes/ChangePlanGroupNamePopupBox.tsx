@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 type ChangePlanGroupNamePopupBoxParams = {
   planGroupId: number;
   onClose: () => void;
-  onSuccess: () => Promise<void>;
+  onSuccess: () => void;
 };
 
 export default function ChangePlanGroupNamePopupBox({
@@ -15,8 +15,8 @@ export default function ChangePlanGroupNamePopupBox({
 }: ChangePlanGroupNamePopupBoxParams) {
   const { mutate: changePlanGroupName } = useMutation({
     mutationFn: (title: string) => renamePlanGroupByGroupId(planGroupId, title),
-    onSuccess: async () => {
-      await onSuccess();
+    onSuccess: () => {
+      onSuccess();
       onClose();
     },
   });

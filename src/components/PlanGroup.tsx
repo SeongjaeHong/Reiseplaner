@@ -8,7 +8,7 @@ type typePlanGroup = {
   to: string;
   groupId: number;
   title: string;
-  refetch: () => Promise<void>;
+  refetch: () => void;
 };
 
 export default function PlanGroup({
