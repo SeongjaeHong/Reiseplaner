@@ -5,20 +5,20 @@ import { deletePlan } from '@/apis/supabase/plans';
 type DeletePlanPopupBoxParam = {
   planId: number;
   onClose: () => void;
-  onSuccess: () => void;
+  refetch: () => Promise<unknown>;
 };
 
 export default function DeletePlanPopupBox({
   planId,
   onClose,
-  onSuccess,
+  refetch,
 }: DeletePlanPopupBoxParam) {
   const { mutate } = useMutation({
     mutationFn: () => deletePlan(planId),
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       {
         if (res.status === 204) {
-          onSuccess();
+          await refetch();
         } else {
           console.log('Delete 실패');
           console.log(res);

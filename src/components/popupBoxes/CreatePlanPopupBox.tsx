@@ -5,18 +5,18 @@ import InputPopupBox from './InputPopupBox';
 type createPlanPopupBoxParam = {
   groupId: number;
   onClose: () => void;
-  onSuccess: () => void;
+  refetch: () => Promise<unknown>;
 };
 
 export default function CreatePlanPopupBox({
   groupId,
   onClose,
-  onSuccess,
+  refetch,
 }: createPlanPopupBoxParam) {
   const { mutate } = useMutation({
     mutationFn: (title: string) => createPlan(groupId, title),
-    onSuccess: () => {
-      onSuccess();
+    onSuccess: async () => {
+      await refetch();
       onClose();
     },
     throwOnError: true,

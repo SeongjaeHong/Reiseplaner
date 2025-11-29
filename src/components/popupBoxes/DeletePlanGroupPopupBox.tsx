@@ -5,20 +5,20 @@ import Popupbox from './Popupbox';
 type DeletePlanGroupPopupBoxParam = {
   planGroupId: number;
   onClose: () => void;
-  onSuccess: () => void;
+  refetch: () => Promise<unknown>;
 };
 
 export default function DeletePlanGroupPopupBox({
   planGroupId,
   onClose,
-  onSuccess,
+  refetch,
 }: DeletePlanGroupPopupBoxParam) {
   const { mutate } = useMutation({
     mutationFn: () => deletePlanGroups(planGroupId),
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       {
         if (res.status === 204) {
-          onSuccess();
+          await refetch();
         } else {
           console.log('Delete 실패');
           console.log(res);
