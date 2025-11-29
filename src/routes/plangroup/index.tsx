@@ -1,17 +1,18 @@
 import { getPlansByGroupId } from '@/apis/supabase/plans';
 import { getPlanGroupByGroupId } from '@/apis/supabase/planGroups';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { FaEllipsisVertical, FaPenToSquare } from 'react-icons/fa6';
+import type { QueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { createFileRoute } from '@tanstack/react-router';
+import { FaPenToSquare } from 'react-icons/fa6';
 import { PLAN } from '../-constant';
 import { useReducer } from 'react';
 import { z } from 'zod';
 import CreatePlanPopupBox from '@/components/popupBoxes/CreatePlanPopupBox';
+import Plan from '@/components/Plan';
 
 const planGroupParam = z.object({
   group_id: z.number(),
 });
-
 type PlanGroupParam = z.infer<typeof planGroupParam>;
 
 export const Route = createFileRoute('/plangroup/')({
@@ -22,20 +23,15 @@ export const Route = createFileRoute('/plangroup/')({
 function Index() {
   const queryClient = useQueryClient();
   const { group_id: groupId } = Route.useSearch();
-  const { data: plans } = useFetchPlans(groupId);
   const { data: groupTitle } = useFetchGroupTitle(groupId);
+  const { data: plans } = useFetchPlans(groupId);
 
   const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer(
     (prev) => !prev,
     false
   );
 
-  const handleRefetchPlans = async () => {
-    await queryClient.refetchQueries({
-      queryKey: ['fetchPlans'],
-      exact: true,
-    });
-  };
+  const handleRefetchPlans = useRefetchPlans(queryClient, groupId);
 
   return (
     <>
@@ -44,21 +40,14 @@ function Index() {
       </div>
       <div className='relative p-2 min-h-100 bg-reiseyellow'>
         {plans?.map((plan) => (
-          <Link
+          <Plan
             to={PLAN}
-            search={{ group_id: groupId, plan_id: plan.id }}
+            groupId={groupId}
+            planId={plan.id}
+            title={plan.title}
+            refetch={handleRefetchPlans}
             key={plan.id}
-          >
-            <div
-              className='w-full my-1 h-20 bg-zinc-300'
-              id={plan.id.toString()}
-            >
-              <div>
-                <FaEllipsisVertical />
-              </div>
-              <h1>{plan.title}</h1>
-            </div>
-          </Link>
+          />
         ))}
         <button
           className='absolute right-5 bottom-5'
@@ -70,8 +59,8 @@ function Index() {
       {showCreatePlanBox && (
         <CreatePlanPopupBox
           groupId={groupId}
-          onSuccess={handleRefetchPlans}
           onClose={toggleShowCreatePlanBox}
+          onSuccess={handleRefetchPlans}
         />
       )}
     </>
@@ -79,28 +68,37 @@ function Index() {
 }
 
 function useFetchPlans(groupId: number) {
-  const { data, error, isError, refetch } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ['fetchPlans', groupId],
     queryFn: () => getPlansByGroupId(groupId),
     staleTime: Infinity,
+    throwOnError: true,
   });
-
-  if (isError) throw error;
 
   return { data, refetch };
 }
 
 function useFetchGroupTitle(groupId: number) {
-  const { data, error, isError, refetch } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ['fetchGroupTitle', groupId],
     queryFn: () => getPlanGroupByGroupId(groupId),
     throwOnError: true,
     staleTime: Infinity,
   });
 
-  if (isError) throw error;
-
-  if (!data) return { data: undefined, refetch };
+  if (!data) return { data: null, refetch };
 
   return { data: data.title, refetch };
+}
+
+function useRefetchPlans(queryClient: QueryClient, groupId: number) {
+  const { mutate } = useMutation({
+    mutationFn: () =>
+      queryClient.refetchQueries({
+        queryKey: ['fetchPlans', groupId],
+        exact: true,
+      }),
+  });
+
+  return () => mutate();
 }
