@@ -37,7 +37,7 @@ export default function InputPopupBox({
 
   return (
     <div className='fixed z-1 top-50 left-1/2 -translate-x-1/2 py-2 px-3 w-70 bg-zinc-100 border-2 border-reiseorange rounded-md'>
-      <div>
+      <div className='mb-2'>
         <span className='text-reiseorange text-sm font-bold'>{title}</span>
       </div>
       <div>
