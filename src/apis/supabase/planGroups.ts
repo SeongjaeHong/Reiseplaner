@@ -16,14 +16,6 @@ export const createPlanGroup = async (title: string) => {
   return data;
 };
 
-export const getPlanGroups = async () => {
-  const { data, error } = await supabase.from('plangroups').select();
-
-  if (error) console.error(error);
-
-  return data;
-};
-
 const plangroupsById = z.object({
   id: z.number(),
   created_at: z.string(),
@@ -41,6 +33,23 @@ export const getPlanGroupByGroupId: GetPlanGroupByGroupId = async (groupId) => {
     .throwOnError();
 
   return plangroupsById.parse(data);
+};
+
+const plangroups = z.array(
+  z.object({
+    id: z.number(),
+    created_at: z.string(),
+    title: z.string(),
+  })
+);
+export type TypePlangroups = z.infer<typeof plangroups>;
+type GetPlanGroups = () => Promise<TypePlangroups | null>;
+export const getPlanGroups: GetPlanGroups = async () => {
+  const { data, error } = await supabase.from('plangroups').select();
+
+  if (error) console.error(error);
+
+  return plangroups.parse(data);
 };
 
 type typeDeletePlanGroups = (

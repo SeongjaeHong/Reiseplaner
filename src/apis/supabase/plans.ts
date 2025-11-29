@@ -40,7 +40,7 @@ export const createPlan: CreatePlan = async (groupId, title) => {
 };
 
 const Plans = z.array(Plan);
-type TypePlans = z.infer<typeof Plans>;
+export type TypePlans = z.infer<typeof Plans>;
 type GetPlansByGroup = (groupId: number) => Promise<TypePlans | null>;
 export const getPlansByGroupId: GetPlansByGroup = async (groupId) => {
   const { data, error } = await supabase
