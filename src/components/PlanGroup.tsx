@@ -92,7 +92,6 @@ export default function PlanGroup({
   );
 }
 
-//TODO: 서서히 나타났다가, 즉시 사라지도록 변경. 현재는 서서히 사라짐.
 const StyleMenuClick = (
   showMenu: boolean
 ) => `absolute invisible left-[-85px] top-[-30px] bg-zinc-500/0
