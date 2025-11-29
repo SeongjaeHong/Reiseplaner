@@ -2,12 +2,14 @@ import { useState } from 'react';
 
 type InputPopupBoxParams = {
   title: string;
+  placeholder?: string;
   onAccept: (userInput: string) => void;
   onClose: () => void;
 };
 
 export default function InputPopupBox({
   title,
+  placeholder = '',
   onAccept,
   onClose,
 }: InputPopupBoxParams) {
@@ -42,7 +44,7 @@ export default function InputPopupBox({
         <input
           className='w-full text-lg border-1 border-zinc-300 rounded-sm text-zinc-500 caret-pink-500'
           type='text'
-          placeholder={title}
+          placeholder={placeholder}
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           onKeyDown={handleEnterPress}

@@ -25,6 +25,7 @@ export default function CreatePlanPopupBox({
   return (
     <InputPopupBox
       title='Create a new plan'
+      placeholder='Titel'
       onAccept={(title: string) => mutate(title)}
       onClose={onClose}
     />

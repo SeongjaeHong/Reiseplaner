@@ -24,6 +24,7 @@ export default function ChangePlanGroupNamePopupBox({
   return (
     <InputPopupBox
       title='Change the title'
+      placeholder='Neu Titel'
       onAccept={changePlanGroupName}
       onClose={onClose}
     />

@@ -23,6 +23,7 @@ export default function CreatePlanGroupPopupBox({
   return (
     <InputPopupBox
       title='Create a new plan group'
+      placeholder='Titel'
       onAccept={(title: string) => mutate(title)}
       onClose={onClose}
     />
