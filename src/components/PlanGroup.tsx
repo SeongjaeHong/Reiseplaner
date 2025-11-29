@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { useReducer } from 'react';
+import { useReducer, useRef, useState } from 'react';
 import { FaEllipsisVertical } from 'react-icons/fa6';
 import DeletePlanGroupPopupBox from './popupBoxes/DeletePlanGroupPopupBox';
 import ChangePlanGroupNamePopupBox from './popupBoxes/ChangePlanGroupNamePopupBox';
@@ -17,20 +17,33 @@ export default function PlanGroup({
   title,
   refetch,
 }: typePlanGroup) {
-  const [showMenu, toggleShowMenu] = useReducer((prev) => !prev, false);
+  const [showMenu, setShowMenu] = useState(false);
   const [showDeleteBox, toggleShowDeleteBox] = useReducer(
     (prev) => !prev,
     false
   );
-  const handleClickPlanGroupMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    toggleShowMenu();
-  };
-
   const [showChangeNameBox, toggleShowChangeNameBox] = useReducer(
     (prev) => !prev,
     false
   );
+
+  const refTimer = useRef<number | null>(null);
+  const handleMenuMouseEnter = () => {
+    if (refTimer.current) {
+      clearTimeout(refTimer.current);
+      refTimer.current = null;
+    }
+
+    setShowMenu(true);
+  };
+
+  const handleMenuMouseLeave = () => {
+    if (refTimer.current) {
+      clearTimeout(refTimer.current);
+    }
+
+    refTimer.current = setTimeout(() => setShowMenu(false), 300);
+  };
 
   return (
     <>
@@ -43,12 +56,16 @@ export default function PlanGroup({
           <div className='absolute right-1 invisible group-hover:visible'>
             <button
               className='hover:bg-green-300 rounded-full p-2'
-              onClick={handleClickPlanGroupMenu}
+              onMouseEnter={handleMenuMouseEnter}
+              onMouseLeave={handleMenuMouseLeave}
+              onClick={(e) => e.preventDefault()}
             >
               <FaEllipsisVertical />
             </button>
             <PlanGroupMenuUI
               showMenu={showMenu}
+              onMouseEnter={handleMenuMouseEnter}
+              onMouseLeave={handleMenuMouseLeave}
               toggleShowChangeNameBox={toggleShowChangeNameBox}
               toggleShowDeleteBox={toggleShowDeleteBox}
             />
@@ -78,7 +95,7 @@ export default function PlanGroup({
 //TODO: 서서히 나타났다가, 즉시 사라지도록 변경. 현재는 서서히 사라짐.
 const StyleMenuClick = (
   showMenu: boolean
-) => `absolute invisible left-[-90px] top-[-30px] bg-zinc-500/0
+) => `absolute invisible left-[-85px] top-[-30px] bg-zinc-500/0
       duration-200 ease-out opacity-0
       ${showMenu && 'visible !top-0 !bg-zinc-500 !opacity-100'}`;
 
@@ -86,16 +103,25 @@ const StyleMenu = 'px-2 py-1 hover:bg-zinc-700';
 
 type PlanGroupMenuUIParams = {
   showMenu: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
   toggleShowChangeNameBox: () => void;
   toggleShowDeleteBox: () => void;
 };
 function PlanGroupMenuUI({
   showMenu,
+  onMouseEnter,
+  onMouseLeave,
   toggleShowChangeNameBox,
   toggleShowDeleteBox,
 }: PlanGroupMenuUIParams) {
   return (
-    <div className={StyleMenuClick(showMenu)}>
+    <div
+      className={StyleMenuClick(showMenu)}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onClick={(e) => e.preventDefault()}
+    >
       <div
         className={`${StyleMenu} border-b-1 border-zinc-600`}
         onClick={toggleShowChangeNameBox}
