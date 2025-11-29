@@ -21,6 +21,7 @@ export default function InputPopupBox({
       if (userInput) {
         setShowMsg(false);
         onAccept(userInput);
+        onClose();
       } else {
         setShowMsg(true);
       }
@@ -30,6 +31,7 @@ export default function InputPopupBox({
   const handleOnAccept = () => {
     if (userInput) {
       onAccept(userInput);
+      onClose();
     } else {
       setShowMsg(true);
     }
