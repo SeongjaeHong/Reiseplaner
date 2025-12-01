@@ -60,7 +60,7 @@ export default function PlanGroup({
           id={groupId.toString()}
         >
           <h1>{title}</h1>
-          <div className='absolute right-1 invisible group-hover:visible'>
+          <div className='absolute right-1 invisible group-hover:visible overflow-visible'>
             <button
               className='hover:bg-green-300 rounded-full p-2'
               onMouseEnter={handleMenuMouseEnter}
@@ -99,13 +99,15 @@ export default function PlanGroup({
   );
 }
 
-const StyleMenuClick = (
+const StyleMenuGroup = (
   showMenu: boolean
-) => `absolute invisible left-[-85px] top-[-30px] bg-zinc-500/0
-      duration-200 ease-out opacity-0
+) => `absolute invisible left-[-90px] top-[-30px]
+      duration-200 ease-out opacity-0 bg-zinc-500/0
+      text-center
+      divide-y divide-zinc-600
       ${showMenu && 'visible !top-0 !bg-zinc-500 !opacity-100'}`;
 
-const StyleMenu = 'px-2 py-1 hover:bg-zinc-700';
+const StyleMenuItem = 'w-full px-2 py-1 hover:bg-zinc-700';
 
 type PlanGroupMenuUIParams = {
   showMenu: boolean;
@@ -122,21 +124,18 @@ function PlanGroupMenuUI({
   toggleShowDeleteBox,
 }: PlanGroupMenuUIParams) {
   return (
-    <div
-      className={StyleMenuClick(showMenu)}
+    <ul
+      className={StyleMenuGroup(showMenu)}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={(e) => e.preventDefault()}
     >
-      <div
-        className={`${StyleMenu} border-b-1 border-zinc-600`}
-        onClick={toggleShowChangeNameBox}
-      >
-        <span>이름 변경</span>
-      </div>
-      <div className={StyleMenu} onClick={toggleShowDeleteBox}>
-        <span>삭제</span>
-      </div>
-    </div>
+      <li className={StyleMenuItem} onClick={toggleShowChangeNameBox}>
+        Bearbeiten
+      </li>
+      <li className={StyleMenuItem} onClick={toggleShowDeleteBox}>
+        Löschen
+      </li>
+    </ul>
   );
 }
