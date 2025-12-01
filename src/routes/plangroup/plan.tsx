@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { PLAN_GROUP } from '../-constant';
+import { PLAN_GROUP } from '@/routes/-constant';
 import { z } from 'zod';
 
 const planParam = z.object({

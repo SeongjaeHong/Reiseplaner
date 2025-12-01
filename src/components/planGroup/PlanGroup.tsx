@@ -1,8 +1,8 @@
 import { Link } from '@tanstack/react-router';
 import { useReducer, useRef, useState } from 'react';
 import { FaEllipsisVertical } from 'react-icons/fa6';
-import DeletePlanGroupPopupBox from './popupBoxes/DeletePlanGroupPopupBox';
-import ChangePlanGroupNamePopupBox from './popupBoxes/ChangePlanGroupNamePopupBox';
+import DeletePlanGroupPopupBox from './DeletePlanGroupPopupBox';
+import ChangePlanGroupNamePopupBox from './ChangePlanGroupNamePopupBox';
 
 type typePlanGroup = {
   to: string;

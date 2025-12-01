@@ -1,11 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { useReducer } from 'react';
-import CreatePlanGroupPopupBox from '@/components/popupBoxes/CreatePlanGroupPopupBox';
+import CreatePlanGroupPopupBox from '@/components/planGroup/CreatePlanGroupPopupBox';
 import { useQuery } from '@tanstack/react-query';
 import { getPlanGroups } from '@/apis/supabase/planGroups';
 import { PLAN_GROUP } from './-constant';
-import PlanGroup from '@/components/PlanGroup';
+import PlanGroup from '@/components/planGroup/PlanGroup';
 
 export const Route = createFileRoute('/')({
   component: Index,

@@ -1,6 +1,6 @@
 import { createPlanGroup } from '@/apis/supabase/planGroups';
 import { useMutation } from '@tanstack/react-query';
-import InputPopupBox from './InputPopupBox';
+import InputPopupBox from '@/components/popupBoxes/InputPopupBox';
 
 type createPlanGroupPopupBoxParam = {
   onClose: () => void;

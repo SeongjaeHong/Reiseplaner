@@ -5,8 +5,8 @@ import { FaPenToSquare } from 'react-icons/fa6';
 import { PLAN } from '../-constant';
 import { useReducer } from 'react';
 import { z } from 'zod';
-import CreatePlanPopupBox from '@/components/popupBoxes/CreatePlanPopupBox';
-import Plan from '@/components/Plan';
+import CreatePlanPopupBox from '@/components/plan/CreatePlanPopupBox';
+import Plan from '@/components/plan/Plan';
 
 const planGroupParam = z.object({
   group_id: z.number(),

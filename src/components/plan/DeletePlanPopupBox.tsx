@@ -1,20 +1,20 @@
 import { useMutation } from '@tanstack/react-query';
-import { deletePlanGroups } from '../../apis/supabase/planGroups';
-import Popupbox from './Popupbox';
+import Popupbox from '@/components/popupBoxes/Popupbox';
+import { deletePlan } from '@/apis/supabase/plans';
 
-type DeletePlanGroupPopupBoxParam = {
-  planGroupId: number;
+type DeletePlanPopupBoxParam = {
+  planId: number;
   onClose: () => void;
   refetch: () => Promise<unknown>;
 };
 
-export default function DeletePlanGroupPopupBox({
-  planGroupId,
+export default function DeletePlanPopupBox({
+  planId,
   onClose,
   refetch,
-}: DeletePlanGroupPopupBoxParam) {
+}: DeletePlanPopupBoxParam) {
   const { mutate } = useMutation({
-    mutationFn: () => deletePlanGroups(planGroupId),
+    mutationFn: () => deletePlan(planId),
     onSuccess: async (res) => {
       {
         if (res.status === 204) {

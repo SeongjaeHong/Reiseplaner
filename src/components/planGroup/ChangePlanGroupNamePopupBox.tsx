@@ -1,6 +1,6 @@
 import type { TypePlangroups } from '@/apis/supabase/planGroups';
 import { renamePlanGroupByGroupId } from '@/apis/supabase/planGroups';
-import InputPopupBox from './InputPopupBox';
+import InputPopupBox from '@/components/popupBoxes/InputPopupBox';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type ChangePlanGroupNamePopupBoxParams = {
