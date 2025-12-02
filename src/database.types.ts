@@ -18,16 +18,19 @@ export type Database = {
         Row: {
           created_at: string
           id: number
+          thumbnailURL: string | null
           title: string
         }
         Insert: {
           created_at?: string
           id?: number
+          thumbnailURL?: string | null
           title?: string
         }
         Update: {
           created_at?: string
           id?: number
+          thumbnailURL?: string | null
           title?: string
         }
         Relationships: []
