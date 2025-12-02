@@ -1,9 +1,4 @@
-import type {
-  PostgrestResponse,
-  PostgrestSingleResponse,
-} from '@supabase/supabase-js';
 import supabase from '@/supabaseClient';
-import { z } from 'zod';
 
 export const createPlanGroup = async (title: string) => {
   const { data, error } = await supabase
@@ -16,15 +11,7 @@ export const createPlanGroup = async (title: string) => {
   return data;
 };
 
-const plangroupsById = z.object({
-  id: z.number(),
-  created_at: z.string(),
-  title: z.string(),
-});
-type GetPlanGroupByGroupId = (
-  groupId: number
-) => Promise<z.infer<typeof plangroupsById> | null>;
-export const getPlanGroupByGroupId: GetPlanGroupByGroupId = async (groupId) => {
+export const getPlanGroupByGroupId = async (groupId: number) => {
   const { data } = await supabase
     .from('plangroups')
     .select()
@@ -32,30 +19,18 @@ export const getPlanGroupByGroupId: GetPlanGroupByGroupId = async (groupId) => {
     .single()
     .throwOnError();
 
-  return plangroupsById.parse(data);
+  return data;
 };
 
-const plangroups = z.array(
-  z.object({
-    id: z.number(),
-    created_at: z.string(),
-    title: z.string(),
-  })
-);
-export type TypePlangroups = z.infer<typeof plangroups>;
-type GetPlanGroups = () => Promise<TypePlangroups | null>;
-export const getPlanGroups: GetPlanGroups = async () => {
+export const getPlanGroups = async () => {
   const { data, error } = await supabase.from('plangroups').select();
 
   if (error) console.error(error);
 
-  return plangroups.parse(data);
+  return data;
 };
 
-type typeDeletePlanGroups = (
-  planGroupId: number
-) => Promise<PostgrestSingleResponse<null>>;
-export const deletePlanGroups: typeDeletePlanGroups = async (planGroupId) => {
+export const deletePlanGroups = async (planGroupId: number) => {
   const response = await supabase
     .from('plangroups')
     .delete()
@@ -64,17 +39,21 @@ export const deletePlanGroups: typeDeletePlanGroups = async (planGroupId) => {
   return response;
 };
 
-type RenamePlanGroupByGroupId = (
+export const updatePlanGroupByGroupId = async (
   groupId: number,
-  newTitle: string
-) => Promise<PostgrestResponse<never> | null>;
-export const renamePlanGroupByGroupId: RenamePlanGroupByGroupId = async (
-  groupId,
-  newTitle
+  title: string,
+  thumbnailURL: string | null | undefined
 ) => {
+  const update: Partial<{ title: string; thumbnailURL: string | null }> = {
+    title,
+  };
+  if (thumbnailURL || thumbnailURL === null) {
+    update.thumbnailURL = thumbnailURL;
+  }
+
   const res = await supabase
     .from('plangroups')
-    .update({ title: newTitle })
+    .update(update)
     .eq('id', groupId)
     .single()
     .throwOnError();
