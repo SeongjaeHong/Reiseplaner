@@ -29,10 +29,8 @@ function Index() {
         {planGroups?.map((planGroup) => (
           <PlanGroup
             to={PLAN_GROUP}
-            groupId={planGroup.id}
-            title={planGroup.title}
+            planGroup={planGroup}
             refetch={() => refetch()}
-            fetchKey={['getPlanGroups']}
             key={planGroup.id}
           />
         ))}
