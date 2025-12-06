@@ -35,16 +35,7 @@ function Index() {
       </div>
       <div className='relative p-2 min-h-100 bg-reiseyellow'>
         {plans?.map((plan) => (
-          <Plan
-            to={PLAN}
-            groupId={groupId}
-            groupTitle={groupTitle}
-            planId={plan.id}
-            planTitle={plan.title}
-            fetchKey={['fetchGroupTitle', groupId.toString()]}
-            refetch={refetch}
-            key={plan.id}
-          />
+          <Plan to={PLAN} plan={plan} refetch={refetch} key={plan.id} />
         ))}
         <button
           className='absolute right-5 bottom-5'

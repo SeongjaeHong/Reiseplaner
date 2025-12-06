@@ -3,26 +3,15 @@ import { useReducer, useRef, useState } from 'react';
 import { FaEllipsisVertical } from 'react-icons/fa6';
 import DeletePlanPopupBox from './DeletePlanPopupBox';
 import ChangePlanNamePopupBox from './ChangePlanNamePopupBox';
+import type { Database } from '@/database.types';
 
-type PlanParams = {
+type Plan = {
   to: string;
-  fetchKey: string[];
-  groupId: number;
-  groupTitle: string;
-  planId: number;
-  planTitle: string;
+  plan: Database['public']['Tables']['plans']['Row'];
   refetch: () => Promise<unknown>;
 };
 
-export default function Plan({
-  to,
-  fetchKey,
-  groupId,
-  groupTitle,
-  planId,
-  planTitle,
-  refetch,
-}: PlanParams) {
+export default function Plan({ to, plan, refetch }: Plan) {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteBox, toggleShowDeleteBox] = useReducer(
     (prev) => !prev,
@@ -56,25 +45,24 @@ export default function Plan({
       <Link
         to={to}
         search={{
-          group_id: groupId,
-          plan_id: planId,
-          group_title: groupTitle,
-          plan_title: planTitle,
+          group_id: plan.group_id,
+          plan_id: plan.id,
+          plan_title: plan.title,
         }}
         mask={{
           to: to,
           search: {
-            group_id: groupId,
-            plan_id: planId,
+            group_id: plan.group_id,
+            plan_id: plan.id,
           },
         }}
-        key={groupId}
+        key={plan.id}
       >
         <div
           className='group relative flex justify-between w-full my-1 p-3 h-20 bg-zinc-300 truncate'
-          id={groupId.toString()}
+          id={plan.id.toString()}
         >
-          <h1>{planTitle}</h1>
+          <h1>{plan.title}</h1>
           <div className='absolute right-1 invisible group-hover:visible'>
             <button
               className='hover:bg-green-300 rounded-full p-2'
@@ -97,8 +85,7 @@ export default function Plan({
 
       {showChangeNameBox && (
         <ChangePlanNamePopupBox
-          planId={planId}
-          fetchKey={fetchKey}
+          planId={plan.id}
           onClose={toggleShowChangeNameBox}
           refetch={refetch}
         />
@@ -106,7 +93,7 @@ export default function Plan({
 
       {showDeleteBox && (
         <DeletePlanPopupBox
-          planId={planId}
+          planId={plan.id}
           onClose={toggleShowDeleteBox}
           refetch={refetch}
         />
