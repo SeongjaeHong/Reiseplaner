@@ -1,11 +1,11 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { PLAN_GROUP } from '@/routes/-constant';
+import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
+import { FaAngleLeft } from 'react-icons/fa6';
+import PlanContents from '@/components/planContents/PlanContents';
 
 const planParam = z.object({
   group_id: z.number(),
   plan_id: z.number(),
-  group_title: z.string(),
   plan_title: z.string(),
 });
 
@@ -17,19 +17,24 @@ export const Route = createFileRoute('/plangroup/plan')({
 });
 
 function Plan() {
-  const { group_id, plan_id, group_title } = Route.useSearch();
+  const {
+    group_id: groupId,
+    plan_id: planId,
+    plan_title: planTitle,
+  } = Route.useSearch();
 
   return (
     <>
-      <Link to={PLAN_GROUP} search={{ group_id, group_title }}>
-        <div className='bg-reiseorange min-h-30'>
-          <h1>
-            {group_id} - {plan_id}
-          </h1>
-        </div>
-      </Link>
+      <div className='flex items-center bg-reiseorange text-xl w-full'>
+        <button onClick={() => window.history.back()} className='p-1'>
+          <span>
+            <FaAngleLeft />
+          </span>
+        </button>
+        <h1 className='break-all'>{planTitle}</h1>
+      </div>
 
-      <div className='text-zinc-500'> PLAN PAGE: CONTENTS</div>
+      <PlanContents planId={planId} />
     </>
   );
 }

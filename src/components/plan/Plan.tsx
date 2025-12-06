@@ -72,7 +72,7 @@ export default function Plan({ to, plan, refetch }: Plan) {
             >
               <FaEllipsisVertical />
             </button>
-            <PlanGroupMenuUI
+            <PlanMenuUI
               showMenu={showMenu}
               onMouseEnter={handleMenuMouseEnter}
               onMouseLeave={handleMenuMouseLeave}
@@ -110,20 +110,20 @@ const StyleMenuClick = (
 
 const StyleMenu = 'px-2 py-1 hover:bg-zinc-700';
 
-type PlanGroupMenuUIParams = {
+type PlanMenuUIParams = {
   showMenu: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   toggleShowChangeNameBox: () => void;
   toggleShowDeleteBox: () => void;
 };
-function PlanGroupMenuUI({
+function PlanMenuUI({
   showMenu,
   onMouseEnter,
   onMouseLeave,
   toggleShowChangeNameBox,
   toggleShowDeleteBox,
-}: PlanGroupMenuUIParams) {
+}: PlanMenuUIParams) {
   return (
     <div
       className={StyleMenuClick(showMenu)}

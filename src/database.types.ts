@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      planContents: {
+        Row: {
+          contents: Json | null
+          created_at: string
+          id: number
+          plans_id: number
+        }
+        Insert: {
+          contents?: Json | null
+          created_at?: string
+          id?: number
+          plans_id: number
+        }
+        Update: {
+          contents?: Json | null
+          created_at?: string
+          id?: number
+          plans_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_plans_id_fkey"
+            columns: ["plans_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plangroups: {
         Row: {
           created_at: string
@@ -37,27 +66,32 @@ export type Database = {
       }
       plans: {
         Row: {
-          contents: Json | null
           created_at: string
           group_id: number
           id: number
           title: string
         }
         Insert: {
-          contents?: Json | null
           created_at?: string
           group_id: number
           id?: number
           title?: string
         }
         Update: {
-          contents?: Json | null
           created_at?: string
           group_id?: number
           id?: number
           title?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "plans_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "plangroups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

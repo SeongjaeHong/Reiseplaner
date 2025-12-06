@@ -9,16 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as NewplanRouteImport } from './routes/newplan'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlangroupIndexRouteImport } from './routes/plangroup/index'
 import { Route as PlangroupPlanRouteImport } from './routes/plangroup/plan'
 
-const NewplanRoute = NewplanRouteImport.update({
-  id: '/newplan',
-  path: '/newplan',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,47 +31,36 @@ const PlangroupPlanRoute = PlangroupPlanRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/newplan': typeof NewplanRoute
   '/plangroup/plan': typeof PlangroupPlanRoute
   '/plangroup': typeof PlangroupIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/newplan': typeof NewplanRoute
   '/plangroup/plan': typeof PlangroupPlanRoute
   '/plangroup': typeof PlangroupIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/newplan': typeof NewplanRoute
   '/plangroup/plan': typeof PlangroupPlanRoute
   '/plangroup/': typeof PlangroupIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/newplan' | '/plangroup/plan' | '/plangroup'
+  fullPaths: '/' | '/plangroup/plan' | '/plangroup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/newplan' | '/plangroup/plan' | '/plangroup'
-  id: '__root__' | '/' | '/newplan' | '/plangroup/plan' | '/plangroup/'
+  to: '/' | '/plangroup/plan' | '/plangroup'
+  id: '__root__' | '/' | '/plangroup/plan' | '/plangroup/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  NewplanRoute: typeof NewplanRoute
   PlangroupPlanRoute: typeof PlangroupPlanRoute
   PlangroupIndexRoute: typeof PlangroupIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/newplan': {
-      id: '/newplan'
-      path: '/newplan'
-      fullPath: '/newplan'
-      preLoaderRoute: typeof NewplanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -104,7 +87,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  NewplanRoute: NewplanRoute,
   PlangroupPlanRoute: PlangroupPlanRoute,
   PlangroupIndexRoute: PlangroupIndexRoute,
 }
