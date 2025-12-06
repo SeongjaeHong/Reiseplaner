@@ -39,6 +39,7 @@ export default function PlanGroupEdit({
   const currentThumbnail = useWatch({ control, name: 'thumbnail' });
   const isThumbnailDirty = !(currentThumbnail === thumbnail);
   const isFormDirty = !!dirtyFields.title || isThumbnailDirty;
+
   const { onChange: registerTitleOnChange, ...registerTitleRest } =
     register('title');
   const [titleEmpty, setTitleEmpty] = useState(false);
@@ -50,42 +51,13 @@ export default function PlanGroupEdit({
     }
   };
 
-  const { mutate: submit, isPending } = useMutation({
-    mutationFn: async (data: PlanGroupForm) => {
-      let thumbnailPath = undefined;
-      if (isThumbnailDirty) {
-        // Save a new image in DB.
-        if (currentThumbnail) {
-          const res = await uploadPlanGroupThumbnail(currentThumbnail).catch(
-            (e) => {
-              console.log('Fail to upload a new image in db.');
-              console.log(e);
-              throw e;
-            }
-          );
-          thumbnailPath = res.fullPath;
-        } else {
-          thumbnailPath = null;
-        }
-
-        // Remove previously saved image from DB.
-        if (thumbnail) {
-          await deletePlanGroupThumbnail(thumbnail.name).catch((e) => {
-            console.log('Fail to remove an image from db.');
-            console.log(e);
-          });
-        }
-      }
-
-      // Update a title and a thumbnail path of a plan group in DB
-      await updatePlanGroupByGroupId(planGroup.id, data.title, thumbnailPath);
-    },
-    onSuccess: async () => {
-      console.log('onSuccess');
-      await refetch();
-      console.log('Run refetch');
-      onClose();
-    },
+  const { mutate: submit, isPending } = useMutatePlanGroup({
+    planGroup,
+    isThumbnailDirty,
+    prevThumbnail: thumbnail,
+    curThumbnail: currentThumbnail,
+    onClose,
+    refetch,
   });
 
   const isSubmitDisabled = !isFormDirty || isPending || titleEmpty;
@@ -158,4 +130,58 @@ export default function PlanGroupEdit({
       </div>
     </form>
   );
+}
+
+type UseMutatePlanGroup = {
+  planGroup: Database['public']['Tables']['plangroups']['Row'];
+  isThumbnailDirty: boolean;
+  prevThumbnail: File | null;
+  curThumbnail: File | null;
+  onClose: () => void;
+  refetch: () => Promise<unknown>;
+};
+// Update information of a plan group
+function useMutatePlanGroup({
+  planGroup,
+  isThumbnailDirty,
+  prevThumbnail,
+  curThumbnail,
+  onClose,
+  refetch,
+}: UseMutatePlanGroup) {
+  return useMutation({
+    mutationFn: async (data: PlanGroupForm) => {
+      let thumbnailPath = undefined;
+      if (isThumbnailDirty) {
+        // Save a new thumbnail image in DB.
+        if (curThumbnail) {
+          const res = await uploadPlanGroupThumbnail(curThumbnail).catch(
+            (e) => {
+              console.log('Fail to upload a new image in db.');
+              console.log(e);
+              throw e;
+            }
+          );
+          thumbnailPath = res.fullPath;
+        } else {
+          thumbnailPath = null;
+        }
+
+        // Remove a previously saved thumbnail image from DB.
+        if (prevThumbnail) {
+          await deletePlanGroupThumbnail(prevThumbnail.name).catch((e) => {
+            console.log('Fail to remove an image from db.');
+            console.log(e);
+          });
+        }
+      }
+
+      // Update a title and a thumbnail path of a plan group in DB
+      await updatePlanGroupByGroupId(planGroup.id, data.title, thumbnailPath);
+    },
+    onSuccess: async () => {
+      await refetch();
+      onClose();
+    },
+  });
 }
