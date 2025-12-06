@@ -1,9 +1,9 @@
+import type { Database } from '@/database.types';
 import supabase from '@/supabaseClient';
 import type {
   PostgrestResponse,
   PostgrestSingleResponse,
 } from '@supabase/supabase-js';
-import z from 'zod';
 
 type typeuploadImage = (file: File) => Promise<string>;
 export const uploadImage: typeuploadImage = async (file) => {
@@ -18,15 +18,8 @@ export const uploadImage: typeuploadImage = async (file) => {
   return data.fullPath;
 };
 
-const Plan = z.object({
-  id: z.number(),
-  created_at: z.string(),
-  title: z.string(),
-  contents: z.json(),
-  group_id: z.number(),
-});
-type TypePlan = z.infer<typeof Plan>;
-type CreatePlan = (group_id: number, title: string) => Promise<TypePlan | null>;
+type Plan = Database['public']['Tables']['plans']['Row'];
+type CreatePlan = (group_id: number, title: string) => Promise<Plan | null>;
 export const createPlan: CreatePlan = async (groupId, title) => {
   const { data, error } = await supabase
     .from('plans')
@@ -36,12 +29,10 @@ export const createPlan: CreatePlan = async (groupId, title) => {
 
   if (error) throw error;
 
-  return Plan.parse(data);
+  return data;
 };
 
-const Plans = z.array(Plan);
-export type TypePlans = z.infer<typeof Plans>;
-type GetPlansByGroup = (groupId: number) => Promise<TypePlans | null>;
+type GetPlansByGroup = (groupId: number) => Promise<Plan[] | null>;
 export const getPlansByGroupId: GetPlansByGroup = async (groupId) => {
   const { data, error } = await supabase
     .from('plans')
@@ -50,7 +41,7 @@ export const getPlansByGroupId: GetPlansByGroup = async (groupId) => {
 
   if (error) console.error(error);
 
-  return Plans.parse(data);
+  return data;
 };
 
 type typeDeletePlan = (
