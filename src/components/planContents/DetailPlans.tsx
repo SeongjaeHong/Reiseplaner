@@ -4,9 +4,10 @@ import {
 } from '@/apis/supabase/planContents';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { FaCirclePlus, FaTag } from 'react-icons/fa6';
+import { FaCirclePlus } from 'react-icons/fa6';
+import TextBox from './TextBox';
 
-type HandleUpdateContent = {
+export type HandleUpdateContent = {
   id: Content['id'];
   box?: Content['box'];
   data?: Content['data'];
@@ -30,47 +31,16 @@ export default function DetailPlans({ planId }: DetailPlans) {
   }, [data]);
 
   const [editingId, setEditingId] = useState<number | null>(null);
-  const handleAddNewBox = () => {
-    const newContent: Content = {
-      id: planContents ? planContents.length + 1 : 1,
-      type: 'text',
-      data: '',
-      box: 'plain',
-    };
+  const handleAddNewBox = useAddNewBox({
+    planContents,
+    setPlanContents,
+    setEditingId,
+  });
 
-    setPlanContents((prev) => (prev ? [...prev, newContent] : [newContent]));
-    setEditingId(newContent.id);
-  };
-
-  const handleUpdateContent = ({ id, box, data }: HandleUpdateContent) => {
-    if (!planContents) {
-      return;
-    }
-
-    if (box) {
-      setPlanContents(
-        planContents.map((content) => {
-          if (content.id === id) {
-            content.box = box;
-          }
-
-          return content;
-        })
-      );
-    }
-
-    if (data) {
-      setPlanContents(
-        planContents.map((content) => {
-          if (content.id === id) {
-            content.data = data;
-          }
-
-          return content;
-        })
-      );
-    }
-  };
+  const handleUpdateContent = useUpdateContent({
+    planContents,
+    setPlanContents,
+  });
 
   return (
     <div className='border-1 border-reiseorange bg-zinc-500 flex-1 min-h-30 p-1'>
@@ -101,136 +71,61 @@ export default function DetailPlans({ planId }: DetailPlans) {
   );
 }
 
-type TextBox = {
-  content: Content;
-  isEdit: boolean;
-  setEditingId: (id: number | null) => void;
-  updateContent: ({ id, box, data }: HandleUpdateContent) => void;
+type UseAddNewBox = {
+  planContents: Content[] | null;
+  setPlanContents: React.Dispatch<React.SetStateAction<Content[] | null>>;
+  setEditingId: React.Dispatch<React.SetStateAction<number | null>>;
 };
-function TextBox({ content, isEdit, setEditingId, updateContent }: TextBox) {
-  const handleClearEditOnBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-    if (e.currentTarget.contains(e.relatedTarget)) {
+function useAddNewBox({
+  planContents,
+  setPlanContents,
+  setEditingId,
+}: UseAddNewBox) {
+  return () => {
+    const newContent: Content = {
+      id: planContents ? planContents.length + 1 : 1,
+      type: 'text',
+      data: '',
+      box: 'plain',
+    };
+
+    setPlanContents((prev) => (prev ? [...prev, newContent] : [newContent]));
+    setEditingId(newContent.id);
+  };
+}
+
+type UseUpdateContent = {
+  planContents: Content[] | null;
+  setPlanContents: React.Dispatch<React.SetStateAction<Content[] | null>>;
+};
+function useUpdateContent({ planContents, setPlanContents }: UseUpdateContent) {
+  return ({ id, box, data }: HandleUpdateContent) => {
+    if (!planContents) {
       return;
     }
 
-    setEditingId(null);
-    updateContent({ id: content.id, data: content.data });
+    if (box) {
+      setPlanContents(
+        planContents.map((content) => {
+          if (content.id === id) {
+            content.box = box;
+          }
+
+          return content;
+        })
+      );
+    }
+
+    if (data) {
+      setPlanContents(
+        planContents.map((content) => {
+          if (content.id === id) {
+            content.data = data;
+          }
+
+          return content;
+        })
+      );
+    }
   };
-
-  if (content.box === 'note') {
-    return (
-      <NoteBox
-        content={content}
-        isEdit={isEdit}
-        toggleNote={() => updateContent({ id: content.id, box: 'plain' })}
-        toggleEdit={() => setEditingId(content.id)}
-        UpdateContentOnBlur={handleClearEditOnBlur}
-      />
-    );
-  } else {
-    return (
-      <DetailPlanBox
-        content={content}
-        isEdit={isEdit}
-        toggleNote={() => updateContent({ id: content.id, box: 'note' })}
-        toggleEdit={() => setEditingId(content.id)}
-        UpdateContentOnBlur={handleClearEditOnBlur}
-      />
-    );
-  }
-}
-
-const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  const target = e.currentTarget;
-  target.style.height = 'auto';
-  target.style.height = `${target.scrollHeight}px`;
-};
-type TextBoxItem = {
-  content: Content;
-  isEdit: boolean;
-  toggleNote: () => void;
-  toggleEdit: () => void;
-  UpdateContentOnBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
-};
-function NoteBox({
-  content,
-  isEdit,
-  toggleNote,
-  toggleEdit,
-  UpdateContentOnBlur,
-}: TextBoxItem) {
-  return (
-    <div
-      tabIndex={content.id} // to make it focousable and trigger onBlur later
-      onBlur={UpdateContentOnBlur}
-      className='rounded-md bg-reisered py-1 px-2 mb-3 min-h-5 '
-    >
-      <h1 className='mb-2 text-xl font-bold'>NOTE</h1>
-      {isEdit && (
-        <div>
-          <textarea
-            defaultValue={content.data ?? ''}
-            onChange={handleTextArea}
-            placeholder='Input here.'
-            className='w-full resize-none outline-0'
-          />
-          <div className='flex flex-row-reverse pr-5 pb-2'>
-            <button
-              onClick={toggleNote}
-              className='flex items-center gap-1 rounded-xl bg-orange-300 py-1 px-3'
-            >
-              <FaTag />
-              NOTE
-            </button>
-          </div>
-        </div>
-      )}
-      {!isEdit && (
-        <div onClick={toggleEdit}>
-          {content.data ? content.data : 'Input here.'}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function DetailPlanBox({
-  content,
-  isEdit,
-  toggleNote,
-  toggleEdit,
-  UpdateContentOnBlur,
-}: TextBoxItem) {
-  return (
-    <div
-      tabIndex={content.id} // to make it focousable and trigger onBlur later
-      onBlur={UpdateContentOnBlur}
-      className='border-1 border-reiseyellow rounded-md mb-2 px-2 py-1 min-h-2'
-    >
-      {isEdit && (
-        <div>
-          <textarea
-            defaultValue={content.data ?? ''}
-            onChange={handleTextArea}
-            placeholder='Input here.'
-            className='w-full py-1 resize-none outline-0'
-          />
-          <div className='flex flex-row-reverse pr-5 pb-2'>
-            <button
-              onClick={toggleNote}
-              className='flex items-center gap-1 rounded-xl bg-zinc-300 py-1 px-3'
-            >
-              <FaTag />
-              NOTE
-            </button>
-          </div>
-        </div>
-      )}
-      {!isEdit && (
-        <div onClick={toggleEdit} className='py-1 px-2'>
-          {content.data ? content.data : 'Input here.'}
-        </div>
-      )}
-    </div>
-  );
 }
