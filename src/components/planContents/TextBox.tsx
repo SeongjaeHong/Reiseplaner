@@ -1,6 +1,7 @@
 import type { Content } from '@/apis/supabase/planContents';
 import type { HandleUpdateContent } from './DetailPlans';
 import { FaTag } from 'react-icons/fa6';
+import { useRef } from 'react';
 
 type TextBox = {
   content: Content;
@@ -14,21 +15,19 @@ export default function TextBox({
   setEditingId,
   updateContent,
 }: TextBox) {
-  const handleClearEditOnBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-    if (e.currentTarget.contains(e.relatedTarget)) {
-      return;
-    }
-
-    setEditingId(null);
-    updateContent({ id: content.id, data: content.data });
-  };
+  const handleToggleNote = useToggleNote({ id: content.id, updateContent });
+  const handleClearEditOnBlur = useClearEditOnBlur({
+    id: content.id,
+    setEditingId,
+    updateContent,
+  });
 
   if (content.box === 'note') {
     return (
       <NoteBox
         content={content}
         isEdit={isEdit}
-        toggleNote={() => updateContent({ id: content.id, box: 'plain' })}
+        toggleNote={handleToggleNote('plain')}
         toggleEdit={() => setEditingId(content.id)}
         UpdateContentOnBlur={handleClearEditOnBlur}
       />
@@ -38,7 +37,7 @@ export default function TextBox({
       <DetailPlanBox
         content={content}
         isEdit={isEdit}
-        toggleNote={() => updateContent({ id: content.id, box: 'note' })}
+        toggleNote={handleToggleNote('note')}
         toggleEdit={() => setEditingId(content.id)}
         UpdateContentOnBlur={handleClearEditOnBlur}
       />
@@ -46,18 +45,65 @@ export default function TextBox({
   }
 }
 
+type UseToggleNote = {
+  id: Content['id'];
+  updateContent: ({ id, box, data }: HandleUpdateContent) => void;
+};
+function useToggleNote({ id, updateContent }: UseToggleNote) {
+  return (box: Content['box']) => {
+    return (ref: React.RefObject<HTMLTextAreaElement | null>) => {
+      if (!ref.current) {
+        updateContent({ id, box });
+      } else {
+        updateContent({ id, box, data: ref.current.value });
+      }
+    };
+  };
+}
+
+type UseClearEditOnBlur = {
+  id: Content['id'];
+  setEditingId: (id: number | null) => void;
+  updateContent: ({ id, box, data }: HandleUpdateContent) => void;
+};
+function useClearEditOnBlur({
+  id,
+  setEditingId,
+  updateContent,
+}: UseClearEditOnBlur) {
+  return (
+    e: React.FocusEvent<HTMLDivElement>,
+    ref: React.RefObject<HTMLTextAreaElement | null>
+  ) => {
+    if (e.currentTarget.contains(e.relatedTarget)) {
+      return;
+    }
+
+    setEditingId(null);
+
+    if (ref.current) {
+      updateContent({ id, data: ref.current.value });
+    }
+  };
+}
+
 const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
   const target = e.currentTarget;
   target.style.height = 'auto';
   target.style.height = `${target.scrollHeight}px`;
 };
+
 type TextBoxItem = {
   content: Content;
   isEdit: boolean;
-  toggleNote: () => void;
+  toggleNote: (ref: React.RefObject<HTMLTextAreaElement | null>) => void;
   toggleEdit: () => void;
-  UpdateContentOnBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
+  UpdateContentOnBlur: (
+    e: React.FocusEvent<HTMLDivElement>,
+    ref: React.RefObject<HTMLTextAreaElement | null>
+  ) => void;
 };
+
 function NoteBox({
   content,
   isEdit,
@@ -65,16 +111,21 @@ function NoteBox({
   toggleEdit,
   UpdateContentOnBlur,
 }: TextBoxItem) {
+  const refTextArea = useRef<HTMLTextAreaElement | null>(null);
   return (
     <div
       tabIndex={content.id} // to make it focousable and trigger onBlur later
-      onBlur={UpdateContentOnBlur}
+      onBlur={(e) => UpdateContentOnBlur(e, refTextArea)}
       className='rounded-md bg-reisered py-1 px-2 mb-3 min-h-5 '
     >
       <h1 className='mb-2 text-xl font-bold'>NOTE</h1>
       {isEdit && (
         <div>
           <textarea
+            ref={(node) => {
+              refTextArea.current = node;
+              refTextArea.current?.focus();
+            }}
             defaultValue={content.data ?? ''}
             onChange={handleTextArea}
             placeholder='Input here.'
@@ -82,8 +133,8 @@ function NoteBox({
           />
           <div className='flex flex-row-reverse pr-5 pb-2'>
             <button
-              onClick={toggleNote}
-              className='flex items-center gap-1 rounded-xl bg-orange-300 py-1 px-3'
+              onClick={() => toggleNote(refTextArea)}
+              className='flex items-center gap-1 rounded-xl bg-orange-300 hover:bg-orange-200 py-1 px-3'
             >
               <FaTag />
               NOTE
@@ -107,15 +158,20 @@ function DetailPlanBox({
   toggleEdit,
   UpdateContentOnBlur,
 }: TextBoxItem) {
+  const refTextArea = useRef<HTMLTextAreaElement | null>(null);
   return (
     <div
       tabIndex={content.id} // to make it focousable and trigger onBlur later
-      onBlur={UpdateContentOnBlur}
+      onBlur={(e) => UpdateContentOnBlur(e, refTextArea)}
       className='border-1 border-reiseyellow rounded-md mb-2 px-2 py-1 min-h-2'
     >
       {isEdit && (
         <div>
           <textarea
+            ref={(node) => {
+              refTextArea.current = node;
+              refTextArea.current?.focus();
+            }}
             defaultValue={content.data ?? ''}
             onChange={handleTextArea}
             placeholder='Input here.'
@@ -123,8 +179,8 @@ function DetailPlanBox({
           />
           <div className='flex flex-row-reverse pr-5 pb-2'>
             <button
-              onClick={toggleNote}
-              className='flex items-center gap-1 rounded-xl bg-zinc-300 py-1 px-3'
+              onClick={() => toggleNote(refTextArea)}
+              className='flex items-center gap-1 rounded-xl bg-zinc-300 hover:bg-zinc-200 py-1 px-3'
             >
               <FaTag />
               NOTE
