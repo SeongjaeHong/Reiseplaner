@@ -177,7 +177,7 @@ function NoteBox({
           <div className='flex flex-row-reverse pr-5 pb-2'>
             <button
               onClick={toggleNote}
-              className='flex items-center gap-1 rounded-xl bg-orange-300 py-1 px-2'
+              className='flex items-center gap-1 rounded-xl bg-orange-300 py-1 px-3'
             >
               <FaTag />
               NOTE
@@ -218,7 +218,7 @@ function DetailPlanBox({
           <div className='flex flex-row-reverse pr-5 pb-2'>
             <button
               onClick={toggleNote}
-              className='flex items-center gap-1 rounded-xl bg-zinc-300 py-1 px-2'
+              className='flex items-center gap-1 rounded-xl bg-zinc-300 py-1 px-3'
             >
               <FaTag />
               NOTE
