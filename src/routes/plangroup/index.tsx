@@ -21,7 +21,7 @@ export const Route = createFileRoute('/plangroup/')({
 
 function Index() {
   const { group_id: groupId, group_title: groupTitle } = Route.useSearch();
-  const { data: plans, refetch } = useFetchPlans(groupId);
+  const { data: plans, isLoading, refetch } = useFetchPlans(groupId);
 
   const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer(
     (prev) => !prev,
@@ -34,6 +34,7 @@ function Index() {
         <h1 className='text-2xl font-bold'>{groupTitle}</h1>
       </div>
       <div className='relative p-2 min-h-100 bg-reiseyellow'>
+        {isLoading && <PlansSkeleton />}
         {plans?.map((plan) => (
           <Plan
             to={PLAN}
@@ -62,12 +63,19 @@ function Index() {
 }
 
 function useFetchPlans(groupId: number) {
-  const { data, refetch } = useQuery({
+  return useQuery({
     queryKey: ['fetchPlans', groupId],
     queryFn: () => getPlansByGroupId(groupId),
     staleTime: Infinity,
     throwOnError: true,
   });
+}
 
-  return { data, refetch };
+function PlansSkeleton() {
+  return (
+    <>
+      <div className='my-1 p-3 h-20 bg-zinc-300 animate-pulse' />
+      <div className='my-1 p-3 h-20 bg-zinc-300 animate-pulse' />
+    </>
+  );
 }
