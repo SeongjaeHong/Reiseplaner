@@ -16,19 +16,19 @@ export type Database = {
     Tables: {
       planContents: {
         Row: {
-          contents: Json | null
+          contents: Json
           created_at: string
           id: number
           plans_id: number
         }
         Insert: {
-          contents?: Json | null
+          contents: Json
           created_at?: string
           id?: number
           plans_id: number
         }
         Update: {
-          contents?: Json | null
+          contents?: Json
           created_at?: string
           id?: number
           plans_id?: number
