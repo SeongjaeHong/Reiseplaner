@@ -116,7 +116,7 @@ function useUpdateContent({ planContents, setPlanContents }: UseUpdateContent) {
       );
     }
 
-    if (data) {
+    if (data || data === '') {
       setPlanContents(
         planContents.map((content) => {
           if (content.id === id) {
