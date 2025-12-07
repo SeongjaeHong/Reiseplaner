@@ -205,7 +205,7 @@ function DetailPlanBox({
     <div
       tabIndex={content.id} // to make it focousable and trigger onBlur later
       onBlur={UpdateContentOnBlur}
-      className='border-1 border-reiseyellow rounded-md mb-2 min-h-2'
+      className='border-1 border-reiseyellow rounded-md mb-2 px-2 py-1 min-h-2'
     >
       {isEdit && (
         <div>
@@ -213,12 +213,12 @@ function DetailPlanBox({
             defaultValue={content.data ?? ''}
             onChange={handleTextArea}
             placeholder='Input here.'
-            className='w-full py-1 px-2 resize-none outline-0'
+            className='w-full py-1 resize-none outline-0'
           />
           <div className='flex flex-row-reverse pr-5 pb-2'>
             <button
               onClick={toggleNote}
-              className='flex items-center gap-1 rounded-xl bg-orange-300 py-1 px-2'
+              className='flex items-center gap-1 rounded-xl bg-zinc-300 py-1 px-2'
             >
               <FaTag />
               NOTE
