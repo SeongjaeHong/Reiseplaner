@@ -8,10 +8,11 @@ import type { Database } from '@/database.types';
 type Plan = {
   to: string;
   plan: Database['public']['Tables']['plans']['Row'];
+  groupTitle: string;
   refetch: () => Promise<unknown>;
 };
 
-export default function Plan({ to, plan, refetch }: Plan) {
+export default function Plan({ to, plan, groupTitle, refetch }: Plan) {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteBox, toggleShowDeleteBox] = useReducer(
     (prev) => !prev,
@@ -46,6 +47,7 @@ export default function Plan({ to, plan, refetch }: Plan) {
         to={to}
         search={{
           group_id: plan.group_id,
+          group_title: groupTitle,
           plan_id: plan.id,
           plan_title: plan.title,
         }}
