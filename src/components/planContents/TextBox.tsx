@@ -79,11 +79,11 @@ function useClearEditOnBlur({
       return;
     }
 
-    setEditingId(null);
-
     if (ref.current) {
       updateContent({ id, data: ref.current.value });
     }
+
+    setEditingId(null);
   };
 }
 
@@ -118,7 +118,7 @@ function NoteBox({
       onBlur={(e) => UpdateContentOnBlur(e, refTextArea)}
       className='rounded-md bg-reisered py-1 px-2 mb-3 min-h-5 '
     >
-      <h1 className='mb-2 text-xl font-bold'>NOTE</h1>
+      <h1 className='mb-2 px-2 text-xl font-bold'>NOTE</h1>
       {isEdit && (
         <div>
           <textarea
@@ -129,7 +129,7 @@ function NoteBox({
             defaultValue={content.data ?? ''}
             onChange={handleTextArea}
             placeholder='Input here.'
-            className='w-full resize-none outline-0'
+            className='w-full resize-none outline-0 py-1 px-2'
           />
           <div className='flex flex-row-reverse pr-5 pb-2'>
             <button
@@ -143,7 +143,12 @@ function NoteBox({
         </div>
       )}
       {!isEdit && (
-        <div onClick={toggleEdit}>
+        <div
+          onClick={toggleEdit}
+          className={`py-1 px-2 ${
+            content.data ? 'text-white' : 'text-red-300'
+          }`}
+        >
           {content.data ? content.data : 'Input here.'}
         </div>
       )}
@@ -175,7 +180,7 @@ function DetailPlanBox({
             defaultValue={content.data ?? ''}
             onChange={handleTextArea}
             placeholder='Input here.'
-            className='w-full py-1 resize-none outline-0'
+            className='w-full py-1 resize-none outline-0 px-2'
           />
           <div className='flex flex-row-reverse pr-5 pb-2'>
             <button
@@ -189,7 +194,12 @@ function DetailPlanBox({
         </div>
       )}
       {!isEdit && (
-        <div onClick={toggleEdit} className='py-1 px-2'>
+        <div
+          onClick={toggleEdit}
+          className={`py-1 px-2 ${
+            content.data ? 'text-white' : 'text-red-300'
+          }`}
+        >
           {content.data ? content.data : 'Input here.'}
         </div>
       )}
