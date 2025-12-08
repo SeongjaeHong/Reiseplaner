@@ -4,7 +4,7 @@ import {
   type Content,
 } from '@/apis/supabase/planContents';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaCirclePlus } from 'react-icons/fa6';
 import TextBox from './TextBox';
 
@@ -39,18 +39,15 @@ export default function DetailPlans({ planId }: DetailPlans) {
     setEditingId,
   });
 
-  const [contentsDirty, setContentsDirty] = useState(false);
-  const handleUpdateContents = useUpdateContent({
-    planContents,
-    setPlanContents,
-    setContentsDirty,
-  });
-
-  const handleSaveContents = useSaveContent({
+  const { saveContents, refContentsDirty } = useSaveContent({
     planId,
     planContents,
-    contentsDirty,
-    setContentsDirty,
+  });
+
+  const updateContents = useUpdateContent({
+    planContents,
+    setPlanContents,
+    refContentsDirty,
   });
 
   return (
@@ -62,8 +59,8 @@ export default function DetailPlans({ planId }: DetailPlans) {
               content={content}
               isEdit={editingId === content.id}
               setEditingId={setEditingId}
-              updateContents={handleUpdateContents}
-              saveContents={handleSaveContents}
+              updateContents={updateContents}
+              saveContents={saveContents}
               key={content.id}
             />
           );
@@ -83,31 +80,6 @@ export default function DetailPlans({ planId }: DetailPlans) {
   );
 }
 
-type UseSaveContent = {
-  planId: number;
-  planContents: Content[] | null;
-  contentsDirty: boolean;
-  setContentsDirty: React.Dispatch<React.SetStateAction<boolean>>;
-};
-function useSaveContent({
-  planId,
-  planContents,
-  contentsDirty,
-  setContentsDirty,
-}: UseSaveContent) {
-  const queryClient = useQueryClient();
-
-  return async () => {
-    if (planContents && contentsDirty) {
-      await insertPlanContents(planId, planContents);
-      await queryClient.invalidateQueries({
-        queryKey: ['DetailPlans', planId],
-      });
-      setContentsDirty(false);
-    }
-  };
-}
-
 type UseAddNewBox = {
   planContents: Content[] | null;
   setPlanContents: React.Dispatch<React.SetStateAction<Content[] | null>>;
@@ -122,7 +94,7 @@ function useAddNewBox({
     const newContent: Content = {
       id: planContents ? planContents.length + 1 : 1,
       type: 'text',
-      data: '',
+      data: null,
       box: 'plain',
     };
 
@@ -131,15 +103,36 @@ function useAddNewBox({
   };
 }
 
+type UseSaveContent = {
+  planId: number;
+  planContents: Content[] | null;
+};
+function useSaveContent({ planId, planContents }: UseSaveContent) {
+  const queryClient = useQueryClient();
+  const refContentsDirty = useRef(false);
+
+  const saveContents = async () => {
+    if (planContents && refContentsDirty.current) {
+      await insertPlanContents(planId, planContents);
+      await queryClient.invalidateQueries({
+        queryKey: ['DetailPlans', planId],
+      });
+      refContentsDirty.current = false;
+    }
+  };
+
+  return { saveContents, refContentsDirty };
+}
+
 type UseUpdateContent = {
   planContents: Content[] | null;
   setPlanContents: React.Dispatch<React.SetStateAction<Content[] | null>>;
-  setContentsDirty: React.Dispatch<React.SetStateAction<boolean>>;
+  refContentsDirty: React.RefObject<boolean>;
 };
 function useUpdateContent({
   planContents,
   setPlanContents,
-  setContentsDirty,
+  refContentsDirty,
 }: UseUpdateContent) {
   return ({ id, box, data }: HandleUpdateContent) => {
     if (!planContents) {
@@ -163,7 +156,7 @@ function useUpdateContent({
         planContents.map((content) => {
           if (content.id === id && content.data !== data) {
             content.data = data;
-            setContentsDirty(true);
+            refContentsDirty.current = true;
           }
 
           return content;
