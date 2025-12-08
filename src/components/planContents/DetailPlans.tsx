@@ -4,15 +4,10 @@ import {
   type Content,
 } from '@/apis/supabase/planContents';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaCirclePlus } from 'react-icons/fa6';
 import TextBox from './TextBox';
 
-export type HandleUpdateContent = {
-  id: Content['id'];
-  box?: Content['box'];
-  data?: Content['data'];
-};
 type DetailPlans = {
   planId: number;
 };
@@ -39,15 +34,10 @@ export default function DetailPlans({ planId }: DetailPlans) {
     setEditingId,
   });
 
-  const { saveContents, refContentsDirty } = useSaveContent({
+  const updateContents = useUpdateContents({
     planId,
     planContents,
-  });
-
-  const updateContents = useUpdateContent({
-    planContents,
     setPlanContents,
-    refContentsDirty,
   });
 
   return (
@@ -60,7 +50,6 @@ export default function DetailPlans({ planId }: DetailPlans) {
               isEdit={editingId === content.id}
               setEditingId={setEditingId}
               updateContents={updateContents}
-              saveContents={saveContents}
               key={content.id}
             />
           );
@@ -94,7 +83,7 @@ function useAddNewBox({
     const newContent: Content = {
       id: planContents ? planContents.length + 1 : 1,
       type: 'text',
-      data: null,
+      data: '',
       box: 'plain',
     };
 
@@ -103,65 +92,49 @@ function useAddNewBox({
   };
 }
 
-type UseSaveContent = {
+type UseUpdateContents = {
   planId: number;
   planContents: Content[] | null;
-};
-function useSaveContent({ planId, planContents }: UseSaveContent) {
-  const queryClient = useQueryClient();
-  const refContentsDirty = useRef(false);
-
-  const saveContents = async () => {
-    if (planContents && refContentsDirty.current) {
-      await insertPlanContents(planId, planContents);
-      await queryClient.invalidateQueries({
-        queryKey: ['DetailPlans', planId],
-      });
-      refContentsDirty.current = false;
-    }
-  };
-
-  return { saveContents, refContentsDirty };
-}
-
-type UseUpdateContent = {
-  planContents: Content[] | null;
   setPlanContents: React.Dispatch<React.SetStateAction<Content[] | null>>;
-  refContentsDirty: React.RefObject<boolean>;
 };
-function useUpdateContent({
+function useUpdateContents({
+  planId,
   planContents,
   setPlanContents,
-  refContentsDirty,
-}: UseUpdateContent) {
-  return ({ id, box, data }: HandleUpdateContent) => {
+}: UseUpdateContents) {
+  const queryClient = useQueryClient();
+
+  return async (newContent: Content) => {
     if (!planContents) {
       return;
     }
 
-    if (box) {
-      setPlanContents(
-        planContents.map((content) => {
-          if (content.id === id) {
-            content.box = box;
-          }
-
+    let dirty = false;
+    const newContents = planContents
+      .map((content) => {
+        if (content.id !== newContent.id) {
           return content;
-        })
-      );
+        }
+
+        const isDataDirty = content.data !== newContent.data;
+        const isBoxDirty = content.box !== newContent.box;
+        dirty = isDataDirty || isBoxDirty;
+
+        return newContent;
+      })
+      .filter((content) => content.data !== '');
+
+    if (newContents.length !== planContents.length) {
+      dirty = true;
     }
 
-    if (typeof data === 'string') {
-      setPlanContents(
-        planContents.map((content) => {
-          if (content.id === id && content.data !== data) {
-            content.data = data;
-            refContentsDirty.current = true;
-          }
+    setPlanContents(newContents);
 
-          return content;
-        })
-      );
+    if (dirty) {
+      await insertPlanContents(planId, newContents);
+      await queryClient.invalidateQueries({
+        queryKey: ['DetailPlans', planId],
+      });
     }
   };
 }
