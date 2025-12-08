@@ -7,19 +7,22 @@ type TextBox = {
   content: Content;
   isEdit: boolean;
   setEditingId: (id: number | null) => void;
-  updateContent: ({ id, box, data }: HandleUpdateContent) => void;
+  updateContents: ({ id, box, data }: HandleUpdateContent) => void;
+  saveContents: () => Promise<void>;
 };
 export default function TextBox({
   content,
   isEdit,
   setEditingId,
-  updateContent,
+  updateContents,
+  saveContents,
 }: TextBox) {
-  const handleToggleNote = useToggleNote({ id: content.id, updateContent });
+  const handleToggleNote = useToggleNote({ id: content.id, updateContents });
   const handleClearEditOnBlur = useClearEditOnBlur({
     id: content.id,
     setEditingId,
-    updateContent,
+    updateContents,
+    saveContents,
   });
 
   if (content.box === 'note') {
@@ -47,15 +50,15 @@ export default function TextBox({
 
 type UseToggleNote = {
   id: Content['id'];
-  updateContent: ({ id, box, data }: HandleUpdateContent) => void;
+  updateContents: ({ id, box, data }: HandleUpdateContent) => void;
 };
-function useToggleNote({ id, updateContent }: UseToggleNote) {
+function useToggleNote({ id, updateContents }: UseToggleNote) {
   return (box: Content['box']) => {
     return (ref: React.RefObject<HTMLTextAreaElement | null>) => {
       if (!ref.current) {
-        updateContent({ id, box });
+        updateContents({ id, box });
       } else {
-        updateContent({ id, box, data: ref.current.value });
+        updateContents({ id, box, data: ref.current.value });
       }
     };
   };
@@ -64,14 +67,16 @@ function useToggleNote({ id, updateContent }: UseToggleNote) {
 type UseClearEditOnBlur = {
   id: Content['id'];
   setEditingId: (id: number | null) => void;
-  updateContent: ({ id, box, data }: HandleUpdateContent) => void;
+  updateContents: ({ id, box, data }: HandleUpdateContent) => void;
+  saveContents: () => Promise<void>;
 };
 function useClearEditOnBlur({
   id,
   setEditingId,
-  updateContent,
+  updateContents,
+  saveContents,
 }: UseClearEditOnBlur) {
-  return (
+  return async (
     e: React.FocusEvent<HTMLDivElement>,
     ref: React.RefObject<HTMLTextAreaElement | null>
   ) => {
@@ -80,7 +85,8 @@ function useClearEditOnBlur({
     }
 
     if (ref.current) {
-      updateContent({ id, data: ref.current.value });
+      updateContents({ id, data: ref.current.value });
+      await saveContents();
     }
 
     setEditingId(null);
@@ -101,7 +107,7 @@ type TextBoxItem = {
   UpdateContentOnBlur: (
     e: React.FocusEvent<HTMLDivElement>,
     ref: React.RefObject<HTMLTextAreaElement | null>
-  ) => void;
+  ) => Promise<void>;
 };
 
 function NoteBox({
@@ -115,7 +121,7 @@ function NoteBox({
   return (
     <div
       tabIndex={content.id} // to make it focousable and trigger onBlur later
-      onBlur={(e) => UpdateContentOnBlur(e, refTextArea)}
+      onBlur={(e) => void UpdateContentOnBlur(e, refTextArea)}
       className='rounded-md bg-reisered py-1 px-2 mb-3 min-h-5 '
     >
       <h1 className='mb-2 px-2 text-xl font-bold'>NOTE</h1>
@@ -167,7 +173,7 @@ function DetailPlanBox({
   return (
     <div
       tabIndex={content.id} // to make it focousable and trigger onBlur later
-      onBlur={(e) => UpdateContentOnBlur(e, refTextArea)}
+      onBlur={(e) => void UpdateContentOnBlur(e, refTextArea)}
       className='border-1 border-reiseyellow rounded-md mb-2 px-2 py-1 min-h-2'
     >
       {isEdit && (

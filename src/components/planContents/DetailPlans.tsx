@@ -1,8 +1,9 @@
 import {
   getPlanContentsById,
+  insertPlanContents,
   type Content,
 } from '@/apis/supabase/planContents';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { FaCirclePlus } from 'react-icons/fa6';
 import TextBox from './TextBox';
@@ -38,9 +39,18 @@ export default function DetailPlans({ planId }: DetailPlans) {
     setEditingId,
   });
 
-  const handleUpdateContent = useUpdateContent({
+  const [contentsDirty, setContentsDirty] = useState(false);
+  const handleUpdateContents = useUpdateContent({
     planContents,
     setPlanContents,
+    setContentsDirty,
+  });
+
+  const handleSaveContents = useSaveContent({
+    planId,
+    planContents,
+    contentsDirty,
+    setContentsDirty,
   });
 
   return (
@@ -52,7 +62,8 @@ export default function DetailPlans({ planId }: DetailPlans) {
               content={content}
               isEdit={editingId === content.id}
               setEditingId={setEditingId}
-              updateContent={handleUpdateContent}
+              updateContents={handleUpdateContents}
+              saveContents={handleSaveContents}
               key={content.id}
             />
           );
@@ -70,6 +81,31 @@ export default function DetailPlans({ planId }: DetailPlans) {
       </div>
     </div>
   );
+}
+
+type UseSaveContent = {
+  planId: number;
+  planContents: Content[] | null;
+  contentsDirty: boolean;
+  setContentsDirty: React.Dispatch<React.SetStateAction<boolean>>;
+};
+function useSaveContent({
+  planId,
+  planContents,
+  contentsDirty,
+  setContentsDirty,
+}: UseSaveContent) {
+  const queryClient = useQueryClient();
+
+  return async () => {
+    if (planContents && contentsDirty) {
+      await insertPlanContents(planId, planContents);
+      await queryClient.invalidateQueries({
+        queryKey: ['DetailPlans', planId],
+      });
+      setContentsDirty(false);
+    }
+  };
 }
 
 type UseAddNewBox = {
@@ -98,8 +134,13 @@ function useAddNewBox({
 type UseUpdateContent = {
   planContents: Content[] | null;
   setPlanContents: React.Dispatch<React.SetStateAction<Content[] | null>>;
+  setContentsDirty: React.Dispatch<React.SetStateAction<boolean>>;
 };
-function useUpdateContent({ planContents, setPlanContents }: UseUpdateContent) {
+function useUpdateContent({
+  planContents,
+  setPlanContents,
+  setContentsDirty,
+}: UseUpdateContent) {
   return ({ id, box, data }: HandleUpdateContent) => {
     if (!planContents) {
       return;
@@ -120,8 +161,9 @@ function useUpdateContent({ planContents, setPlanContents }: UseUpdateContent) {
     if (typeof data === 'string') {
       setPlanContents(
         planContents.map((content) => {
-          if (content.id === id) {
+          if (content.id === id && content.data !== data) {
             content.data = data;
+            setContentsDirty(true);
           }
 
           return content;
