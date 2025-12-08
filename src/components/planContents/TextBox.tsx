@@ -48,6 +48,7 @@ export default function TextBox({
             }}
             defaultValue={content.data ?? ''}
             onChange={handleTextArea}
+            onFocus={handleTextArea}
             placeholder='Input here.'
             className='w-full resize-none outline-0 py-1 px-2'
           />
