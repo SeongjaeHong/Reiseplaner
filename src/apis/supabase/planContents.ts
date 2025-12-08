@@ -1,12 +1,20 @@
 import type { Database } from '@/database.types';
 import supabase from '@/supabaseClient';
 
+export type Content = {
+  id: number;
+  type: 'text' | 'file';
+  data: string | null;
+  box: 'plain' | 'note';
+};
 type PlanContentsRow = Database['public']['Tables']['planContents']['Row'];
-type Json = Database['public']['Tables']['planContents']['Row']['contents'];
+export type PlanContent = Omit<PlanContentsRow, 'contents'> & {
+  contents: Content[];
+};
 type InsertPlanContents = (
   plansId: number,
-  contents: Json
-) => Promise<PlanContentsRow>;
+  contents: Content[]
+) => Promise<PlanContent>;
 export const insertPlanContents: InsertPlanContents = async (
   plansId,
   contents
@@ -18,7 +26,10 @@ export const insertPlanContents: InsertPlanContents = async (
 
   const { data, error } = await supabase
     .from('planContents')
-    .insert([insertData])
+    .upsert([insertData], {
+      onConflict: 'plans_id',
+      ignoreDuplicates: false,
+    })
     .select()
     .single();
 
@@ -27,15 +38,15 @@ export const insertPlanContents: InsertPlanContents = async (
     throw error;
   }
 
-  return data;
+  return data as PlanContent;
 };
 
-type GetPlanById = (planId: number) => Promise<PlanContentsRow | null>;
-export const getPlanContentsById: GetPlanById = async (planId) => {
+type GetPlanContentsById = (planId: number) => Promise<PlanContent | null>;
+export const getPlanContentsById: GetPlanContentsById = async (planId) => {
   const { data, error } = await supabase
     .from('planContents')
     .select()
-    .eq('id', planId)
+    .eq('plans_id', planId)
     .maybeSingle();
 
   if (error) {
@@ -43,5 +54,5 @@ export const getPlanContentsById: GetPlanById = async (planId) => {
     throw error;
   }
 
-  return data;
+  return data as PlanContent | null;
 };
