@@ -56,3 +56,12 @@ export const getPlanContentsById: GetPlanContentsById = async (planId) => {
 
   return data as PlanContent | null;
 };
+
+export const deletePlanContentsById = async (planId: number) => {
+  const response = await supabase
+    .from('planContents')
+    .delete()
+    .eq('plans_id', planId);
+
+  return response;
+};
