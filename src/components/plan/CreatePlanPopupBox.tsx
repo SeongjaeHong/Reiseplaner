@@ -17,7 +17,6 @@ export default function CreatePlanPopupBox({
     mutationFn: (title: string) => createPlan(groupId, title),
     onSuccess: async () => {
       await refetch();
-      onClose();
     },
     throwOnError: true,
   });
