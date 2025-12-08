@@ -1,4 +1,5 @@
 import {
+  deletePlanContentsById,
   getPlanContentsById,
   insertPlanContents,
   type Content,
@@ -131,7 +132,12 @@ function useUpdateContents({
     setPlanContents(newContents);
 
     if (dirty) {
-      await insertPlanContents(planId, newContents);
+      if (newContents.length) {
+        await insertPlanContents(planId, newContents);
+      } else {
+        await deletePlanContentsById(planId);
+      }
+
       await queryClient.invalidateQueries({
         queryKey: ['DetailPlans', planId],
       });
