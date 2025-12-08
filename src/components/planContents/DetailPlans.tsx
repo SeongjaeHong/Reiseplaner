@@ -26,6 +26,7 @@ export default function DetailPlans({ planId }: DetailPlans) {
 
   useEffect(() => {
     if (data) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPlanContents(data.contents);
     }
   }, [data]);
@@ -116,7 +117,7 @@ function useUpdateContent({ planContents, setPlanContents }: UseUpdateContent) {
       );
     }
 
-    if (data || data === '') {
+    if (typeof data === 'string') {
       setPlanContents(
         planContents.map((content) => {
           if (content.id === id) {
