@@ -1,28 +1,27 @@
 import type { Content } from '@/apis/supabase/planContents';
-import type { HandleUpdateContent } from './DetailPlans';
-import { FaTag } from 'react-icons/fa6';
+import { FaRegTrashCan, FaTag } from 'react-icons/fa6';
 import { useRef } from 'react';
 
 type TextBox = {
   content: Content;
   isEdit: boolean;
   setEditingId: (id: number | null) => void;
-  updateContents: ({ id, box, data }: HandleUpdateContent) => void;
-  saveContents: () => Promise<void>;
+  updateContents: (content: Content) => Promise<void>;
 };
 export default function TextBox({
   content,
   isEdit,
   setEditingId,
   updateContents,
-  saveContents,
 }: TextBox) {
-  const handleToggleNote = useToggleNote({ id: content.id, updateContents });
+  const handleToggleNote = useToggleNote({ updateContents });
   const handleClearEditOnBlur = useClearEditOnBlur({
-    id: content.id,
     setEditingId,
     updateContents,
-    saveContents,
+  });
+  const handleDeleteContent = useDeleteContent({
+    content,
+    updateContents,
   });
 
   const refTextArea = useRef<HTMLTextAreaElement | null>(null);
@@ -31,12 +30,13 @@ export default function TextBox({
   return (
     <div
       tabIndex={content.id} // to make it focousable and trigger onBlur later
-      onBlur={(e) => void handleClearEditOnBlur(e, refTextArea)}
-      className={`rounded-md py-1 px-2 mb-2 ${
-        isNoteBox
-          ? 'bg-reisered min-h-5'
-          : 'border-1 border-reiseyellow min-h-2'
-      }`}
+      onBlur={(e) => void handleClearEditOnBlur(e, refTextArea, content)}
+      className={`group relative rounded-md py-1 px-2 mb-2
+        ${
+          isNoteBox
+            ? 'bg-reisered min-h-5'
+            : 'border-1 border-reiseyellow min-h-2'
+        }`}
     >
       {isNoteBox && <h1 className='mb-2 px-2 text-xl font-bold'>NOTE</h1>}
       {isEdit && (
@@ -54,9 +54,7 @@ export default function TextBox({
           />
           <div className='flex flex-row-reverse pr-5 pb-2'>
             <button
-              onClick={() =>
-                handleToggleNote(isNoteBox ? 'plain' : 'note', refTextArea)
-              }
+              onClick={() => void handleToggleNote(content, refTextArea)}
               className={`flex items-center gap-1 rounded-xl py-1 px-3 ${
                 isNoteBox
                   ? 'bg-orange-300 hover:bg-orange-200'
@@ -72,57 +70,68 @@ export default function TextBox({
       {!isEdit && (
         <div
           onClick={() => setEditingId(content.id)}
-          className={`py-1 px-2 ${
-            content.data ? 'text-white' : 'text-red-300'
-          }`}
+          className='py-1 px-2 text-white'
         >
-          {content.data ? content.data : 'Input here.'}
+          {content.data}
         </div>
       )}
+      <div className='absolute top-0 right-0 bg-reiseorange rounded-full w-6 h-6 text-center invisible group-hover:visible'>
+        <button
+          onClick={() => void handleDeleteContent()}
+          className='text-white'
+        >
+          <FaRegTrashCan />
+        </button>
+      </div>
     </div>
   );
 }
 
 type UseToggleNote = {
-  id: Content['id'];
-  updateContents: ({ id, box, data }: HandleUpdateContent) => void;
+  updateContents: (content: Content) => Promise<void>;
 };
-function useToggleNote({ id, updateContents }: UseToggleNote) {
-  return (
-    box: Content['box'],
+function useToggleNote({ updateContents }: UseToggleNote) {
+  return async (
+    content: Content,
     ref: React.RefObject<HTMLTextAreaElement | null>
   ) => {
-    if (!ref.current) {
-      updateContents({ id, box });
-    } else {
-      updateContents({ id, box, data: ref.current.value });
+    if (ref.current) {
+      content.data = ref.current.value;
     }
+    content.box = content.box === 'plain' ? 'note' : 'plain';
+    await updateContents(content);
+  };
+}
+
+type UseDeleteContent = {
+  content: Content;
+  updateContents: (content: Content) => Promise<void>;
+};
+function useDeleteContent({ content, updateContents }: UseDeleteContent) {
+  return async () => {
+    await updateContents({ ...content, data: '' });
   };
 }
 
 type UseClearEditOnBlur = {
-  id: Content['id'];
   setEditingId: (id: number | null) => void;
-  updateContents: ({ id, box, data }: HandleUpdateContent) => void;
-  saveContents: () => Promise<void>;
+  updateContents: (content: Content) => Promise<void>;
 };
 function useClearEditOnBlur({
-  id,
   setEditingId,
   updateContents,
-  saveContents,
 }: UseClearEditOnBlur) {
   return async (
     e: React.FocusEvent<HTMLDivElement>,
-    ref: React.RefObject<HTMLTextAreaElement | null>
+    ref: React.RefObject<HTMLTextAreaElement | null>,
+    content: Content
   ) => {
     if (e.currentTarget.contains(e.relatedTarget)) {
       return;
     }
 
     if (ref.current) {
-      updateContents({ id, data: ref.current.value });
-      await saveContents();
+      await updateContents({ ...content, data: ref.current.value });
     }
 
     setEditingId(null);
