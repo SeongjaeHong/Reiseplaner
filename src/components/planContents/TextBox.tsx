@@ -1,4 +1,4 @@
-import type { TextContent } from '@/apis/supabase/planContents';
+import type { Content, TextContent } from '@/apis/supabase/planContents';
 import { FaRegTrashCan, FaTag } from 'react-icons/fa6';
 import { useRef } from 'react';
 
@@ -6,7 +6,7 @@ type TextBox = {
   content: TextContent;
   isEdit: boolean;
   setEditingId: (id: number | null) => void;
-  updateContents: (content: TextContent) => Promise<void>;
+  updateContents: (content: Content) => Promise<void>;
 };
 export default function TextBox({
   content,
@@ -19,10 +19,8 @@ export default function TextBox({
     setEditingId,
     updateContents,
   });
-  const handleDeleteContent = useDeleteContent({
-    content,
-    updateContents,
-  });
+  const handleDeleteContent = () =>
+    void updateContents({ ...content, data: '' });
 
   const refTextArea = useRef<HTMLTextAreaElement | null>(null);
   const isNoteBox = content.box === 'note';
@@ -78,10 +76,7 @@ export default function TextBox({
 
       {/* Delete button to delete the text box */}
       <div className='absolute top-0 right-0 bg-reiseorange rounded-full w-6 h-6 text-center invisible group-hover:visible'>
-        <button
-          onClick={() => void handleDeleteContent()}
-          className='text-white'
-        >
+        <button onClick={handleDeleteContent} className='text-white'>
           <FaRegTrashCan />
         </button>
       </div>
@@ -102,16 +97,6 @@ function useToggleNote({ updateContents }: UseToggleNote) {
     }
     content.box = content.box === 'plain' ? 'note' : 'plain';
     await updateContents(content);
-  };
-}
-
-type UseDeleteContent = {
-  content: TextContent;
-  updateContents: (content: TextContent) => Promise<void>;
-};
-function useDeleteContent({ content, updateContents }: UseDeleteContent) {
-  return async () => {
-    await updateContents({ ...content, data: '' });
   };
 }
 
