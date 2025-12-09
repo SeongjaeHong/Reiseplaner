@@ -1,12 +1,20 @@
 import type { Database } from '@/database.types';
 import supabase from '@/supabaseClient';
 
-export type Content = {
+export type TextContent = {
   id: number;
-  type: 'text' | 'file';
-  data: string | null;
+  type: 'text';
+  data: string;
   box: 'plain' | 'note';
 };
+export type ImageContent = {
+  id: number;
+  type: 'file';
+  data: string;
+  width: number | null;
+  height: number | null;
+};
+export type Content = TextContent | ImageContent;
 type PlanContentsRow = Database['public']['Tables']['planContents']['Row'];
 export type PlanContent = Omit<PlanContentsRow, 'contents'> & {
   contents: Content[];

@@ -1,12 +1,12 @@
-import type { Content } from '@/apis/supabase/planContents';
+import type { TextContent } from '@/apis/supabase/planContents';
 import { FaRegTrashCan, FaTag } from 'react-icons/fa6';
 import { useRef } from 'react';
 
 type TextBox = {
-  content: Content;
+  content: TextContent;
   isEdit: boolean;
   setEditingId: (id: number | null) => void;
-  updateContents: (content: Content) => Promise<void>;
+  updateContents: (content: TextContent) => Promise<void>;
 };
 export default function TextBox({
   content,
@@ -75,6 +75,8 @@ export default function TextBox({
           {content.data}
         </div>
       )}
+
+      {/* Delete button to delete the text box */}
       <div className='absolute top-0 right-0 bg-reiseorange rounded-full w-6 h-6 text-center invisible group-hover:visible'>
         <button
           onClick={() => void handleDeleteContent()}
@@ -88,11 +90,11 @@ export default function TextBox({
 }
 
 type UseToggleNote = {
-  updateContents: (content: Content) => Promise<void>;
+  updateContents: (content: TextContent) => Promise<void>;
 };
 function useToggleNote({ updateContents }: UseToggleNote) {
   return async (
-    content: Content,
+    content: TextContent,
     ref: React.RefObject<HTMLTextAreaElement | null>
   ) => {
     if (ref.current) {
@@ -104,8 +106,8 @@ function useToggleNote({ updateContents }: UseToggleNote) {
 }
 
 type UseDeleteContent = {
-  content: Content;
-  updateContents: (content: Content) => Promise<void>;
+  content: TextContent;
+  updateContents: (content: TextContent) => Promise<void>;
 };
 function useDeleteContent({ content, updateContents }: UseDeleteContent) {
   return async () => {
@@ -115,7 +117,7 @@ function useDeleteContent({ content, updateContents }: UseDeleteContent) {
 
 type UseClearEditOnBlur = {
   setEditingId: (id: number | null) => void;
-  updateContents: (content: Content) => Promise<void>;
+  updateContents: (content: TextContent) => Promise<void>;
 };
 function useClearEditOnBlur({
   setEditingId,
@@ -124,7 +126,7 @@ function useClearEditOnBlur({
   return async (
     e: React.FocusEvent<HTMLDivElement>,
     ref: React.RefObject<HTMLTextAreaElement | null>,
-    content: Content
+    content: TextContent
   ) => {
     if (e.currentTarget.contains(e.relatedTarget)) {
       return;
