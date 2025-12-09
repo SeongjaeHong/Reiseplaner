@@ -11,8 +11,8 @@ export type ImageContent = {
   id: number;
   type: 'file';
   data: string;
-  width: number | null;
-  height: number | null;
+  width: number;
+  height: number;
 };
 export type Content = TextContent | ImageContent;
 type PlanContentsRow = Database['public']['Tables']['planContents']['Row'];
