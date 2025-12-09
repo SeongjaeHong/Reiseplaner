@@ -22,6 +22,7 @@ export const uploadPlanGroupThumbnail = async (file: File) => {
 };
 
 export const deletePlanGroupThumbnail = async (filePath: string) => {
+  filePath = filePath.split('/').at(-1) as string;
   if (filePath === EMPTY_IMAGE_URL) {
     return Promise.resolve(null);
   }
