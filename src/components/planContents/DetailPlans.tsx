@@ -1,12 +1,8 @@
 import {
-  deletePlanContentsById,
   getPlanContentsById,
-  insertPlanContents,
   type Content,
-  type ImageContent,
-  type TextContent,
 } from '@/apis/supabase/planContents';
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { IoIosAttach } from 'react-icons/io';
@@ -14,6 +10,7 @@ import TextBox from './TextBox';
 import ImageBox from './ImageBox';
 import { useAddImage } from './utils/image';
 import { useAddText } from './utils/text';
+import { useUpdateContents } from './utils/contents';
 
 type DetailPlans = {
   planId: number;
@@ -89,65 +86,4 @@ export default function DetailPlans({ planId }: DetailPlans) {
       </div>
     </div>
   );
-}
-
-type UseUpdateContents = {
-  planId: number;
-  planContents: Content[] | null;
-  setPlanContents: React.Dispatch<React.SetStateAction<Content[] | null>>;
-};
-function useUpdateContents({
-  planId,
-  planContents,
-  setPlanContents,
-}: UseUpdateContents) {
-  const queryClient = useQueryClient();
-
-  return async (newContent: Content) => {
-    if (!planContents) {
-      return;
-    }
-
-    let textContentsDirty = false;
-    const newContents = planContents
-      .map((content) => {
-        if (content.id !== newContent.id) {
-          return content;
-        }
-
-        const isDataDirty = content.data !== newContent.data;
-        let isBoxDirty = false;
-        let isImageSizeDirty = false;
-        if (newContent.type === 'text') {
-          isBoxDirty = (content as TextContent).box !== newContent.box;
-        } else if (newContent.type === 'file') {
-          isImageSizeDirty =
-            (content as ImageContent).height !== newContent.height ||
-            (content as ImageContent).width !== newContent.width;
-        }
-
-        textContentsDirty = isDataDirty || isBoxDirty || isImageSizeDirty;
-
-        return newContent;
-      })
-      .filter((content) => content.data !== '');
-
-    if (newContents.length !== planContents.length) {
-      textContentsDirty = true;
-    }
-
-    setPlanContents(newContents);
-
-    if (textContentsDirty) {
-      if (newContents.length) {
-        await insertPlanContents(planId, newContents);
-      } else {
-        await deletePlanContentsById(planId);
-      }
-
-      await queryClient.invalidateQueries({
-        queryKey: ['DetailPlans', planId],
-      });
-    }
-  };
 }
