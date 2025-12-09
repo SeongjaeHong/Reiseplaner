@@ -3,11 +3,17 @@ import {
   getPlanContentsById,
   insertPlanContents,
   type Content,
+  type ImageContent,
+  type TextContent,
 } from '@/apis/supabase/planContents';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaCirclePlus } from 'react-icons/fa6';
+import { IoIosAttach } from 'react-icons/io';
 import TextBox from './TextBox';
+import ImageBox from './ImageBox';
+import { useAddImage } from './utils/image';
+import { useAddText } from './utils/text';
 
 type DetailPlans = {
   planId: number;
@@ -29,11 +35,14 @@ export default function DetailPlans({ planId }: DetailPlans) {
   }, [data]);
 
   const [editingId, setEditingId] = useState<number | null>(null);
-  const handleAddNewBox = useAddNewBox({
+  const handleAddText = useAddText({
     planContents,
     setPlanContents,
     setEditingId,
   });
+
+  const refFileInput = useRef<HTMLInputElement | null>(null);
+  const addFile = useAddImage({ planId, planContents, setPlanContents });
 
   const updateContents = useUpdateContents({
     planId,
@@ -56,41 +65,30 @@ export default function DetailPlans({ planId }: DetailPlans) {
           );
         } else {
           // content.type === file
-          return (
-            <div className='h-10 w-full border-1 border-reiseyellow'>FILE</div>
-          );
+          return <ImageBox content={content} updateContents={updateContents} />;
         }
       })}
-      <div className='ml-2 mt-5'>
-        <button onClick={handleAddNewBox}>
+      <div className='flex items-center gap-2 ml-2 mt-5'>
+        <button onClick={handleAddText}>
           <FaCirclePlus className='text-3xl text-reiseorange hover:text-orange-300' />
+        </button>
+        <button
+          onClick={() => refFileInput.current?.click()}
+          className='flex rounded-xl py-1 pr-2 text-zinc-500 font-bold bg-reiseorange hover:bg-orange-300'
+        >
+          <input
+            type='file'
+            accept='image/*'
+            ref={refFileInput}
+            onChange={(e) => void addFile(e)}
+            className='hidden'
+          />
+          <IoIosAttach className='text-2xl' />
+          <span>File</span>
         </button>
       </div>
     </div>
   );
-}
-
-type UseAddNewBox = {
-  planContents: Content[] | null;
-  setPlanContents: React.Dispatch<React.SetStateAction<Content[] | null>>;
-  setEditingId: React.Dispatch<React.SetStateAction<number | null>>;
-};
-function useAddNewBox({
-  planContents,
-  setPlanContents,
-  setEditingId,
-}: UseAddNewBox) {
-  return () => {
-    const newContent: Content = {
-      id: planContents ? planContents.length + 1 : 1,
-      type: 'text',
-      data: '',
-      box: 'plain',
-    };
-
-    setPlanContents((prev) => (prev ? [...prev, newContent] : [newContent]));
-    setEditingId(newContent.id);
-  };
 }
 
 type UseUpdateContents = {
@@ -110,7 +108,7 @@ function useUpdateContents({
       return;
     }
 
-    let dirty = false;
+    let textContentsDirty = false;
     const newContents = planContents
       .map((content) => {
         if (content.id !== newContent.id) {
@@ -118,20 +116,29 @@ function useUpdateContents({
         }
 
         const isDataDirty = content.data !== newContent.data;
-        const isBoxDirty = content.box !== newContent.box;
-        dirty = isDataDirty || isBoxDirty;
+        let isBoxDirty = false;
+        let isImageSizeDirty = false;
+        if (newContent.type === 'text') {
+          isBoxDirty = (content as TextContent).box !== newContent.box;
+        } else if (newContent.type === 'file') {
+          isImageSizeDirty =
+            (content as ImageContent).height !== newContent.height ||
+            (content as ImageContent).width !== newContent.width;
+        }
+
+        textContentsDirty = isDataDirty || isBoxDirty || isImageSizeDirty;
 
         return newContent;
       })
       .filter((content) => content.data !== '');
 
     if (newContents.length !== planContents.length) {
-      dirty = true;
+      textContentsDirty = true;
     }
 
     setPlanContents(newContents);
 
-    if (dirty) {
+    if (textContentsDirty) {
       if (newContents.length) {
         await insertPlanContents(planId, newContents);
       } else {
