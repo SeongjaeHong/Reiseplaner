@@ -1,6 +1,7 @@
 import type { Content, TextContent } from '@/apis/supabase/planContents';
 import { FaRegTrashCan, FaTag } from 'react-icons/fa6';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import TimeWidget, { type Time } from './utils/TimeWidget';
 
 type TextBox = {
   content: TextContent;
@@ -24,6 +25,21 @@ export default function TextBox({
 
   const refTextArea = useRef<HTMLTextAreaElement | null>(null);
   const isNoteBox = content.box === 'note';
+
+  const [time, setTime] = useState({
+    start: { hour: '00', minute: '00' },
+    end: { hour: '00', minute: '00' },
+  });
+  const [timeActive, setTimeActive] = useState(false);
+
+  const startTimeValide =
+    time.start.hour !== '00' && time.start.minute !== '00';
+  const envTimeValide = time.end.hour !== '00' && time.end.minute !== '00';
+  const isTimeValide = startTimeValide || envTimeValide;
+
+  if (timeActive && !isTimeValide) {
+    setTimeActive(false);
+  }
 
   return (
     <div
@@ -50,18 +66,24 @@ export default function TextBox({
             placeholder='Input here.'
             className='w-full resize-none outline-0 py-1 px-2'
           />
-          <div className='flex flex-row-reverse pr-5 pb-2'>
+          <div className='flex flex-row-reverse gap-3 pr-5 pb-2'>
             <button
               onClick={() => void handleToggleNote(content, refTextArea)}
               className={`flex items-center gap-1 rounded-xl py-1 px-3 ${
                 isNoteBox
-                  ? 'bg-orange-300 hover:bg-orange-200'
+                  ? 'bg-reiseorange hover:bg-orange-300'
                   : 'bg-zinc-300 hover:bg-zinc-200'
               }`}
             >
               <FaTag />
               NOTE
             </button>
+            <TimeWidget
+              time={time}
+              setTime={setTime}
+              timeActive={timeActive}
+              setTimeActive={setTimeActive}
+            />
           </div>
         </div>
       )}
