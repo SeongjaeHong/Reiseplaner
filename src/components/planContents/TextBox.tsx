@@ -1,7 +1,7 @@
 import type { Content, TextContent } from '@/apis/supabase/planContents';
 import { FaRegTrashCan, FaTag } from 'react-icons/fa6';
-import { useRef, useState } from 'react';
-import TimeWidget from './utils/TimeWidget';
+import { useCallback, useRef, useState } from 'react';
+import TimeWidget, { type Time } from './utils/TimeWidget';
 
 type TextBox = {
   content: TextContent;
@@ -16,10 +16,7 @@ export default function TextBox({
   updateContents,
 }: TextBox) {
   const handleToggleNote = useToggleNote({ updateContents });
-  const handleClearEditOnBlur = useClearEditOnBlur({
-    setEditingId,
-    updateContents,
-  });
+
   const handleDeleteContent = () =>
     void updateContents({ ...content, data: '' });
 
@@ -27,21 +24,53 @@ export default function TextBox({
   const isNoteBox = content.box === 'note';
 
   const [time, setTime] = useState(content.time);
+  const handleTime = (time: Time) => {
+    setTime(time);
+  };
   const [timeActive, setTimeActive] = useState(content.isTimeActive);
-
   const startTimeValide =
-    time.start.hour !== '00' && time.start.minute !== '00';
-  const envTimeValide = time.end.hour !== '00' && time.end.minute !== '00';
+    time.start.hour !== '00' || time.start.minute !== '00';
+  const envTimeValide = time.end.hour !== '00' || time.end.minute !== '00';
   const isTimeValide = startTimeValide || envTimeValide;
 
-  if (timeActive && !isTimeValide) {
-    setTimeActive(false);
-  }
+  const handleTimeActive = (timeActive: boolean) => {
+    if (timeActive && !isTimeValide) {
+      setTimeActive(false);
+      return;
+    }
+
+    setTimeActive(timeActive);
+  };
+
+  const handleClearEditOnBlur = useCallback(
+    (e: React.FocusEvent<HTMLDivElement>) => {
+      if (e.currentTarget.contains(e.relatedTarget)) {
+        return;
+      }
+
+      if (refTextArea.current) {
+        const newData = refTextArea.current.value;
+
+        const updatedContent: TextContent = {
+          ...content,
+          data: newData,
+          time: time,
+          isTimeActive: timeActive,
+        };
+        console.log(updatedContent.time, updatedContent.isTimeActive);
+
+        void updateContents(updatedContent);
+      }
+
+      setEditingId(null);
+    },
+    [setEditingId, updateContents, time, timeActive, content]
+  );
 
   return (
     <div
       tabIndex={content.id} // to make it focousable and trigger onBlur later
-      onBlur={(e) => void handleClearEditOnBlur(e, refTextArea, content)}
+      onBlur={(e) => void handleClearEditOnBlur(e)}
       className={`group relative rounded-md py-1 px-2 mb-2
         ${
           isNoteBox
@@ -77,9 +106,9 @@ export default function TextBox({
             </button>
             <TimeWidget
               time={time}
-              setTime={setTime}
+              setTime={handleTime}
               timeActive={timeActive}
-              setTimeActive={setTimeActive}
+              setTimeActive={handleTimeActive}
             />
           </div>
         </div>
@@ -116,31 +145,6 @@ function useToggleNote({ updateContents }: UseToggleNote) {
     }
     content.box = content.box === 'plain' ? 'note' : 'plain';
     await updateContents(content);
-  };
-}
-
-type UseClearEditOnBlur = {
-  setEditingId: (id: number | null) => void;
-  updateContents: (content: TextContent) => Promise<void>;
-};
-function useClearEditOnBlur({
-  setEditingId,
-  updateContents,
-}: UseClearEditOnBlur) {
-  return async (
-    e: React.FocusEvent<HTMLDivElement>,
-    ref: React.RefObject<HTMLTextAreaElement | null>,
-    content: TextContent
-  ) => {
-    if (e.currentTarget.contains(e.relatedTarget)) {
-      return;
-    }
-
-    if (ref.current) {
-      await updateContents({ ...content, data: ref.current.value });
-    }
-
-    setEditingId(null);
   };
 }
 
