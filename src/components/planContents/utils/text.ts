@@ -16,6 +16,11 @@ export function useAddText({
       type: 'text',
       data: '',
       box: 'plain',
+      time: {
+        start: { hour: '00', minute: '00' },
+        end: { hour: '00', minute: '00' },
+      },
+      isTimeActive: false,
     };
 
     setEditingId(newContent.id);

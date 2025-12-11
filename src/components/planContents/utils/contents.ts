@@ -24,7 +24,7 @@ export function useUpdateContents({
       return;
     }
 
-    let textContentsDirty = false;
+    let contentsDirty = false;
     const newContents = planContents
       .map((content) => {
         if (content.id !== newContent.id) {
@@ -32,29 +32,41 @@ export function useUpdateContents({
         }
 
         const isDataDirty = content.data !== newContent.data;
-        let isBoxDirty = false;
-        let isImageSizeDirty = false;
-        if (newContent.type === 'text') {
-          isBoxDirty = (content as TextContent).box !== newContent.box;
-        } else if (newContent.type === 'file') {
-          isImageSizeDirty =
-            (content as ImageContent).height !== newContent.height ||
-            (content as ImageContent).width !== newContent.width;
-        }
+        contentsDirty = isDataDirty;
+        if (!contentsDirty) {
+          if (newContent.type === 'text') {
+            const textContent = content as TextContent;
+            const isBoxDirty = textContent.box !== newContent.box;
+            const isTimeActiveDirty =
+              textContent.isTimeActive !== newContent.isTimeActive;
 
-        textContentsDirty = isDataDirty || isBoxDirty || isImageSizeDirty;
+            const time = textContent.time;
+            const newTime = newContent.time;
+            const isTimeDirty =
+              time.start.hour !== newTime.start.hour ||
+              time.start.minute !== newTime.start.minute ||
+              time.end.hour !== newTime.end.hour ||
+              time.end.minute !== newTime.end.minute;
+
+            contentsDirty = isBoxDirty || isTimeActiveDirty || isTimeDirty;
+          } else if (newContent.type === 'file') {
+            contentsDirty =
+              (content as ImageContent).height !== newContent.height ||
+              (content as ImageContent).width !== newContent.width;
+          }
+        }
 
         return newContent;
       })
       .filter((content) => content.data !== '');
 
     if (newContents.length !== planContents.length) {
-      textContentsDirty = true;
+      contentsDirty = true;
     }
 
     setPlanContents(newContents);
 
-    if (textContentsDirty) {
+    if (contentsDirty) {
       if (newContents.length) {
         await insertPlanContents(planId, newContents);
       } else {

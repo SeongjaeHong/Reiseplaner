@@ -1,7 +1,7 @@
 import type { Content, TextContent } from '@/apis/supabase/planContents';
 import { FaRegTrashCan, FaTag } from 'react-icons/fa6';
-import { useEffect, useRef, useState } from 'react';
-import TimeWidget, { type Time } from './utils/TimeWidget';
+import { useRef, useState } from 'react';
+import TimeWidget from './utils/TimeWidget';
 
 type TextBox = {
   content: TextContent;
@@ -26,11 +26,8 @@ export default function TextBox({
   const refTextArea = useRef<HTMLTextAreaElement | null>(null);
   const isNoteBox = content.box === 'note';
 
-  const [time, setTime] = useState({
-    start: { hour: '00', minute: '00' },
-    end: { hour: '00', minute: '00' },
-  });
-  const [timeActive, setTimeActive] = useState(false);
+  const [time, setTime] = useState(content.time);
+  const [timeActive, setTimeActive] = useState(content.isTimeActive);
 
   const startTimeValide =
     time.start.hour !== '00' && time.start.minute !== '00';
