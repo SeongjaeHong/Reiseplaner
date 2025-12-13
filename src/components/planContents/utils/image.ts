@@ -7,13 +7,13 @@ import {
 
 type UseAddImage = {
   planId: number;
-  planContents: Content[] | null;
-  setPlanContents: React.Dispatch<React.SetStateAction<Content[] | null>>;
+  planContents: Content[];
+  updateLocalContents: (content: Content) => void;
 };
 export function useAddImage({
   planId,
   planContents,
-  setPlanContents,
+  updateLocalContents,
 }: UseAddImage) {
   return async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -30,13 +30,13 @@ export function useAddImage({
     const dataURL = await readFileAsDataURL(file);
     const { width, height } = await getImageDimensions(dataURL);
     const newContent: ImageContent = {
-      id: planContents ? planContents.length + 1 : 1,
+      id: (planContents.at(-1)?.id ?? 0) + 1,
       type: 'file',
       data: filePath,
       width,
       height,
     };
-    setPlanContents((prev) => (prev ? [...prev, newContent] : [newContent]));
+    updateLocalContents(newContent);
     const newContents = planContents
       ? [...planContents, newContent]
       : [newContent];

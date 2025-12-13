@@ -7,7 +7,7 @@ type TextBox = {
   content: TextContent;
   isEdit: boolean;
   setEditingId: (id: number | null) => void;
-  updateContents: (content: Content) => Promise<void>;
+  updateContents: (content: Content) => void;
 };
 export default function TextBox({
   content,
@@ -17,8 +17,7 @@ export default function TextBox({
 }: TextBox) {
   const handleToggleNote = useToggleNote({ updateContents });
 
-  const handleDeleteContent = () =>
-    void updateContents({ ...content, data: '' });
+  const handleDeleteContent = () => updateContents({ ...content, data: '' });
 
   const refTextArea = useRef<HTMLTextAreaElement | null>(null);
   const isNoteBox = content.box === 'note';
@@ -57,9 +56,8 @@ export default function TextBox({
           time: time,
           isTimeActive: timeActive,
         };
-        console.log(updatedContent.time, updatedContent.isTimeActive);
 
-        void updateContents(updatedContent);
+        updateContents(updatedContent);
       }
 
       setEditingId(null);
@@ -133,10 +131,10 @@ export default function TextBox({
 }
 
 type UseToggleNote = {
-  updateContents: (content: TextContent) => Promise<void>;
+  updateContents: (content: TextContent) => void;
 };
 function useToggleNote({ updateContents }: UseToggleNote) {
-  return async (
+  return (
     content: TextContent,
     ref: React.RefObject<HTMLTextAreaElement | null>
   ) => {
@@ -144,7 +142,7 @@ function useToggleNote({ updateContents }: UseToggleNote) {
       content.data = ref.current.value;
     }
     content.box = content.box === 'plain' ? 'note' : 'plain';
-    await updateContents(content);
+    updateContents(content);
   };
 }
 

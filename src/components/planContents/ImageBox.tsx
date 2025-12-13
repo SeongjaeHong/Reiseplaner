@@ -7,7 +7,7 @@ import { deletePlanGroupThumbnail } from '@/apis/supabase/buckets';
 
 type ImageBox = {
   content: ImageContent;
-  updateContents: (content: Content) => Promise<void>;
+  updateContents: (content: Content) => void;
 };
 const PROJECT_ID = import.meta.env.VITE_PROJECT_ID as string;
 const defaultMaxLength = 400;
@@ -45,13 +45,13 @@ export default function ImageBox({ content, updateContents }: ImageBox) {
     if (refUpdateTimer.current) {
       clearTimeout(refUpdateTimer.current);
     }
-    refUpdateTimer.current = setTimeout(async () => {
-      await updateContents({ ...content, width, height });
+    refUpdateTimer.current = setTimeout(() => {
+      updateContents({ ...content, width, height });
     }, 1000);
   };
 
   const handleDeleteContent = async () => {
-    await updateContents({ ...content, data: '' });
+    updateContents({ ...content, data: '' });
     await deletePlanGroupThumbnail(content.data);
   };
 
