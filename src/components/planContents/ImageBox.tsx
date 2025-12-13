@@ -15,7 +15,7 @@ export default function ImageBox({ content, updateContents }: ImageBox) {
   let contentWidth: number;
   let contentHeight: number;
 
-  if (content.width > content.height && content.width > defaultMaxLength) {
+  if (content.width >= content.height && content.width > defaultMaxLength) {
     const ratio = content.height / content.width;
     contentWidth = defaultMaxLength;
     contentHeight = ratio * contentWidth;
