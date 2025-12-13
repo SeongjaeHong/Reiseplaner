@@ -1,16 +1,17 @@
 import { Suspense } from 'react';
 import ScheduleTable from './ScheduleTable';
-import DetailPlans from './DetailPlans';
+import DetailPlans, { type DetailPlansHandle } from './DetailPlans';
 
 type PlanContents = {
   planId: number;
+  detailPlansRef: React.RefObject<DetailPlansHandle | null>;
 };
-export default function PlanContents({ planId }: PlanContents) {
+export default function PlanContents({ planId, detailPlansRef }: PlanContents) {
   return (
     <Suspense fallback={<PlanContentsSkeleton />}>
       <div className='flex gap-1 py-1'>
         <ScheduleTable />
-        <DetailPlans planId={planId} />
+        <DetailPlans planId={planId} ref={detailPlansRef} />
       </div>
     </Suspense>
   );

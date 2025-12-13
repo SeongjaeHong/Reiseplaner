@@ -2,6 +2,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { FaAngleLeft } from 'react-icons/fa6';
 import PlanContents from '@/components/planContents/PlanContents';
+import type { DetailPlansHandle } from '@/components/planContents/DetailPlans';
+import { useEffect, useRef } from 'react';
 
 const planParam = z.object({
   group_id: z.number(),
@@ -24,11 +26,32 @@ function Plan() {
     plan_id: planId,
     plan_title: planTitle,
   } = Route.useSearch();
+  const detailPlansRef = useRef<DetailPlansHandle>(null);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (detailPlansRef.current?.hasUnsavedChanges) {
+        // Alert for loss of unsaved data
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
+  const handleBack = async () => {
+    const detailPlans = detailPlansRef.current;
+    if (detailPlans?.hasUnsavedChanges) {
+      await detailPlans.saveChanges();
+    }
+
+    window.history.back();
+  };
 
   return (
     <>
       <div className='flex items-center bg-reiseorange w-full'>
-        <button onClick={() => window.history.back()} className='px-1 py-2'>
+        <button onClick={() => void handleBack()} className='px-1 py-2'>
           <span className='text-2xl'>
             <FaAngleLeft />
           </span>
@@ -39,7 +62,7 @@ function Plan() {
         </div>
       </div>
 
-      <PlanContents planId={planId} />
+      <PlanContents planId={planId} detailPlansRef={detailPlansRef} />
     </>
   );
 }
