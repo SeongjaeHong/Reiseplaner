@@ -53,7 +53,6 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
             newContents.push(content);
           } // else -> add nothing (remove the empty content)
         } else {
-          console.log(prevContent.id, content.data);
           newContents.push(prevContent);
         }
         return newContents;
