@@ -17,6 +17,7 @@ type DetailPlans = {
 };
 
 export default function DetailPlans({ planId }: DetailPlans) {
+  // useState is used to update UI quickly before the DB server syncronization.
   const [planContents, setPlanContents] = useState<Content[] | null>(null);
   const { data } = useSuspenseQuery({
     queryKey: ['DetailPlans', planId],
@@ -26,7 +27,7 @@ export default function DetailPlans({ planId }: DetailPlans) {
 
   useEffect(() => {
     if (data) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+      // replace local data to DB data
       setPlanContents(data.contents);
     }
   }, [data]);
