@@ -27,19 +27,6 @@ export default function TextBox({
     setTime(time);
   };
   const [timeActive, setTimeActive] = useState(content.isTimeActive);
-  const startTimeValide =
-    time.start.hour !== '00' || time.start.minute !== '00';
-  const envTimeValide = time.end.hour !== '00' || time.end.minute !== '00';
-  const isTimeValide = startTimeValide || envTimeValide;
-
-  const handleTimeActive = (timeActive: boolean) => {
-    if (timeActive && !isTimeValide) {
-      setTimeActive(false);
-      return;
-    }
-
-    setTimeActive(timeActive);
-  };
 
   const handleClearEditOnBlur = useCallback(
     (e: React.FocusEvent<HTMLDivElement>) => {
@@ -106,7 +93,7 @@ export default function TextBox({
               time={time}
               setTime={handleTime}
               timeActive={timeActive}
-              setTimeActive={handleTimeActive}
+              setTimeActive={setTimeActive}
             />
           </div>
         </div>

@@ -18,6 +18,37 @@ export default function TimeWidget({
   timeActive,
   setTimeActive,
 }: TimeWidget) {
+  const [isOpen, setIsOpen] = useState(timeActive);
+  const [isContentVisible, setIsContentVisible] = useState(timeActive);
+
+  const isStartTimeEarlierThanEndTime = (
+    start: Time['start'],
+    end: Time['end']
+  ) => {
+    return (
+      start.hour < end.hour ||
+      (start.hour === end.hour && start.minute < end.minute)
+    );
+  };
+
+  const handleOpen = () => {
+    if (isOpen) {
+      setIsContentVisible(false);
+      setIsOpen(false);
+      setTimeActive(false);
+    } else {
+      setIsOpen(true);
+      if (isStartTimeEarlierThanEndTime(time.start, time.end)) {
+        setTimeActive(true);
+      }
+    }
+  };
+  const handleTransitionEnd = () => {
+    if (isOpen) {
+      setIsContentVisible(true);
+    }
+  };
+
   type TimeType = 'startHour' | 'startMinute' | 'endHour' | 'endMinute';
   const handleTimeChange = (timeType: TimeType) => {
     return (newValue: string) => {
@@ -30,36 +61,16 @@ export default function TimeWidget({
         minute: timeType === 'endMinute' ? newValue : time.end.minute,
       };
 
-      if (start.hour > end.hour) {
+      if (!isStartTimeEarlierThanEndTime(start, end)) {
         return false;
-      } else if (start.hour === end.hour && start.minute >= end.minute) {
-        return false;
-      } else {
-        setTime({ start, end });
-        setTimeActive(true);
-        return true;
       }
+
+      setTime({ start, end });
+      setTimeActive(true);
+      return true;
     };
   };
 
-  const [isOpen, setIsOpen] = useState(timeActive);
-  const [isContentVisible, setIsContentVisible] = useState(timeActive);
-
-  const handleOpen = () => {
-    if (isOpen) {
-      setIsContentVisible(false);
-      setIsOpen(false);
-      setTimeActive(false);
-    } else {
-      setIsOpen(true);
-      setTimeActive(true);
-    }
-  };
-  const handleTransitionEnd = () => {
-    if (isOpen) {
-      setIsContentVisible(true);
-    }
-  };
   return (
     <button
       onTransitionEnd={handleTransitionEnd}
