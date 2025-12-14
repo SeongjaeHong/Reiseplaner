@@ -4,8 +4,13 @@ import {
   insertPlanContents,
   type Content,
 } from '@/apis/supabase/planContents';
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import {
+  type QueryClient,
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
+import { useImperativeHandle, useRef, useState } from 'react';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { IoIosAttach } from 'react-icons/io';
 import TextBox from './TextBox';
@@ -14,7 +19,6 @@ import { useAddImage } from './utils/image';
 import { useAddText } from './utils/text';
 
 export type DetailPlansHandle = {
-  hasUnsavedChanges: boolean;
   saveChanges: () => Promise<void>;
 };
 type DetailPlans = {
@@ -22,48 +26,22 @@ type DetailPlans = {
   ref: React.RefObject<DetailPlansHandle | null>;
 };
 
+const CONTENTS_QUERY_KEY = (planId: number) => ['DetailPlans', planId];
+
 export default function DetailPlans({ planId, ref }: DetailPlans) {
   const queryClient = useQueryClient();
   const { data } = useSuspenseQuery({
-    queryKey: ['DetailPlans', planId],
+    queryKey: CONTENTS_QUERY_KEY(planId),
     queryFn: () => getPlanContentsById(planId),
     staleTime: Infinity,
   });
-  // useState is used to update UI quickly before the DB server syncronization.
-  const [planContents, setPlanContents] = useState<Content[]>([]);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  useEffect(() => {
-    if (data) {
-      // synchronize local data with DB data
-      setPlanContents(data.contents);
-      setHasUnsavedChanges(false);
-    }
-  }, [data]);
-
-  const updateLocalContents = (content: Content, replace = true) => {
-    setPlanContents((prevContents) => {
-      if (!prevContents.length || !replace) {
-        return [...prevContents, content];
-      }
-
-      return prevContents.reduce((newContents, prevContent) => {
-        if (prevContent.id === content.id) {
-          if (content.data !== '') {
-            newContents.push(content);
-          } // else -> add nothing (remove the empty content)
-        } else {
-          newContents.push(prevContent);
-        }
-        return newContents;
-      }, [] as Content[]);
-    });
-    setHasUnsavedChanges(true);
-  };
+  const saveChanges = useSaveChanges(queryClient, planId);
+  const updateLocalContents = useUpdateLocalContents(queryClient, planId);
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const handleAddText = useAddText({
-    planContents,
+    planContents: data?.contents ?? ([] as Content[]),
     updateLocalContents: (content) => updateLocalContents(content, false),
     setEditingId,
   });
@@ -71,43 +49,24 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
   const refFileInput = useRef<HTMLInputElement | null>(null);
   const addFile = useAddImage({
     planId,
-    planContents,
+    planContents: data?.contents ?? ([] as Content[]),
     updateLocalContents: (content) => updateLocalContents(content, false),
   });
 
-  const updateContents = (content: Content) => {
-    updateLocalContents(content);
-  };
-
-  const saveChanges = async () => {
-    if (planContents.length) {
-      await insertPlanContents(planId, planContents);
-    } else {
-      await deletePlanContentsById(planId);
-    }
-
-    await queryClient.invalidateQueries({
-      queryKey: ['DetailPlans', planId],
-    });
-
-    setHasUnsavedChanges(false);
-  };
-
   useImperativeHandle(ref, () => ({
-    hasUnsavedChanges,
     saveChanges,
   }));
 
   return (
     <div className='border-1 border-reiseorange bg-zinc-500 flex-1 min-h-30 p-1'>
-      {planContents?.map((content) => {
+      {data?.contents?.map((content) => {
         if (content.type === 'text') {
           return (
             <TextBox
               content={content}
               isEdit={editingId === content.id}
               setEditingId={setEditingId}
-              updateContents={updateContents}
+              updateContents={(content) => updateLocalContents(content)}
               key={content.id}
             />
           );
@@ -116,7 +75,7 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
           return (
             <ImageBox
               content={content}
-              updateContents={updateContents}
+              updateContents={(content) => updateLocalContents(content)}
               key={content.id}
             />
           );
@@ -144,3 +103,61 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
     </div>
   );
 }
+
+const useUpdateLocalContents = (queryClient: QueryClient, planId: number) => {
+  return (updatedContent: Content, replace = true) => {
+    const previousData = queryClient.getQueryData<{ contents: Content[] }>(
+      CONTENTS_QUERY_KEY(planId)
+    ) ?? { contents: [] };
+    const prevContents = previousData.contents;
+    if (prevContents) {
+      let newContents: Content[] = [];
+
+      if (!prevContents.length || !replace) {
+        // Add a new content
+        newContents = [...prevContents, updatedContent];
+      } else {
+        // Update an existing content
+        newContents = prevContents.reduce((acc, current) => {
+          if (current.id === updatedContent.id) {
+            if (updatedContent.data !== '') {
+              acc.push(updatedContent);
+            }
+            // else -> Add nothing (remove the empty content)
+          } else {
+            acc.push(current);
+          }
+          return acc;
+        }, [] as Content[]);
+      }
+
+      queryClient.setQueryData(CONTENTS_QUERY_KEY(planId), {
+        contents: newContents,
+      });
+    }
+  };
+};
+
+const useSaveChanges = (queryClient: QueryClient, planId: number) => {
+  const { mutateAsync: saveMutation } = useMutation({
+    mutationFn: async (contents: Content[]) => {
+      if (contents.length) {
+        await insertPlanContents(planId, contents);
+      } else {
+        await deletePlanContentsById(planId);
+      }
+
+      return true;
+    },
+  });
+
+  return async () => {
+    const currentData = queryClient.getQueryData<{ contents: Content[] }>(
+      CONTENTS_QUERY_KEY(planId)
+    );
+
+    if (currentData) {
+      await saveMutation(currentData.contents);
+    }
+  };
+};
