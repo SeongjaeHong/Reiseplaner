@@ -73,7 +73,7 @@ export default function TextBox({
             type='text'
             placeholder='Titel'
             defaultValue={content.title}
-            autoFocus
+            autoFocus={content.title ? false : true}
             className='w-full px-2 outline-0 text-xl border-b-1 border-red-300 truncate'
           />
           <textarea
@@ -82,6 +82,7 @@ export default function TextBox({
             onChange={handleTextAreaResize}
             onFocus={handleTextAreaResize}
             placeholder='Input here.'
+            autoFocus={content.title ? true : false}
             className='w-full resize-none outline-0 py-1 px-2'
           />
           <div className='flex flex-row-reverse gap-3 pb-2'>
