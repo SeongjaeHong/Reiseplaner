@@ -11,9 +11,7 @@ export function useAddText({
   setEditingId,
 }: UseAddText) {
   return () => {
-    console.log('text.ts: ', planContents);
     const contentId = (planContents.at(-1)?.id ?? 0) + 1;
-    console.log('new ID: ', contentId);
     const defaultTime = {
       start: { hour: '00', minute: '00' },
       end: { hour: '00', minute: '00' },
