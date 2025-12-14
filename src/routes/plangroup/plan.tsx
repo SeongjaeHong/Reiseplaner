@@ -21,7 +21,6 @@ export const Route = createFileRoute('/plangroup/plan')({
 
 function Plan() {
   const {
-    group_id: groupId,
     group_title: groupTitle,
     plan_id: planId,
     plan_title: planTitle,
