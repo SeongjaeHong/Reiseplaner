@@ -1,7 +1,7 @@
 import type { Content, TextContent } from '@/apis/supabase/planContents';
 import { FaRegTrashCan, FaTag } from 'react-icons/fa6';
-import { useCallback, useRef, useState } from 'react';
-import TimeWidget, { type Time } from './utils/TimeWidget';
+import { useReducer, useRef, useState } from 'react';
+import TimeWidget from './utils/TimeWidget';
 
 type TextBox = {
   content: TextContent;
@@ -15,42 +15,44 @@ export default function TextBox({
   setEditingId,
   updateContents,
 }: TextBox) {
-  const handleToggleNote = useToggleNote({ updateContents });
-
-  const handleDeleteContent = () => updateContents({ ...content, data: '' });
-
-  const refTextArea = useRef<HTMLTextAreaElement | null>(null);
-  const isNoteBox = content.box === 'note';
-
   const [time, setTime] = useState(content.time);
-  const handleTime = (time: Time) => {
-    setTime(time);
-  };
   const [timeActive, setTimeActive] = useState(content.isTimeActive);
 
-  const handleClearEditOnBlur = useCallback(
-    (e: React.FocusEvent<HTMLDivElement>) => {
-      if (e.currentTarget.contains(e.relatedTarget)) {
-        return;
-      }
-
-      if (refTextArea.current) {
-        const newData = refTextArea.current.value;
-
-        const updatedContent: TextContent = {
-          ...content,
-          data: newData,
-          time: time,
-          isTimeActive: timeActive,
-        };
-
-        updateContents(updatedContent);
-      }
-
-      setEditingId(null);
-    },
-    [setEditingId, updateContents, time, timeActive, content]
+  const handleDeleteContent = () =>
+    updateContents({ ...content, title: '', data: '' });
+  const [isNoteBox, toggleIsNoteBox] = useReducer(
+    (prev) => !prev,
+    content.box === 'note'
   );
+
+  const refTitle = useRef<HTMLInputElement | null>(null);
+  const refTextArea = useRef<HTMLTextAreaElement | null>(null);
+
+  const handleClearEditOnBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+    if (e.currentTarget.contains(e.relatedTarget)) {
+      return;
+    }
+
+    if (refTextArea.current && refTitle.current) {
+      const newTitle = refTitle.current.value.trim();
+      const newContent = refTextArea.current.value.trim();
+      const newTime = time;
+      const newTimeActive = timeActive;
+      const currentBoxType = content.box;
+
+      const updatedContent: TextContent = {
+        ...content,
+        title: newTitle,
+        data: newContent,
+        time: newTime,
+        isTimeActive: newTimeActive,
+        box: currentBoxType,
+      };
+      updateContents(updatedContent);
+    }
+
+    setEditingId(null);
+  };
 
   return (
     <div
@@ -65,21 +67,26 @@ export default function TextBox({
     >
       {isNoteBox && <h1 className='mb-2 px-2 text-xl font-bold'>NOTE</h1>}
       {isEdit && (
-        <div>
+        <div onSubmit={(e) => e.preventDefault()}>
+          <input
+            ref={refTitle}
+            type='text'
+            placeholder='Titel'
+            defaultValue={content.title}
+            autoFocus
+            className='w-full px-2 outline-0 text-xl border-b-1 border-red-300 truncate'
+          />
           <textarea
-            ref={(node) => {
-              refTextArea.current = node;
-              refTextArea.current?.focus();
-            }}
-            defaultValue={content.data ?? ''}
-            onChange={handleTextArea}
-            onFocus={handleTextArea}
+            ref={refTextArea}
+            defaultValue={content.data}
+            onChange={handleTextAreaResize}
+            onFocus={handleTextAreaResize}
             placeholder='Input here.'
             className='w-full resize-none outline-0 py-1 px-2'
           />
-          <div className='flex flex-row-reverse gap-3 pr-5 pb-2'>
+          <div className='flex flex-row-reverse gap-3 pb-2'>
             <button
-              onClick={() => void handleToggleNote(content, refTextArea)}
+              onClick={toggleIsNoteBox}
               className={`flex items-center gap-1 rounded-xl py-1 px-3 ${
                 isNoteBox
                   ? 'bg-reiseorange hover:bg-orange-300'
@@ -91,7 +98,7 @@ export default function TextBox({
             </button>
             <TimeWidget
               time={time}
-              setTime={handleTime}
+              setTime={setTime}
               timeActive={timeActive}
               setTimeActive={setTimeActive}
             />
@@ -103,11 +110,15 @@ export default function TextBox({
           onClick={() => setEditingId(content.id)}
           className='py-1 px-2 text-white'
         >
-          {content.data}
+          <div className='w-full text-xl border-b-1 border-red-300 mb-1 truncate'>
+            {content.title && <h1>{content.title}</h1>}
+            {!content.title && <h1 className='text-zinc-300'>제목 없음</h1>}
+          </div>
+          <pre>{content.data}</pre>
         </div>
       )}
 
-      {/* Delete button to delete the text box */}
+      {/* Delete button to delete the TextBox */}
       <div className='absolute top-0 right-0 bg-reiseorange rounded-full w-6 h-6 text-center invisible group-hover:visible'>
         <button onClick={handleDeleteContent} className='text-white'>
           <FaRegTrashCan />
@@ -117,23 +128,7 @@ export default function TextBox({
   );
 }
 
-type UseToggleNote = {
-  updateContents: (content: TextContent) => void;
-};
-function useToggleNote({ updateContents }: UseToggleNote) {
-  return (
-    content: TextContent,
-    ref: React.RefObject<HTMLTextAreaElement | null>
-  ) => {
-    if (ref.current) {
-      content.data = ref.current.value;
-    }
-    content.box = content.box === 'plain' ? 'note' : 'plain';
-    updateContents(content);
-  };
-}
-
-const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+const handleTextAreaResize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
   const target = e.currentTarget;
   target.style.height = 'auto';
   target.style.height = `${target.scrollHeight}px`;

@@ -20,6 +20,7 @@ export function useAddText({
     const newContent: TextContent = {
       id: contentId,
       type: 'text',
+      title: '',
       data: '',
       box: 'plain',
       time: defaultTime,

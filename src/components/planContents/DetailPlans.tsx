@@ -3,6 +3,7 @@ import {
   getPlanContentsById,
   insertPlanContents,
   type Content,
+  type TextContent,
 } from '@/apis/supabase/planContents';
 import {
   type QueryClient,
@@ -120,7 +121,10 @@ const useUpdateLocalContents = (queryClient: QueryClient, planId: number) => {
         // Update an existing content
         newContents = prevContents.reduce((acc, current) => {
           if (current.id === updatedContent.id) {
-            if (updatedContent.data !== '') {
+            if (
+              updatedContent.data !== '' ||
+              (updatedContent as TextContent)?.title !== ''
+            ) {
               acc.push(updatedContent);
             }
             // else -> Add nothing (remove the empty content)

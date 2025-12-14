@@ -5,6 +5,7 @@ import supabase from '@/supabaseClient';
 export type TextContent = {
   id: number;
   type: 'text';
+  title: string;
   data: string;
   box: 'plain' | 'note';
   time: Time;
