@@ -56,7 +56,7 @@ export default function TextBox({
 
   return (
     <div
-      tabIndex={content.id} // to make it focousable and trigger onBlur later
+      tabIndex={content.id} // to make it focousable to trigger onBlur
       onBlur={(e) => void handleClearEditOnBlur(e)}
       className={`group relative rounded-md py-1 px-2 mb-2
         ${
