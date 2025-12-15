@@ -29,7 +29,7 @@ function Plan() {
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (detailPlansRef.current) {
+      if (detailPlansRef.current?.saveStatus === 'Dirty') {
         // Alert for loss of unsaved data
         e.preventDefault();
       }
@@ -40,7 +40,7 @@ function Plan() {
 
   const handleBack = async () => {
     const detailPlans = detailPlansRef.current;
-    if (detailPlans) {
+    if (detailPlans?.saveStatus === 'Dirty') {
       await detailPlans.saveChanges();
     }
 
