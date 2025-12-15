@@ -2,13 +2,13 @@ import React, { useRef, useState } from 'react';
 import useClickOutside from '@/utils/useOutsideClick';
 import { FaClock } from 'react-icons/fa6';
 
-export type Time = {
+export type PlanTime = {
   start: { hour: string; minute: string };
   end: { hour: string; minute: string };
 };
 type TimeWidget = {
-  time: Time;
-  setTime: (time: Time) => void;
+  time: PlanTime;
+  setTime: (time: PlanTime) => void;
   timeActive: boolean;
   setTimeActive: (state: boolean) => void;
 };
@@ -22,8 +22,8 @@ export default function TimeWidget({
   const [isContentVisible, setIsContentVisible] = useState(timeActive);
 
   const isStartTimeEarlierThanEndTime = (
-    start: Time['start'],
-    end: Time['end']
+    start: PlanTime['start'],
+    end: PlanTime['end']
   ) => {
     return (
       start.hour < end.hour ||

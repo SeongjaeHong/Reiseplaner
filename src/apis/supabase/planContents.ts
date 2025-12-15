@@ -1,4 +1,4 @@
-import type { Time } from '@/components/planContents/utils/TimeWidget';
+import type { PlanTime } from '@/components/planContents/TimeWidget';
 import type { Database } from '@/database.types';
 import supabase from '@/supabaseClient';
 
@@ -8,7 +8,7 @@ export type TextContent = {
   title: string;
   data: string;
   box: 'plain' | 'note';
-  time: Time;
+  time: PlanTime;
   isTimeActive: boolean;
 };
 export type ImageContent = {
