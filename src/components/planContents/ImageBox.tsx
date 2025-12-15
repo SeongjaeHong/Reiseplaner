@@ -1,17 +1,21 @@
-import type { Content, ImageContent } from '@/apis/supabase/planContents';
 import { useRef, useState } from 'react';
 import { ResizableBox, type ResizeCallbackData } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { FaRegTrashCan } from 'react-icons/fa6';
-import { deletePlanGroupThumbnail } from '@/apis/supabase/buckets';
+import type { LocalContent, LocalImageContent } from './DetailPlans';
 
 type ImageBox = {
-  content: ImageContent;
-  updateContents: (content: Content) => void;
+  content: LocalImageContent;
+  updateContents: (content: LocalContent) => void;
+  deleteContents: (content: LocalContent) => void;
 };
 const PROJECT_ID = import.meta.env.VITE_PROJECT_ID as string;
 const defaultMaxLength = 400;
-export default function ImageBox({ content, updateContents }: ImageBox) {
+export default function ImageBox({
+  content,
+  updateContents,
+  deleteContents,
+}: ImageBox) {
   let contentWidth: number;
   let contentHeight: number;
 
@@ -50,10 +54,18 @@ export default function ImageBox({ content, updateContents }: ImageBox) {
     }, 1000);
   };
 
-  const handleDeleteContent = async () => {
-    updateContents({ ...content, data: '' });
-    await deletePlanGroupThumbnail(content.data);
+  const handleDeleteContent = () => {
+    deleteContents(content);
   };
+
+  let imgSrc;
+  if (typeof content.data === 'string') {
+    imgSrc = `https://${PROJECT_ID}.supabase.co/storage/v1/object/public/${content.data}`;
+  } else if ((content.data as unknown) instanceof File) {
+    imgSrc = URL.createObjectURL(content.data);
+  } else {
+    imgSrc = '';
+  }
 
   return (
     <ResizableBox
@@ -61,10 +73,12 @@ export default function ImageBox({ content, updateContents }: ImageBox) {
       height={height}
       onResize={handleResize}
       axis='both'
-      className='group relative w-full'
+      minConstraints={[100, 100]}
+      maxConstraints={[500, 500]}
+      className='group relative'
     >
       <img
-        src={`https://${PROJECT_ID}.supabase.co/storage/v1/object/public/${content.data}`}
+        src={imgSrc}
         alt='Image'
         className='w-full h-full object-contain rounded-lg'
       />

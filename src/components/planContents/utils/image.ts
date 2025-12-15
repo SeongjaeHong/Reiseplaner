@@ -1,17 +1,10 @@
-import { uploadPlanGroupThumbnail } from '@/apis/supabase/buckets';
-import {
-  insertPlanContents,
-  type Content,
-  type ImageContent,
-} from '@/apis/supabase/planContents';
+import type { LocalContent, LocalImageContent } from '../DetailPlans';
 
 type UseAddImage = {
-  planId: number;
-  planContents: Content[];
-  updateLocalContents: (content: Content) => void;
+  planContents: LocalContent[];
+  updateLocalContents: (content: LocalContent) => void;
 };
 export function useAddImage({
-  planId,
   planContents,
   updateLocalContents,
 }: UseAddImage) {
@@ -21,26 +14,17 @@ export function useAddImage({
       return null;
     }
 
-    const { fullPath: filePath } = await uploadPlanGroupThumbnail(file);
-
-    if (!filePath) {
-      return null;
-    }
-
     const dataURL = await readFileAsDataURL(file);
     const { width, height } = await getImageDimensions(dataURL);
-    const newContent: ImageContent = {
+    const newContent: LocalImageContent = {
       id: (planContents.at(-1)?.id ?? 0) + 1,
       type: 'file',
-      data: filePath,
+      data: file,
       width,
       height,
+      fileDelete: false,
     };
     updateLocalContents(newContent);
-    const newContents = planContents
-      ? [...planContents, newContent]
-      : [newContent];
-    await insertPlanContents(planId, newContents);
   };
 }
 

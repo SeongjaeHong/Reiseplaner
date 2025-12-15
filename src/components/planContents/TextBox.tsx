@@ -1,25 +1,27 @@
-import type { Content, TextContent } from '@/apis/supabase/planContents';
+import type { TextContent } from '@/apis/supabase/planContents';
 import { FaRegTrashCan, FaTag } from 'react-icons/fa6';
 import { useReducer, useRef, useState } from 'react';
-import TimeWidget from './utils/TimeWidget';
+import TimeWidget from './TimeWidget';
+import type { LocalContent } from './DetailPlans';
 
 type TextBox = {
   content: TextContent;
   isEdit: boolean;
   setEditingId: (id: number | null) => void;
-  updateContents: (content: Content) => void;
+  updateContents: (content: LocalContent) => void;
+  deleteContents: (content: LocalContent) => void;
 };
 export default function TextBox({
   content,
   isEdit,
   setEditingId,
   updateContents,
+  deleteContents,
 }: TextBox) {
   const [time, setTime] = useState(content.time);
   const [timeActive, setTimeActive] = useState(content.isTimeActive);
 
-  const handleDeleteContent = () =>
-    updateContents({ ...content, title: '', data: '' });
+  const handleDeleteContent = () => deleteContents(content);
   const [isNoteBox, toggleIsNoteBox] = useReducer(
     (prev) => !prev,
     content.box === 'note'

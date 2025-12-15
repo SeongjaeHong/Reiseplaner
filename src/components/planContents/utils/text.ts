@@ -1,8 +1,9 @@
-import type { Content, TextContent } from '@/apis/supabase/planContents';
+import type { TextContent } from '@/apis/supabase/planContents';
+import type { LocalContent } from '../DetailPlans';
 
 type UseAddText = {
-  planContents: Content[];
-  updateLocalContents: (content: Content) => void;
+  planContents: LocalContent[];
+  updateLocalContents: (content: LocalContent) => void;
   setEditingId: React.Dispatch<React.SetStateAction<number | null>>;
 };
 export function useAddText({
