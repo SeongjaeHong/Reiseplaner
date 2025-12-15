@@ -1,61 +1,116 @@
 import {
-  deletePlanContentsById,
   getPlanContentsById,
-  insertPlanContents,
-  type Content,
+  type ImageContent,
   type TextContent,
 } from '@/apis/supabase/planContents';
-import {
-  type QueryClient,
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
-import { useImperativeHandle, useRef, useState } from 'react';
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { IoIosAttach } from 'react-icons/io';
 import TextBox from './TextBox';
 import ImageBox from './ImageBox';
 import { useAddImage } from './utils/image';
 import { useAddText } from './utils/text';
+import {
+  getContentsQueryKey,
+  useDeleteLocalContents,
+  useSaveChanges,
+  useUpdateLocalContents,
+} from './utils/contents';
 
 export type DetailPlansHandle = {
   saveChanges: () => Promise<void>;
+  contentsStatus: ContentsStatus;
 };
+export type LocalContent = TextContent | LocalImageContent;
+export type LocalImageContent = Omit<ImageContent, 'data'> & {
+  data: string | File;
+  fileDelete: boolean;
+};
+type ContentsStatus = 'Clean' | 'Dirty' | 'Pending'; // Pending: Being saved into DB
 type DetailPlans = {
   planId: number;
   ref: React.RefObject<DetailPlansHandle | null>;
 };
 
-const CONTENTS_QUERY_KEY = (planId: number) => ['DetailPlans', planId];
-
 export default function DetailPlans({ planId, ref }: DetailPlans) {
   const queryClient = useQueryClient();
-  const { data } = useSuspenseQuery({
-    queryKey: CONTENTS_QUERY_KEY(planId),
-    queryFn: () => getPlanContentsById(planId),
-    staleTime: Infinity,
-  });
+  const { data } = useSuspenseQueryLocalContents(planId);
 
-  const saveChanges = useSaveChanges(queryClient, planId);
+  const [contentsStatus, setContentsStatus] = useState<ContentsStatus>('Clean');
+  const saveStatusRef = useRef<ContentsStatus>('Clean');
+  const updateContentsStatus = (status: ContentsStatus) => {
+    setContentsStatus(status);
+    saveStatusRef.current = status;
+  };
+
+  const { saveChanges, isPending: isSavePending } = useSaveChanges(
+    queryClient,
+    planId
+  );
+  const isSavePendingRef = useRef(isSavePending);
+
+  const handleSaveChanges = useCallback(async () => {
+    if (isSavePendingRef.current) {
+      try {
+        await waitFor(() => !isSavePendingRef.current, 5000);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error(error.message);
+        } else {
+          console.error('An unknown error occurred while waiting for saving');
+        }
+        return;
+      }
+    }
+
+    updateContentsStatus('Pending');
+    isSavePendingRef.current = true;
+
+    await saveChanges();
+
+    isSavePendingRef.current = false;
+    if (saveStatusRef.current === 'Pending') {
+      // Set saveStatus to "Clean" only when contents hasn't been changed while saving.
+      updateContentsStatus('Clean');
+    }
+  }, [saveChanges]);
+
+  const autoSave = useAutoSave(handleSaveChanges);
+
   const updateLocalContents = useUpdateLocalContents(queryClient, planId);
+  const handleUpdateLocalContents = (
+    updatedContent: LocalContent,
+    replace = true
+  ) => {
+    updateLocalContents(updatedContent, replace);
+    updateContentsStatus('Dirty');
+    autoSave();
+  };
+
+  const deleteLocalContents = useDeleteLocalContents(queryClient, planId);
+  const handleDeleteLocalContents = (deletedContent: LocalContent) => {
+    deleteLocalContents(deletedContent);
+    updateContentsStatus('Dirty');
+    autoSave();
+  };
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const handleAddText = useAddText({
-    planContents: data?.contents ?? ([] as Content[]),
-    updateLocalContents: (content) => updateLocalContents(content, false),
+    planContents: data?.contents ?? ([] as LocalContent[]),
+    updateLocalContents: (content) => handleUpdateLocalContents(content, false),
     setEditingId,
   });
 
   const refFileInput = useRef<HTMLInputElement | null>(null);
   const addFile = useAddImage({
-    planId,
-    planContents: data?.contents ?? ([] as Content[]),
-    updateLocalContents: (content) => updateLocalContents(content, false),
+    planContents: data?.contents ?? ([] as LocalContent[]),
+    updateLocalContents: (content) => handleUpdateLocalContents(content, false),
   });
 
   useImperativeHandle(ref, () => ({
-    saveChanges,
+    saveChanges: handleSaveChanges,
+    contentsStatus,
   }));
 
   return (
@@ -67,101 +122,102 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
               content={content}
               isEdit={editingId === content.id}
               setEditingId={setEditingId}
-              updateContents={(content) => updateLocalContents(content)}
+              updateContents={(content) => handleUpdateLocalContents(content)}
+              deleteContents={(content) => handleDeleteLocalContents(content)}
               key={content.id}
             />
           );
-        } else {
-          // content.type === file
+        } else if (content.type === 'file' && !content.fileDelete) {
           return (
             <ImageBox
               content={content}
-              updateContents={(content) => updateLocalContents(content)}
+              updateContents={(content) => handleUpdateLocalContents(content)}
+              deleteContents={(content) => handleDeleteLocalContents(content)}
               key={content.id}
             />
           );
         }
       })}
-      <div className='flex items-center gap-2 ml-2 mt-5'>
-        <button onClick={handleAddText}>
-          <FaCirclePlus className='text-3xl text-reiseorange hover:text-orange-300' />
-        </button>
-        <button
-          onClick={() => refFileInput.current?.click()}
-          className='flex rounded-xl py-1 pr-2 text-zinc-500 font-bold bg-reiseorange hover:bg-orange-300'
-        >
-          <input
-            type='file'
-            accept='image/*'
-            ref={refFileInput}
-            onChange={(e) => void addFile(e)}
-            className='hidden'
-          />
-          <IoIosAttach className='text-2xl' />
-          <span>File</span>
-        </button>
+
+      <div className='flex justify-between mt-5'>
+        <div className='flex items-center gap-2 ml-2'>
+          <button onClick={handleAddText}>
+            <FaCirclePlus className='text-3xl text-reiseorange hover:text-orange-300' />
+          </button>
+          <button
+            onClick={() => refFileInput.current?.click()}
+            className='flex rounded-xl py-1 pr-2 text-zinc-500 font-bold bg-reiseorange hover:bg-orange-300'
+          >
+            <input
+              type='file'
+              accept='image/*'
+              ref={refFileInput}
+              onChange={(e) => void addFile(e)}
+              className='hidden'
+            />
+            <IoIosAttach className='text-2xl' />
+            <span>File</span>
+          </button>
+        </div>
+        <div className='mr-2'>
+          {contentsStatus === 'Pending' && <p className='text-sm'>Saving...</p>}
+        </div>
       </div>
     </div>
   );
 }
 
-const useUpdateLocalContents = (queryClient: QueryClient, planId: number) => {
-  return (updatedContent: Content, replace = true) => {
-    const previousData = queryClient.getQueryData<{ contents: Content[] }>(
-      CONTENTS_QUERY_KEY(planId)
-    ) ?? { contents: [] };
-    const prevContents = previousData.contents;
-    if (prevContents) {
-      let newContents: Content[] = [];
-
-      if (!prevContents.length || !replace) {
-        // Add a new content
-        newContents = [...prevContents, updatedContent];
-      } else {
-        // Update an existing content
-        newContents = prevContents.reduce((acc, current) => {
-          if (current.id === updatedContent.id) {
-            if (
-              updatedContent.data !== '' ||
-              (updatedContent as TextContent)?.title !== ''
-            ) {
-              acc.push(updatedContent);
-            }
-            // else -> Add nothing (remove the empty content)
-          } else {
-            acc.push(current);
-          }
-          return acc;
-        }, [] as Content[]);
+const useSuspenseQueryLocalContents = (planId: number) =>
+  useSuspenseQuery({
+    queryKey: getContentsQueryKey(planId),
+    queryFn: async () => {
+      const data = await getPlanContentsById(planId);
+      if (!data) {
+        return null;
       }
+      const localContents = {
+        ...data,
+        contents: data.contents.map((content) => {
+          let localContent;
+          if (content.type === 'file') {
+            localContent = { ...content, fileDelete: false };
+          } else {
+            localContent = content;
+          }
+          return localContent;
+        }),
+      };
+      return localContents;
+    },
+    staleTime: Infinity,
+  });
 
-      queryClient.setQueryData(CONTENTS_QUERY_KEY(planId), {
-        contents: newContents,
-      });
+const useAutoSave = (handleSaveChanges: () => Promise<void>) => {
+  const refSaveTimer = useRef<number | null>(null);
+
+  return () => {
+    if (refSaveTimer.current) {
+      clearTimeout(refSaveTimer.current);
     }
+
+    refSaveTimer.current = setTimeout(() => {
+      void handleSaveChanges();
+    }, 30_000);
   };
 };
 
-const useSaveChanges = (queryClient: QueryClient, planId: number) => {
-  const { mutateAsync: saveMutation } = useMutation({
-    mutationFn: async (contents: Content[]) => {
-      if (contents.length) {
-        await insertPlanContents(planId, contents);
+const waitFor = (condition: () => boolean, timeout = 5000): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const startTime = Date.now();
+    const checkCondition = () => {
+      if (condition()) {
+        resolve();
+      } else if (Date.now() - startTime > timeout) {
+        reject(new Error('waitFor timeout exceeded'));
       } else {
-        await deletePlanContentsById(planId);
+        setTimeout(checkCondition, 100);
       }
-
-      return true;
-    },
+    };
+    checkCondition();
   });
-
-  return async () => {
-    const currentData = queryClient.getQueryData<{ contents: Content[] }>(
-      CONTENTS_QUERY_KEY(planId)
-    );
-
-    if (currentData) {
-      await saveMutation(currentData.contents);
-    }
-  };
 };
