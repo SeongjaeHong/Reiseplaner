@@ -79,7 +79,10 @@ export default function TextBox({
             className='w-full px-2 outline-0 text-xl border-b-1 border-red-300 truncate'
           />
           <textarea
-            ref={refTextArea}
+            ref={(node) => {
+              refTextArea.current = node;
+              handleTextAreaResize(refTextArea);
+            }}
             defaultValue={content.data}
             onChange={handleTextAreaResize}
             onFocus={handleTextAreaResize}
@@ -117,7 +120,7 @@ export default function TextBox({
             {content.title && <h1>{content.title}</h1>}
             {!content.title && <h1 className='text-zinc-300'>제목 없음</h1>}
           </div>
-          <pre>{content.data}</pre>
+          <pre className='text-wrap'>{content.data}</pre>
         </div>
       )}
 
@@ -131,8 +134,20 @@ export default function TextBox({
   );
 }
 
-const handleTextAreaResize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  const target = e.currentTarget;
-  target.style.height = 'auto';
-  target.style.height = `${target.scrollHeight}px`;
+const handleTextAreaResize = (
+  obj:
+    | React.ChangeEvent<HTMLTextAreaElement>
+    | React.RefObject<HTMLTextAreaElement | null>
+) => {
+  let target: HTMLTextAreaElement | null = null;
+  if ('currentTarget' in obj) {
+    target = obj.currentTarget;
+  } else if ('current' in obj) {
+    target = obj.current;
+  }
+
+  if (target) {
+    target.style.height = 'auto';
+    target.style.height = `${target.scrollHeight}px`;
+  }
 };
