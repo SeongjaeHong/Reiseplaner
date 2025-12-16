@@ -1,9 +1,8 @@
 import {
-  getPlanContentsById,
   type ImageContent,
   type TextContent,
 } from '@/apis/supabase/planContents';
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   useCallback,
   useEffect,
@@ -18,9 +17,9 @@ import ImageBox from './ImageBox';
 import { useAddImage } from './utils/image';
 import { useAddText } from './utils/text';
 import {
-  getContentsQueryKey,
   useDeleteLocalContents,
   useSaveChanges,
+  useSuspenseQueryLocalContents,
   useUpdateLocalContents,
 } from './utils/contents';
 
@@ -120,7 +119,7 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
   }));
 
   return (
-    <div className='border-1 border-reiseorange bg-zinc-500 flex-1 p-1'>
+    <>
       {data?.contents?.map((content) => {
         if (content.type === 'text') {
           return (
@@ -145,6 +144,7 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
         }
       })}
 
+      {/* A function layer at the bottom*/}
       <div className='flex justify-between mt-5'>
         <div className='flex items-center gap-2 ml-2'>
           <button onClick={handleAddText}>
@@ -175,34 +175,9 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
           {contentsStatus === 'Pending' && <p className='text-sm'>Saving...</p>}
         </div>
       </div>
-    </div>
+    </>
   );
 }
-
-const useSuspenseQueryLocalContents = (planId: number) =>
-  useSuspenseQuery({
-    queryKey: getContentsQueryKey(planId),
-    queryFn: async () => {
-      const data = await getPlanContentsById(planId);
-      if (!data) {
-        return null;
-      }
-      const localContents = {
-        ...data,
-        contents: data.contents.map((content) => {
-          let localContent;
-          if (content.type === 'file') {
-            localContent = { ...content, fileDelete: false };
-          } else {
-            localContent = content;
-          }
-          return localContent;
-        }),
-      };
-      return localContents;
-    },
-    staleTime: Infinity,
-  });
 
 const useAutoSave = (handleSaveChanges: () => Promise<void>) => {
   const refSaveTimer = useRef<number | null>(null);

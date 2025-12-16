@@ -1,4 +1,8 @@
-import { type QueryClient, useMutation } from '@tanstack/react-query';
+import {
+  type QueryClient,
+  useMutation,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import { type LocalContent } from '../DetailPlans';
 import {
   deletePlanGroupThumbnail,
@@ -6,11 +10,38 @@ import {
 } from '@/apis/supabase/buckets';
 import {
   deletePlanContentsById,
+  getPlanContentsById,
   insertPlanContents,
   type Content,
 } from '@/apis/supabase/planContents';
 
 export const getContentsQueryKey = (planId: number) => ['DetailPlans', planId];
+
+// Fetch contents from DB
+export const useSuspenseQueryLocalContents = (planId: number) =>
+  useSuspenseQuery({
+    queryKey: getContentsQueryKey(planId),
+    queryFn: async () => {
+      const data = await getPlanContentsById(planId);
+      if (!data) {
+        return null;
+      }
+      const localContents = {
+        ...data,
+        contents: data.contents.map((content) => {
+          let localContent;
+          if (content.type === 'file') {
+            localContent = { ...content, fileDelete: false };
+          } else {
+            localContent = content;
+          }
+          return localContent;
+        }),
+      };
+      return localContents;
+    },
+    staleTime: Infinity,
+  });
 
 // Save contents into DB
 export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
