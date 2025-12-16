@@ -158,7 +158,13 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
               type='file'
               accept='image/*'
               ref={refFileInput}
-              onChange={(e) => void addFile(e)}
+              onChange={(e) => {
+                const fileInput = e.currentTarget;
+                void (async () => {
+                  await addFile(e);
+                  fileInput.value = '';
+                })();
+              }}
               className='hidden'
             />
             <IoIosAttach className='text-2xl' />
