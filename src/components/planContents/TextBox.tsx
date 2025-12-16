@@ -7,7 +7,7 @@ import type { LocalContent } from './DetailPlans';
 type TextBox = {
   content: TextContent;
   isEdit: boolean;
-  setEditingId: (id: number | null) => void;
+  setEditingId: (id: string | null) => void;
   updateContents: (content: LocalContent) => void;
   deleteContents: (content: LocalContent) => void;
 };
@@ -58,7 +58,6 @@ export default function TextBox({
 
   return (
     <div
-      tabIndex={content.id} // to make it focousable to trigger onBlur
       onBlur={(e) => void handleClearEditOnBlur(e)}
       className={`group relative rounded-md py-1 px-2 mb-2
         ${

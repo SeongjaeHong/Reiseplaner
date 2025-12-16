@@ -1,25 +1,20 @@
 import type { TextContent } from '@/apis/supabase/planContents';
 import type { LocalContent } from '../DetailPlans';
+import { v4 as uuid } from 'uuid';
 
 type UseAddText = {
-  planContents: LocalContent[];
   updateLocalContents: (content: LocalContent) => void;
-  setEditingId: React.Dispatch<React.SetStateAction<number | null>>;
+  setEditingId: React.Dispatch<React.SetStateAction<string | null>>;
 };
-export function useAddText({
-  planContents,
-  updateLocalContents,
-  setEditingId,
-}: UseAddText) {
+export function useAddText({ updateLocalContents, setEditingId }: UseAddText) {
   return () => {
-    const contentId = (planContents.at(-1)?.id ?? 0) + 1;
     const defaultTime = {
       start: { hour: '00', minute: '00' },
       end: { hour: '00', minute: '00' },
     };
 
     const newContent: TextContent = {
-      id: contentId,
+      id: uuid(),
       type: 'text',
       title: '',
       data: '',

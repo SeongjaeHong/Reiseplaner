@@ -1,13 +1,10 @@
 import type { LocalContent, LocalImageContent } from '../DetailPlans';
+import { v4 as uuid } from 'uuid';
 
 type UseAddImage = {
-  planContents: LocalContent[];
   updateLocalContents: (content: LocalContent) => void;
 };
-export function useAddImage({
-  planContents,
-  updateLocalContents,
-}: UseAddImage) {
+export function useAddImage({ updateLocalContents }: UseAddImage) {
   return async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     if (!file) {
@@ -17,7 +14,7 @@ export function useAddImage({
     const dataURL = await readFileAsDataURL(file);
     const { width, height } = await getImageDimensions(dataURL);
     const newContent: LocalImageContent = {
-      id: (planContents.at(-1)?.id ?? 0) + 1,
+      id: uuid(),
       type: 'file',
       data: file,
       width,

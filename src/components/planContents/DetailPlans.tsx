@@ -100,16 +100,14 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
     autoSave();
   };
 
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const handleAddText = useAddText({
-    planContents: data?.contents ?? ([] as LocalContent[]),
     updateLocalContents: (content) => handleUpdateLocalContents(content, false),
     setEditingId,
   });
 
   const refFileInput = useRef<HTMLInputElement | null>(null);
   const addFile = useAddImage({
-    planContents: data?.contents ?? ([] as LocalContent[]),
     updateLocalContents: (content) => handleUpdateLocalContents(content, false),
   });
 

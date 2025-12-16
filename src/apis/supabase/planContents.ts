@@ -3,7 +3,7 @@ import type { Database } from '@/database.types';
 import supabase from '@/supabaseClient';
 
 export type TextContent = {
-  id: number;
+  id: string;
   type: 'text';
   title: string;
   data: string;
@@ -12,7 +12,7 @@ export type TextContent = {
   isTimeActive: boolean;
 };
 export type ImageContent = {
-  id: number;
+  id: string;
   type: 'file';
   data: string;
   width: number;
