@@ -9,9 +9,13 @@ type PlanContents = {
 export default function PlanContents({ planId, detailPlansRef }: PlanContents) {
   return (
     <Suspense fallback={<PlanContentsSkeleton />}>
-      <div className='flex gap-1 py-1'>
-        <ScheduleTable />
-        <DetailPlans planId={planId} ref={detailPlansRef} />
+      <div className='flex gap-1 py-1 min-h-30'>
+        <div className='w-1/3 2xl:w-1/5 border-1 border-reiseorange bg-zinc-500 px-2 pb-2'>
+          <ScheduleTable planId={planId} />
+        </div>
+        <div className='flex-1 border-1 border-reiseorange bg-zinc-500 p-1'>
+          <DetailPlans planId={planId} ref={detailPlansRef} />
+        </div>
       </div>
     </Suspense>
   );

@@ -1,5 +1,35 @@
-export default function ScheduleTable() {
+import { useSuspenseQueryLocalContents } from './utils/contents';
+
+type ScheduleTable = { planId: number };
+export default function ScheduleTable({ planId }: ScheduleTable) {
+  const { data } = useSuspenseQueryLocalContents(planId);
+
   return (
-    <div className='border-1 border-reiseorange bg-zinc-500 w-1/3 flex-initial min-h-30'></div>
+    <div className='flex flex-col'>
+      <div className='pt-1 mb-2'>
+        <h1 className='font-bold text-xl'>Schedule</h1>
+      </div>
+      <div className='flex-1 flex flex-col justify-between'>
+        {data?.contents.map((content) => {
+          if (content.type === 'text' && content.isTimeActive) {
+            const text = content.title
+              ? content.title
+              : content.data.slice(0, 50);
+            const startTime =
+              content.time.start.hour + ':' + content.time.start.minute;
+            return (
+              <div
+                key={content.id}
+                className='flex relative hover:bg-orange-300 rounded-xl'
+              >
+                <h1 className='text-center max-sm:w-full'>{startTime}</h1>
+                <div className='mx-1 w-[2px] bg-reiseorange max-sm:hidden' />
+                <h1 className='flex-1 line-clamp-2 max-sm:hidden'>{text}</h1>
+              </div>
+            );
+          }
+        })}
+      </div>
+    </div>
   );
 }
