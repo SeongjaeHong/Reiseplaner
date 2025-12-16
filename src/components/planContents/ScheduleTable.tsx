@@ -9,7 +9,9 @@ export default function ScheduleTable({ planId }: ScheduleTable) {
       <div className='pt-1 mb-2'>
         <h1 className='font-bold text-xl'>Schedule</h1>
       </div>
-      <div className='flex-1 flex flex-col justify-between'>
+
+      <div className='relative flex-1 flex flex-col justify-between'>
+        <div className='absolute h-full w-[2px] left-[42px] bg-reiseorange max-sm:hidden' />
         {data?.contents.map((content) => {
           if (content.type === 'text' && content.isTimeActive) {
             const text = content.title
@@ -20,11 +22,12 @@ export default function ScheduleTable({ planId }: ScheduleTable) {
             return (
               <div
                 key={content.id}
-                className='flex relative hover:bg-orange-300 rounded-xl'
+                className='flex relative hover:bg-orange-300 rounded-lg mb-2'
               >
                 <h1 className='text-center max-sm:w-full'>{startTime}</h1>
-                <div className='mx-1 w-[2px] bg-reiseorange max-sm:hidden' />
-                <h1 className='flex-1 line-clamp-2 max-sm:hidden'>{text}</h1>
+                <h1 className='pl-2 flex-1 line-clamp-2 max-sm:hidden'>
+                  {text}
+                </h1>
               </div>
             );
           }
