@@ -13,6 +13,7 @@ import {
   getPlanContentsById,
   insertPlanContents,
   type Content,
+  type TextContent,
 } from '@/apis/supabase/planContents';
 
 export const getContentsQueryKey = (planId: number) => ['DetailPlans', planId];
@@ -35,7 +36,7 @@ export const useSuspenseQueryLocalContents = (planId: number) =>
         return content;
       });
 
-      return { ...data, contents: processedContents };
+      return { ...data, contents: getSortedContents(processedContents) };
     },
     staleTime: Infinity,
   });
@@ -145,7 +146,7 @@ export const useUpdateLocalContents = (
     }
 
     queryClient.setQueryData(queryKey, {
-      contents: updatedList,
+      contents: getSortedContents(updatedList),
     });
   };
 };
@@ -186,4 +187,22 @@ export const useDeleteLocalContents = (
       contents: newContents,
     });
   };
+};
+
+// Sort contents by time
+export const getSortedContents = (contents: LocalContent[]): LocalContent[] => {
+  const active = contents.filter(
+    (c) => c.type === 'text' && c.isTimeActive
+  ) as TextContent[];
+  const inactive = contents.filter(
+    (c) => !(c.type === 'text' && c.isTimeActive)
+  );
+
+  active.sort((a, b) => {
+    const timeA = Number(a.time.start.hour) * 60 + Number(a.time.start.minute);
+    const timeB = Number(b.time.start.hour) * 60 + Number(b.time.start.minute);
+    return timeA - timeB;
+  });
+
+  return [...active, ...inactive];
 };
