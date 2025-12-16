@@ -4,7 +4,13 @@ import {
   type TextContent,
 } from '@/apis/supabase/planContents';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { useCallback, useImperativeHandle, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { IoIosAttach } from 'react-icons/io';
 import TextBox from './TextBox';
@@ -114,7 +120,7 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
   }));
 
   return (
-    <div className='border-1 border-reiseorange bg-zinc-500 flex-1 min-h-30 p-1'>
+    <div className='border-1 border-reiseorange bg-zinc-500 flex-1 p-1'>
       {data?.contents?.map((content) => {
         if (content.type === 'text') {
           return (
@@ -194,6 +200,12 @@ const useSuspenseQueryLocalContents = (planId: number) =>
 
 const useAutoSave = (handleSaveChanges: () => Promise<void>) => {
   const refSaveTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (refSaveTimer.current) clearTimeout(refSaveTimer.current);
+    };
+  }, []);
 
   return () => {
     if (refSaveTimer.current) {
