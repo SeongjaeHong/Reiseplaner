@@ -26,19 +26,16 @@ export const useSuspenseQueryLocalContents = (planId: number) =>
       if (!data) {
         return null;
       }
-      const localContents = {
-        ...data,
-        contents: data.contents.map((content) => {
-          let localContent;
-          if (content.type === 'file') {
-            localContent = { ...content, fileDelete: false };
-          } else {
-            localContent = content;
-          }
-          return localContent;
-        }),
-      };
-      return localContents;
+
+      // Add fileDelete attribute to file contents
+      const processedContents: LocalContent[] = data.contents.map((content) => {
+        if (content.type === 'file') {
+          return { ...content, fileDelete: false };
+        }
+        return content;
+      });
+
+      return { ...data, contents: processedContents };
     },
     staleTime: Infinity,
   });
@@ -125,42 +122,30 @@ export const useUpdateLocalContents = (
   planId: number
 ) => {
   return (updatedContent: LocalContent, replace = true) => {
+    const queryKey = getContentsQueryKey(planId);
     const previousData = queryClient.getQueryData<{ contents: LocalContent[] }>(
-      getContentsQueryKey(planId)
+      queryKey
     ) ?? { contents: [] };
     const prevContents = previousData.contents;
 
-    if (!prevContents) {
-      return;
-    }
+    if (!prevContents) return;
 
-    let newContents: LocalContent[] = [];
+    let updatedList: LocalContent[];
 
-    if (!prevContents.length || !replace) {
-      // Add a new content
-      newContents = [...prevContents, updatedContent];
+    if (replace) {
+      updatedList = prevContents
+        .map((item) => (item.id === updatedContent.id ? updatedContent : item))
+        .filter((item) => {
+          if (item.type === 'text')
+            return item.title !== '' || item.data !== '';
+          return item.data !== '';
+        });
     } else {
-      // Update an existing content
-      newContents = prevContents.reduce((acc, current) => {
-        if (current.id === updatedContent.id) {
-          if (updatedContent.type === 'text') {
-            if (updatedContent.title !== '' || updatedContent.data !== '') {
-              acc.push(updatedContent);
-            }
-          } else if (updatedContent.type === 'file') {
-            if (updatedContent.data !== '') {
-              acc.push(updatedContent);
-            }
-          }
-        } else {
-          acc.push(current);
-        }
-        return acc;
-      }, [] as LocalContent[]);
+      updatedList = [...prevContents, updatedContent];
     }
 
-    queryClient.setQueryData(getContentsQueryKey(planId), {
-      contents: newContents,
+    queryClient.setQueryData(queryKey, {
+      contents: updatedList,
     });
   };
 };
