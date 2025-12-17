@@ -1,7 +1,7 @@
 import { getPlansByGroupId } from '@/apis/supabase/plans';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { FaPenToSquare } from 'react-icons/fa6';
+import { FaAngleLeft, FaPenToSquare } from 'react-icons/fa6';
 import { PLAN } from '../-constant';
 import { useReducer } from 'react';
 import { z } from 'zod';
@@ -31,6 +31,11 @@ function Index() {
   return (
     <>
       <div className='flex items-center p-2 min-h-20 bg-reiseorange'>
+        <button onClick={() => window.history.back()} className='px-1 py-2'>
+          <span className='text-2xl'>
+            <FaAngleLeft />
+          </span>
+        </button>
         <h1 className='text-2xl font-bold'>{groupTitle}</h1>
       </div>
       <div className='relative p-2 min-h-100 bg-reiseyellow'>
