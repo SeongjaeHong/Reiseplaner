@@ -12,7 +12,7 @@ import {
 } from 'react';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { IoIosAttach } from 'react-icons/io';
-import TextBox from './TextBox';
+import TextBox, { type TextBoxHandle } from './TextBox';
 import ImageBox from './ImageBox';
 import { useAddImage } from './utils/image';
 import { useAddText } from './utils/text';
@@ -26,6 +26,7 @@ import {
 export type DetailPlansHandle = {
   saveChanges: () => Promise<void>;
   contentsStatus: ContentsStatus;
+  scrollToContent: (id: string) => void;
 };
 export type LocalContent = TextContent | LocalImageContent;
 export type LocalImageContent = Omit<ImageContent, 'data'> & {
@@ -35,10 +36,17 @@ export type LocalImageContent = Omit<ImageContent, 'data'> & {
 type ContentsStatus = 'Clean' | 'Dirty' | 'Pending'; // Pending: Being saved into DB
 type DetailPlans = {
   planId: number;
-  ref: React.RefObject<DetailPlansHandle | null>;
+  focusedId: string | null;
+  setFocusedId: (id: string | null) => void;
+  ref: React.Ref<DetailPlansHandle>;
 };
 
-export default function DetailPlans({ planId, ref }: DetailPlans) {
+export default function DetailPlans({
+  planId,
+  ref,
+  focusedId,
+  setFocusedId,
+}: DetailPlans) {
   const queryClient = useQueryClient();
   const { data } = useSuspenseQueryLocalContents(planId);
 
@@ -111,10 +119,20 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
     updateLocalContents: (content) => handleUpdateLocalContents(content, false),
   });
 
-  useImperativeHandle(ref, () => ({
-    saveChanges: handleSaveChanges,
-    contentsStatus,
-  }));
+  const contentRefs = useRef<Record<string, TextBoxHandle | null>>({});
+  useImperativeHandle(
+    ref,
+    (): DetailPlansHandle => ({
+      saveChanges: handleSaveChanges,
+      contentsStatus: contentsStatus,
+      scrollToContent: (id: string) => {
+        const target = contentRefs.current[id];
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      },
+    })
+  );
 
   return (
     <>
@@ -122,11 +140,16 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
         if (content.type === 'text') {
           return (
             <TextBox
+              ref={(el) => {
+                contentRefs.current[content.id] = el;
+              }}
               content={content}
+              isFocused={focusedId === content.id}
               isEdit={editingId === content.id}
+              onFocus={() => setFocusedId(content.id)}
               setEditingId={setEditingId}
-              updateContents={(content) => handleUpdateLocalContents(content)}
-              deleteContents={(content) => handleDeleteLocalContents(content)}
+              updateContents={handleUpdateLocalContents}
+              deleteContents={handleDeleteLocalContents}
               key={content.id}
             />
           );
@@ -134,8 +157,8 @@ export default function DetailPlans({ planId, ref }: DetailPlans) {
           return (
             <ImageBox
               content={content}
-              updateContents={(content) => handleUpdateLocalContents(content)}
-              deleteContents={(content) => handleDeleteLocalContents(content)}
+              updateContents={handleUpdateLocalContents}
+              deleteContents={handleDeleteLocalContents}
               key={content.id}
             />
           );

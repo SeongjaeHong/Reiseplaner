@@ -1,22 +1,32 @@
 import type { TextContent } from '@/apis/supabase/planContents';
 import { FaRegTrashCan, FaTag } from 'react-icons/fa6';
-import { useReducer, useRef, useState } from 'react';
+import { useImperativeHandle, useReducer, useRef, useState } from 'react';
 import TimeWidget from './TimeWidget';
 import type { LocalContent } from './DetailPlans';
+
+export type TextBoxHandle = {
+  scrollIntoView: (options?: ScrollIntoViewOptions) => void;
+};
 
 type TextBox = {
   content: TextContent;
   isEdit: boolean;
+  isFocused: boolean; // 추가
   setEditingId: (id: string | null) => void;
+  onFocus: () => void; // 추가
   updateContents: (content: LocalContent) => void;
   deleteContents: (content: LocalContent) => void;
+  ref: React.Ref<TextBoxHandle>;
 };
 export default function TextBox({
   content,
   isEdit,
+  isFocused,
   setEditingId,
+  onFocus,
   updateContents,
   deleteContents,
+  ref,
 }: TextBox) {
   const [time, setTime] = useState(content.time);
   const [timeActive, setTimeActive] = useState(content.isTimeActive);
@@ -27,6 +37,7 @@ export default function TextBox({
     content.box === 'note'
   );
 
+  const containerRef = useRef<HTMLDivElement>(null);
   const refTitle = useRef<HTMLInputElement | null>(null);
   const refTextArea = useRef<HTMLTextAreaElement | null>(null);
 
@@ -56,10 +67,26 @@ export default function TextBox({
     setEditingId(null);
   };
 
+  useImperativeHandle(ref, () => ({
+    scrollIntoView: (options?: ScrollIntoViewOptions) => {
+      containerRef.current?.scrollIntoView(
+        options ?? { behavior: 'smooth', block: 'center' }
+      );
+    },
+  }));
+
+  const handleTextBoxClick = () => {
+    onFocus();
+    if (!isEdit) setEditingId(content.id);
+  };
+
   return (
     <div
+      ref={containerRef}
+      onClick={(e) => e.stopPropagation()}
       onBlur={(e) => void handleClearEditOnBlur(e)}
       className={`group relative rounded-md py-1 px-2 mb-2
+        ${isFocused ? 'ring-2 ring-reiseorange shadow-lg' : ''} 
         ${
           isNoteBox
             ? 'bg-reisered min-h-5'
@@ -111,11 +138,8 @@ export default function TextBox({
         </div>
       )}
       {!isEdit && (
-        <div
-          onClick={() => setEditingId(content.id)}
-          className='py-1 px-2 text-white'
-        >
-          <div className='w-full text-xl border-b-1 border-red-300 mb-1 truncate'>
+        <div onClick={handleTextBoxClick} className='py-1 px-2 text-white'>
+          <div className='w-full text-xl border-b-1 mb-1 truncate'>
             {content.title && <h1>{content.title}</h1>}
             {!content.title && <h1 className='text-zinc-300'>제목 없음</h1>}
           </div>
