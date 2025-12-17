@@ -3,7 +3,6 @@ import {
   useMutation,
   useSuspenseQuery,
 } from '@tanstack/react-query';
-import { type LocalContent } from '../DetailPlans';
 import {
   deletePlanGroupThumbnail,
   uploadPlanGroupThumbnail,
@@ -13,8 +12,15 @@ import {
   getPlanContentsById,
   insertPlanContents,
   type Content,
+  type ImageContent,
   type TextContent,
 } from '@/apis/supabase/planContents';
+
+export type LocalContent = TextContent | LocalImageContent;
+export type LocalImageContent = Omit<ImageContent, 'data'> & {
+  data: string | File;
+  fileDelete: boolean;
+};
 
 export const getContentsQueryKey = (planId: number) => ['DetailPlans', planId];
 

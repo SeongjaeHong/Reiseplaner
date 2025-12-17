@@ -1,5 +1,5 @@
-import type { LocalContent, LocalImageContent } from '../DetailPlans';
 import { v4 as uuid } from 'uuid';
+import type { LocalContent, LocalImageContent } from './contents';
 
 type UseAddImage = {
   updateLocalContents: (content: LocalContent) => void;

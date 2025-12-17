@@ -1,7 +1,3 @@
-import {
-  type ImageContent,
-  type TextContent,
-} from '@/apis/supabase/planContents';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useCallback,
@@ -21,6 +17,7 @@ import {
   useSaveChanges,
   useSuspenseQueryLocalContents,
   useUpdateLocalContents,
+  type LocalContent,
 } from './utils/contents';
 
 export type DetailPlansHandle = {
@@ -28,11 +25,7 @@ export type DetailPlansHandle = {
   contentsStatus: ContentsStatus;
   scrollToContent: (id: string) => void;
 };
-export type LocalContent = TextContent | LocalImageContent;
-export type LocalImageContent = Omit<ImageContent, 'data'> & {
-  data: string | File;
-  fileDelete: boolean;
-};
+
 type ContentsStatus = 'Clean' | 'Dirty' | 'Pending'; // Pending: Being saved into DB
 type DetailPlans = {
   planId: number;
