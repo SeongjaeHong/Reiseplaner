@@ -46,19 +46,25 @@ export type Database = {
       plangroups: {
         Row: {
           created_at: string
+          end_time: string | null
           id: number
+          start_time: string | null
           thumbnailURL: string | null
           title: string
         }
         Insert: {
           created_at?: string
+          end_time?: string | null
           id?: number
+          start_time?: string | null
           thumbnailURL?: string | null
           title?: string
         }
         Update: {
           created_at?: string
+          end_time?: string | null
           id?: number
+          start_time?: string | null
           thumbnailURL?: string | null
           title?: string
         }

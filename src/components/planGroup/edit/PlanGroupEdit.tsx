@@ -4,14 +4,19 @@ import {
   deletePlanGroupThumbnail,
   uploadPlanGroupThumbnail,
 } from '@/apis/supabase/buckets';
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 import { updatePlanGroupByGroupId } from '@/apis/supabase/planGroups';
 import type { Database } from '@/database.types';
 import ThumbnailEdit from './ThumbnailEdit';
+import Calendar from './Calendar';
+import type { DateRange } from 'react-day-picker';
+import { format } from 'date-fns';
+import { getSchedule } from '../utils/time';
 
 type PlanGroupForm = {
   title: string;
   thumbnail: File | null;
+  schedule: DateRange | undefined;
 };
 type PlanGroupEdit = {
   planGroup: Database['public']['Tables']['plangroups']['Row'];
@@ -34,22 +39,41 @@ export default function PlanGroupEdit({
     defaultValues: {
       title: planGroup.title,
       thumbnail: thumbnail,
+      schedule: {
+        from: planGroup.start_time ? new Date(planGroup.start_time) : undefined,
+        to: planGroup.end_time ? new Date(planGroup.end_time) : undefined,
+      },
     },
   });
   const currentThumbnail = useWatch({ control, name: 'thumbnail' });
+  const currentSchedule = useWatch({ control, name: 'schedule' });
+
   const isThumbnailDirty = !(currentThumbnail === thumbnail);
-  const isFormDirty = !!dirtyFields.title || isThumbnailDirty;
+  const isStartTimeDirty =
+    currentSchedule?.from?.toISOString() !==
+    (planGroup.start_time
+      ? new Date(planGroup.start_time).toISOString()
+      : undefined);
+  const isEndTimeDirty =
+    currentSchedule?.to?.toISOString() !==
+    (planGroup.end_time
+      ? new Date(planGroup.end_time).toISOString()
+      : undefined);
+  const isScheduleDirty = isStartTimeDirty || isEndTimeDirty;
+
+  const isFormDirty =
+    !!dirtyFields.title || isScheduleDirty || isThumbnailDirty;
 
   const { onChange: registerTitleOnChange, ...registerTitleRest } =
     register('title');
   const [titleEmpty, setTitleEmpty] = useState(false);
+
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.currentTarget.value === '') {
-      setTitleEmpty(true);
-    } else {
-      setTitleEmpty(false);
-    }
+    setTitleEmpty(e.currentTarget.value.trim() === '');
   };
+
+  const [showCalendar, toggleShowCalendar] = useReducer((prev) => !prev, false);
+  const scheduleText = getSchedule(currentSchedule);
 
   const { mutate: submit, isPending } = useMutatePlanGroup({
     planGroup,
@@ -64,9 +88,8 @@ export default function PlanGroupEdit({
 
   return (
     <form
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onSubmit={handleSubmit((value) => submit(value))}
-      className='fixed flex z-1 top-50 left-1/2 -translate-x-1/2 w-3/5 h-70 rounded-sm p-2 bg-red-300'
+      className='absolute flex z-1 top-50 left-1/2 -translate-x-1/2 w-3/5 h-70 rounded-sm p-2 bg-red-300'
     >
       <Controller
         name='thumbnail'
@@ -100,13 +123,33 @@ export default function PlanGroupEdit({
             )}
           </div>
 
-          {/* TODO: Add a calendar component. */}
-          <div className='inline-flex gap-1 py-1 px-3 rounded-xl border-1 text-xs'>
-            <span>01. Jan. 2026</span>
-            <span>-</span>
-            <span>23. Feb. 2026</span>
-            {/* <span>Bearbeiten</span> */}
+          <div className='inline rounded-xl border-1 hover:bg-zinc-300'>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                toggleShowCalendar();
+              }}
+              disabled={showCalendar}
+              className='inline-flex gap-1 py-1 px-3 text-xs'
+            >
+              <span>{scheduleText}</span>
+            </button>
           </div>
+          {showCalendar && (
+            <div className='absolute top-27 left-1/2 -translate-x-1/2 z-2'>
+              <Controller
+                name='schedule'
+                control={control}
+                render={({ field: { onChange } }) => (
+                  <Calendar
+                    range={currentSchedule}
+                    setRange={onChange}
+                    onClose={toggleShowCalendar}
+                  />
+                )}
+              />
+            </div>
+          )}
         </div>
 
         <div className='flex justify-center gap-2'>
@@ -151,7 +194,7 @@ function useMutatePlanGroup({
 }: UseMutatePlanGroup) {
   return useMutation({
     mutationFn: async (data: PlanGroupForm) => {
-      let thumbnailPath = undefined;
+      let thumbnailPath: string | null = null;
       if (isThumbnailDirty) {
         // Save a new thumbnail image in DB.
         if (curThumbnail) {
@@ -177,7 +220,13 @@ function useMutatePlanGroup({
       }
 
       // Update a title and a thumbnail path of a plan group in DB
-      await updatePlanGroupByGroupId(planGroup.id, data.title, thumbnailPath);
+      await updatePlanGroupByGroupId(
+        planGroup.id,
+        data.title,
+        thumbnailPath,
+        data.schedule?.from?.toISOString() ?? null,
+        data.schedule?.to?.toISOString() ?? null
+      );
     },
     onSuccess: async () => {
       await refetch();

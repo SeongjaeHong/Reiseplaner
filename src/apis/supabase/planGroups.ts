@@ -42,20 +42,26 @@ export const deletePlanGroups = async (planGroupId: number) => {
 export const updatePlanGroupByGroupId = async (
   groupId: number,
   title: string,
-  thumbnailURL: string | null | undefined
+  thumbnailURL: string | null,
+  startTime: string | null,
+  endTime: string | null
 ) => {
-  const update: Partial<{ title: string; thumbnailURL: string | null }> = {
+  const update: Partial<{
+    title: string;
+    thumbnailURL: string | null;
+    start_time: string | null;
+    end_time: string | null;
+  }> = {
     title,
+    thumbnailURL,
+    start_time: startTime,
+    end_time: endTime,
   };
-  if (thumbnailURL || thumbnailURL === null) {
-    update.thumbnailURL = thumbnailURL;
-  }
 
   const res = await supabase
     .from('plangroups')
     .update(update)
     .eq('id', groupId)
-    .single()
     .throwOnError();
 
   return res;

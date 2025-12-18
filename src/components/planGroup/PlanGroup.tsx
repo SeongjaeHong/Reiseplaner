@@ -4,9 +4,9 @@ import { FaEllipsisVertical } from 'react-icons/fa6';
 import DeletePlanGroupPopupBox from './DeletePlanGroupPopupBox';
 import PlanGroupEdit from './edit/PlanGroupEdit';
 import type { Database } from '@/database.types';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { downloadImage } from '@/apis/supabase/buckets';
-import loadingURL from '@/assets/loading.png';
+import { getSchedule } from './utils/time';
 
 type typePlanGroup = {
   to: string;
@@ -44,6 +44,10 @@ export default function PlanGroup({ to, planGroup, refetch }: typePlanGroup) {
   };
 
   const thumbnail = useFetchImage({ imageURL: planGroup.thumbnailURL });
+  const schedule = getSchedule({
+    from: planGroup.start_time ? new Date(planGroup.start_time) : undefined,
+    to: planGroup.end_time ? new Date(planGroup.end_time) : undefined,
+  });
 
   return (
     <>
@@ -51,27 +55,22 @@ export default function PlanGroup({ to, planGroup, refetch }: typePlanGroup) {
         to={to}
         search={{ group_id: planGroup.id, group_title: planGroup.title }}
         mask={{ to: to, search: { group_id: planGroup.id } }}
-        key={planGroup.id}
       >
-        <div
-          className='group relative flex w-1/2 my-1 h-30 bg-zinc-300 truncate'
-          id={planGroup.id.toString()}
-        >
-          <div className='w-30 mr-2 bg-red-300'>
-            {thumbnail && (
-              <img
-                src={URL.createObjectURL(thumbnail)}
-                alt='A thumbnail of a plan group'
-              />
-            )}
-            {!thumbnail && (
-              <div className='h-full bg-red-300'>
-                <img src={loadingURL} alt='Loading image' />
-              </div>
-            )}
+        <div className='group relative flex my-1 h-60 bg-zinc-300 truncate'>
+          <div className='w-1/3 mr-2'>
+            <img
+              src={URL.createObjectURL(thumbnail)}
+              alt='A thumbnail of a plan group'
+              className='h-full w-full object-fill'
+            />
           </div>
-          <div className='py-2'>
-            <h1>{planGroup.title}</h1>
+          <div>
+            <div className='py-2'>
+              <h1>{planGroup.title}</h1>
+            </div>
+            <div className='inline-block rounded-xl border-1 py-1 px-2'>
+              <span>{schedule}</span>
+            </div>
           </div>
           <div className='absolute right-1 invisible group-hover:visible overflow-visible'>
             <button
@@ -158,23 +157,11 @@ type UseFetchImage = {
   imageURL: string | null;
 };
 function useFetchImage({ imageURL }: UseFetchImage) {
-  const { data, isError, isLoading } = useQuery({
+  const { data } = useSuspenseQuery({
     queryKey: [imageURL],
     queryFn: () => downloadImage(imageURL),
     staleTime: Infinity,
   });
 
-  if (isError) {
-    return null;
-  }
-
-  if (isLoading) {
-    return null;
-  }
-
-  if (data) {
-    return data;
-  }
-
-  return null;
+  return data;
 }
