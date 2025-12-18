@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { FaCirclePlus } from 'react-icons/fa6';
-import { useReducer } from 'react';
+import { Suspense, useReducer } from 'react';
 import CreatePlanGroupPopupBox from '@/components/planGroup/CreatePlanGroupPopupBox';
 import { useQuery } from '@tanstack/react-query';
 import { getPlanGroups } from '@/apis/supabase/planGroups';
@@ -25,14 +25,15 @@ function Index() {
 
   return (
     <>
-      <div className='relative p-2 min-h-100 bg-reiseyellow'>
+      <div className='relative p-2 min-h-100 bg-reiseyellow grid grid-cols-2 max-sm:grid-cols-1 xl:grid-cols-3 gap-4'>
         {planGroups?.map((planGroup) => (
-          <PlanGroup
-            to={PLAN_GROUP}
-            planGroup={planGroup}
-            refetch={() => refetch()}
-            key={planGroup.id}
-          />
+          <Suspense fallback={<PlanGroupSkeleton />} key={planGroup.id}>
+            <PlanGroup
+              to={PLAN_GROUP}
+              planGroup={planGroup}
+              refetch={() => refetch()}
+            />
+          </Suspense>
         ))}
         <button
           className='absolute right-5 bottom-5'
@@ -51,3 +52,7 @@ function Index() {
     </>
   );
 }
+
+const PlanGroupSkeleton = () => (
+  <div className='h-60 bg-zinc-300 animate-pulse' />
+);
