@@ -10,7 +10,6 @@ import type { Database } from '@/database.types';
 import ThumbnailEdit from './ThumbnailEdit';
 import Calendar from './Calendar';
 import type { DateRange } from 'react-day-picker';
-import { format } from 'date-fns';
 import { getSchedule } from '../utils/time';
 
 type PlanGroupForm = {
@@ -86,9 +85,13 @@ export default function PlanGroupEdit({
 
   const isSubmitDisabled = !isFormDirty || isPending || titleEmpty;
 
+  const onFormSubmit = (e: React.FormEvent) => {
+    void handleSubmit((value) => submit(value))(e);
+  };
+
   return (
     <form
-      onSubmit={handleSubmit((value) => submit(value))}
+      onSubmit={onFormSubmit}
       className='absolute flex z-1 top-50 left-1/2 -translate-x-1/2 w-3/5 h-70 rounded-sm p-2 bg-red-300'
     >
       <Controller
