@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import ScheduleTable from './ScheduleTable';
 import DetailPlans, { type DetailPlansHandle } from './DetailPlans';
 
@@ -14,13 +14,15 @@ export default function PlanContents({ planId, detailPlansRef }: PlanContents) {
     detailPlansRef.current?.scrollToContent(id);
   };
 
-  const handleBackgroundClick = () => {
-    setFocusedId(null);
-  };
+  useEffect(() => {
+    const clearFocus = () => setFocusedId(null);
+    window.addEventListener('click', clearFocus);
+    return () => window.removeEventListener('click', clearFocus);
+  }, []);
 
   return (
     <Suspense fallback={<PlanContentsSkeleton />}>
-      <div onClick={handleBackgroundClick} className='flex gap-1 py-1 min-h-30'>
+      <div className='flex gap-1 py-1 min-h-30'>
         <div className='w-1/3 2xl:w-1/5 border-1 border-reiseorange bg-zinc-500 px-2 pb-2'>
           <ScheduleTable
             planId={planId}
