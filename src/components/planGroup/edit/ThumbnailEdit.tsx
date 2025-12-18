@@ -1,4 +1,4 @@
-import { useReducer, useRef } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import useOutsideClick from '@/utils/useOutsideClick';
 import { isDefaultImage } from '@/apis/supabase/buckets';
 import SimplePopupbox from '@/components/popupBoxes/SimplePopupbox';
@@ -33,9 +33,11 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
     toggleShowImageMenu();
   };
 
+  const previewUrl = useImagePreview(image);
+
   return (
     <div className='relative w-1/2 h-full mr-2'>
-      {image && (
+      {image && previewUrl && (
         <div className='w-full h-full'>
           {showImageMenu && (
             <ul
@@ -63,7 +65,7 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
           )}
           <img
             ref={refImg}
-            src={URL.createObjectURL(image)}
+            src={previewUrl}
             onClick={toggleShowImageMenu}
             className='w-full h-full object-cover hover:cursor-pointer'
           />
@@ -110,21 +112,28 @@ const isImageFile = (file: unknown): file is File => {
     return false;
   }
 
-  const isFileLike = (file: object): file is File => {
-    return (
-      typeof file === 'object' &&
-      'name' in file &&
-      'type' in file &&
-      'size' in file &&
-      typeof file.name === 'string' &&
-      typeof file.type === 'string' &&
-      typeof file.size === 'number'
-    );
-  };
+  const isFile = (file: object) => file instanceof File;
 
-  if (isFileLike(file) && file.type.startsWith('image/')) {
+  if (isFile(file) && file.type.startsWith('image/')) {
     return true;
   }
 
   return false;
 };
+
+function useImagePreview(file: File | null) {
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!file) {
+      setUrl(null);
+      return;
+    }
+    const newUrl = URL.createObjectURL(file);
+    setUrl(newUrl);
+
+    return () => URL.revokeObjectURL(newUrl);
+  }, [file]);
+
+  return url;
+}
