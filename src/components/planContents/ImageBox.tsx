@@ -75,7 +75,7 @@ export default function ImageBox({
       axis='both'
       minConstraints={[100, 100]}
       maxConstraints={[500, 500]}
-      className='group relative'
+      className='group relativ mb-2'
     >
       <img
         src={imgSrc}

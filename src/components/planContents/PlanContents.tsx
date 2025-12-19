@@ -23,14 +23,14 @@ export default function PlanContents({ planId, detailPlansRef }: PlanContents) {
   return (
     <Suspense fallback={<PlanContentsSkeleton />}>
       <div className='flex gap-1 py-1 min-h-30'>
-        <div className='w-1/3 2xl:w-1/5 border-1 border-reiseorange bg-zinc-500 px-2 pb-2'>
+        <div className='w-1/3 2xl:w-1/5 border-1 border-reiseorange bg-white px-2 pb-2'>
           <ScheduleTable
             planId={planId}
             focusedId={focusedId}
             onSelectContent={handleScheduleClick}
           />
         </div>
-        <div className='flex-1 border-1 border-reiseorange bg-zinc-500 p-1'>
+        <div className='flex-1 border-1 border-reiseorange bg-white p-1'>
           <DetailPlans
             planId={planId}
             ref={detailPlansRef}

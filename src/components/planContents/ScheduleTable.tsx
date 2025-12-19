@@ -15,7 +15,7 @@ export default function ScheduleTable({
   return (
     <div className='flex flex-col'>
       <div className='pt-1 mb-2'>
-        <h1 className='font-bold text-xl'>Schedule</h1>
+        <h1 className='font-bold text-xl text-black'>Schedule</h1>
       </div>
 
       <div className='relative flex-1 flex flex-col justify-between'>
@@ -36,8 +36,11 @@ export default function ScheduleTable({
                   e.stopPropagation();
                   onSelectContent(content.id);
                 }}
-                className={`flex relative cursor-pointer rounded-lg mb-2 p-1 transition-all hover:bg-orange-300
-                  ${isFocused && 'ring-2 ring-orange-400'}`}
+                className={`flex relative cursor-pointer rounded-lg mb-2 p-1 transition-all text-black hover:bg-orange-300 hover:text-white
+                  ${
+                    isFocused &&
+                    'ring-2 ring-orange-400 bg-orange-400 text-white'
+                  }`}
               >
                 <h1 className='text-center max-sm:w-full'>{startTime}</h1>
                 <h1 className='pl-2 flex-1 line-clamp-2 max-sm:hidden'>

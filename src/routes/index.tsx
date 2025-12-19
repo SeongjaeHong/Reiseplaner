@@ -24,8 +24,8 @@ function Index() {
   });
 
   return (
-    <>
-      <div className='relative p-2 min-h-100 bg-reiseyellow grid grid-cols-2 max-sm:grid-cols-1 xl:grid-cols-3 gap-4'>
+    <div className='bg-white max-w-[1600px] mx-auto'>
+      <div className='p-2 grid grid-cols-2 max-sm:grid-cols-1 xl:grid-cols-3 gap-2'>
         {planGroups?.map((planGroup) => (
           <Suspense fallback={<PlanGroupSkeleton />} key={planGroup.id}>
             <PlanGroup
@@ -35,10 +35,9 @@ function Index() {
             />
           </Suspense>
         ))}
-        <button
-          className='absolute right-5 bottom-5'
-          onClick={toggleShowCreatePlanBox}
-        >
+      </div>
+      <div className='flex justify-end'>
+        <button className='mr-2 mb-2' onClick={toggleShowCreatePlanBox}>
           <FaCirclePlus className='text-3xl text-reiseorange' />
         </button>
       </div>
@@ -49,7 +48,7 @@ function Index() {
           onClose={toggleShowCreatePlanBox}
         />
       )}
-    </>
+    </div>
   );
 }
 

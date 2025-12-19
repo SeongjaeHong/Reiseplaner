@@ -90,91 +90,93 @@ export default function PlanGroupEdit({
   };
 
   return (
-    <form
-      onSubmit={onFormSubmit}
-      className='absolute flex z-1 top-50 left-1/2 -translate-x-1/2 w-3/5 h-70 rounded-sm p-2 bg-red-300'
-    >
-      <Controller
-        name='thumbnail'
-        control={control}
-        render={({ field: { onChange } }) => (
-          <ThumbnailEdit
-            image={currentThumbnail}
-            onChange={(file: File | null) => onChange(file)}
-          />
-        )}
-      />
-      <div className='flex flex-col justify-between w-1/2'>
-        <div>
-          <div className='relative mb-10'>
-            <div className='rounded-sm border-1'>
-              <input
-                className='w-full px-1 text-lg font-bold'
-                type='text'
-                defaultValue={planGroup.title}
-                {...registerTitleRest}
-                onChange={(e) => {
-                  void registerTitleOnChange(e);
-                  handleTitleChange(e);
-                }}
-              />
+    <div className='fixed z-1 w-screen h-screen'>
+      <form
+        onSubmit={onFormSubmit}
+        className='fixed flex top-50 left-1/2 -translate-x-1/2 w-3/5 h-70 rounded-sm p-2 bg-reiseorange xl:w-1/3'
+      >
+        <Controller
+          name='thumbnail'
+          control={control}
+          render={({ field: { onChange } }) => (
+            <ThumbnailEdit
+              image={currentThumbnail}
+              onChange={(file: File | null) => onChange(file)}
+            />
+          )}
+        />
+        <div className='flex flex-col justify-between w-1/2'>
+          <div>
+            <div className='relative mb-10'>
+              <div className='rounded-sm border-1'>
+                <input
+                  type='text'
+                  defaultValue={planGroup.title}
+                  {...registerTitleRest}
+                  onChange={(e) => {
+                    void registerTitleOnChange(e);
+                    handleTitleChange(e);
+                  }}
+                  className='w-full px-1 text-lg font-bold'
+                />
+              </div>
+              {titleEmpty && (
+                <div className='absolute'>
+                  <span className='text-rose-500'>Enter a title</span>
+                </div>
+              )}
             </div>
-            {titleEmpty && (
-              <div className='absolute'>
-                <span className='text-rose-500'>Enter a title</span>
+
+            <div className='inline rounded-lg border-1 hover:bg-zinc-300'>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  toggleShowCalendar();
+                }}
+                disabled={showCalendar}
+                className='inline-flex gap-1 py-1 px-3 text-xs'
+              >
+                <span>{scheduleText}</span>
+              </button>
+            </div>
+            {showCalendar && (
+              <div className='absolute top-27 left-1/2 -translate-x-1/2 z-1'>
+                <Controller
+                  name='schedule'
+                  control={control}
+                  render={({ field: { onChange } }) => (
+                    <Calendar
+                      range={currentSchedule}
+                      setRange={onChange}
+                      onClose={toggleShowCalendar}
+                    />
+                  )}
+                />
               </div>
             )}
           </div>
 
-          <div className='inline rounded-xl border-1 hover:bg-zinc-300'>
+          <div className='flex justify-center gap-2'>
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                toggleShowCalendar();
-              }}
-              disabled={showCalendar}
-              className='inline-flex gap-1 py-1 px-3 text-xs'
+              type='button'
+              onClick={onClose}
+              className='py-1 px-2 rounded-lg bg-red-400'
             >
-              <span>{scheduleText}</span>
+              Zurück
+            </button>
+            <button
+              type='submit'
+              disabled={isSubmitDisabled}
+              className={`py-1 px-2 rounded-lg bg-green-300 ${
+                isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              Speichern
             </button>
           </div>
-          {showCalendar && (
-            <div className='absolute top-27 left-1/2 -translate-x-1/2 z-2'>
-              <Controller
-                name='schedule'
-                control={control}
-                render={({ field: { onChange } }) => (
-                  <Calendar
-                    range={currentSchedule}
-                    setRange={onChange}
-                    onClose={toggleShowCalendar}
-                  />
-                )}
-              />
-            </div>
-          )}
         </div>
-
-        <div className='flex justify-center gap-2'>
-          <button
-            type='button'
-            onClick={onClose}
-            className='py-1 px-2 rounded-lg bg-red-400'
-          >
-            Zurück
-          </button>
-          <button
-            type='submit'
-            disabled={isSubmitDisabled}
-            className={`py-1 px-2 rounded-lg bg-green-300 ${
-              isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            Speichern
-          </button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }
 

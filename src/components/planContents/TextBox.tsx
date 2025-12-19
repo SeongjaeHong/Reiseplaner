@@ -90,7 +90,7 @@ export default function TextBox({
         ${
           isNoteBox
             ? 'bg-reisered min-h-5'
-            : 'border-1 border-reiseyellow min-h-2'
+            : 'border-2 border-reiseyellow min-h-2'
         }`}
     >
       {isNoteBox && <h1 className='mb-2 px-2 text-xl font-bold'>NOTE</h1>}
@@ -102,7 +102,9 @@ export default function TextBox({
             placeholder='Titel'
             defaultValue={content.title}
             autoFocus={content.title ? false : true}
-            className='w-full px-2 outline-0 text-xl border-b-1 border-red-300 truncate'
+            className={`w-full px-2 outline-0 text-xl border-b-1 border-red-300 truncate ${
+              isNoteBox ? 'text-white' : 'text-black'
+            }`}
           />
           <textarea
             ref={(node) => {
@@ -114,7 +116,9 @@ export default function TextBox({
             onFocus={handleTextAreaResize}
             placeholder='Input here.'
             autoFocus={content.title ? true : false}
-            className='w-full resize-none outline-0 py-1 px-2'
+            className={`w-full resize-none outline-0 py-1 px-2 ${
+              isNoteBox ? 'text-white' : 'text-black'
+            }`}
           />
           <div className='flex flex-row-reverse gap-3 pb-2'>
             <button
@@ -138,10 +142,13 @@ export default function TextBox({
         </div>
       )}
       {!isEdit && (
-        <div onClick={handleTextBoxClick} className='py-1 px-2 text-white'>
-          <div className='w-full text-xl border-b-1 mb-1 truncate'>
+        <div
+          onClick={handleTextBoxClick}
+          className={`py-1 px-2 ${isNoteBox ? 'text-white' : 'text-black'}`}
+        >
+          <div className='text-xl border-b-1 mb-1 truncate'>
             {content.title && <h1>{content.title}</h1>}
-            {!content.title && <h1 className='text-zinc-300'>제목 없음</h1>}
+            {!content.title && <h1 className='text-zinc-300'>Titel</h1>}
           </div>
           <pre className='text-wrap'>{content.data}</pre>
         </div>

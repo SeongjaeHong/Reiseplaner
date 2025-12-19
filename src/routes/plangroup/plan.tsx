@@ -48,7 +48,7 @@ function Plan() {
   };
 
   return (
-    <>
+    <div className='max-w-[1600px] mx-auto'>
       <div className='flex items-center bg-reiseorange w-full'>
         <button onClick={() => void handleBack()} className='px-1 py-2'>
           <span className='text-2xl'>
@@ -62,6 +62,6 @@ function Plan() {
       </div>
 
       <PlanContents planId={planId} detailPlansRef={detailPlansRef} />
-    </>
+    </div>
   );
 }

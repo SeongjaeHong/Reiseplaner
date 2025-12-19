@@ -3,7 +3,7 @@ import { INDEX } from './-constant';
 
 const RootLayout = () => (
   <>
-    <div className='flex items-center w-screen h-20 pl-5 bg-reiseblue'>
+    <div className='flex items-center h-20 pl-5 bg-reiseblue'>
       <Link to={INDEX}>
         <h1 className='font-bold text-5xl'>Reiseplaner</h1>
       </Link>

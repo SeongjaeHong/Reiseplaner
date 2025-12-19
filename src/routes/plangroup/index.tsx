@@ -29,7 +29,7 @@ function Index() {
   );
 
   return (
-    <>
+    <div className='max-w-[1600px] mx-auto'>
       <div className='flex items-center p-2 min-h-20 bg-reiseorange'>
         <button onClick={() => window.history.back()} className='px-1 py-2'>
           <span className='text-2xl'>
@@ -38,7 +38,7 @@ function Index() {
         </button>
         <h1 className='text-2xl font-bold'>{groupTitle}</h1>
       </div>
-      <div className='relative p-2 min-h-100 bg-reiseyellow'>
+      <div className='relative p-2 min-h-100 bg-white'>
         {isLoading && <PlansSkeleton />}
         {plans?.map((plan) => (
           <Plan
@@ -49,12 +49,11 @@ function Index() {
             key={plan.id}
           />
         ))}
-        <button
-          className='absolute right-5 bottom-5'
-          onClick={toggleShowCreatePlanBox}
-        >
-          <FaPenToSquare className='text-3xl text-reiseorange' />
-        </button>
+        <div className='flex justify-end'>
+          <button className='mr-1 mt-1' onClick={toggleShowCreatePlanBox}>
+            <FaPenToSquare className='text-3xl text-reiseorange' />
+          </button>
+        </div>
       </div>
       {showCreatePlanBox && (
         <CreatePlanPopupBox
@@ -63,7 +62,7 @@ function Index() {
           refetch={refetch}
         />
       )}
-    </>
+    </div>
   );
 }
 

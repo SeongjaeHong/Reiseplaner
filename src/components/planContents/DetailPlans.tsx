@@ -162,11 +162,11 @@ export default function DetailPlans({
       <div className='flex justify-between mt-5'>
         <div className='flex items-center gap-2 ml-2'>
           <button onClick={handleAddText}>
-            <FaCirclePlus className='text-3xl text-reiseorange hover:text-orange-300' />
+            <FaCirclePlus className='text-3xl text-reiseorange hover:text-orange-400' />
           </button>
           <button
             onClick={() => refFileInput.current?.click()}
-            className='flex rounded-xl py-1 pr-2 text-zinc-500 font-bold bg-reiseorange hover:bg-orange-300'
+            className='flex rounded-xl py-1 pr-2 text-white font-bold bg-reiseorange hover:bg-orange-400'
           >
             <input
               type='file'
