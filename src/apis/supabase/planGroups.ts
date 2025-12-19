@@ -23,7 +23,10 @@ export const getPlanGroupByGroupId = async (groupId: number) => {
 };
 
 export const getPlanGroups = async () => {
-  const { data, error } = await supabase.from('plangroups').select();
+  const { data, error } = await supabase
+    .from('plangroups')
+    .select()
+    .order('id', { ascending: true });
 
   if (error) console.error(error);
 

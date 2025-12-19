@@ -37,7 +37,8 @@ export const getPlansByGroupId: GetPlansByGroup = async (groupId) => {
   const { data, error } = await supabase
     .from('plans')
     .select()
-    .eq('group_id', groupId);
+    .eq('group_id', groupId)
+    .order('id', { ascending: true });
 
   if (error) console.error(error);
 
