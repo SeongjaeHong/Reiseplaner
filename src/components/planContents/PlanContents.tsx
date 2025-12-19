@@ -30,7 +30,7 @@ export default function PlanContents({ planId, detailPlansRef }: PlanContents) {
             onSelectContent={handleScheduleClick}
           />
         </div>
-        <div className='flex-1 border-1 border-reiseorange bg-white p-1'>
+        <div className='flex-1 min-w-0 border-1 border-reiseorange bg-white p-1'>
           <DetailPlans
             planId={planId}
             ref={detailPlansRef}

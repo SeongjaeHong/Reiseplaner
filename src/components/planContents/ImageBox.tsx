@@ -75,13 +75,9 @@ export default function ImageBox({
       axis='both'
       minConstraints={[100, 100]}
       maxConstraints={[500, 500]}
-      className='group relativ mb-2'
+      className='group relativ mb-2 max-w-full'
     >
-      <img
-        src={imgSrc}
-        alt='Image'
-        className='w-full h-full object-contain rounded-lg'
-      />
+      <img src={imgSrc} alt='Image' className='object-contain rounded-lg' />
       <div className='absolute top-0 right-0 bg-reiseorange rounded-full w-6 h-6 text-center invisible group-hover:visible'>
         <button
           onClick={() => void handleDeleteContent()}
