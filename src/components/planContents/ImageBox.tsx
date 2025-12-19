@@ -50,7 +50,7 @@ export default function ImageBox({
       clearTimeout(refUpdateTimer.current);
     }
     refUpdateTimer.current = setTimeout(() => {
-      updateContents({ ...content, width, height });
+      updateContents({ ...content, width: size.width, height: size.height });
     }, 1000);
   };
 
