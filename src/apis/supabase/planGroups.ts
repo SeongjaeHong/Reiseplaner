@@ -1,14 +1,9 @@
 import supabase from '@/supabaseClient';
 
 export const createPlanGroup = async (title: string) => {
-  const { data, error } = await supabase
-    .from('plangroups')
-    .insert([{ title }])
-    .select();
+  const { error } = await supabase.from('plangroups').insert([{ title }]);
 
   if (error) console.error(error);
-
-  return data;
 };
 
 export const getPlanGroupByGroupId = async (groupId: number) => {
