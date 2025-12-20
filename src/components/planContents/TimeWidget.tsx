@@ -1,11 +1,8 @@
 import React, { useRef, useState } from 'react';
 import useClickOutside from '@/utils/useOutsideClick';
 import { FaClock } from 'react-icons/fa6';
+import type { PlanTime } from '@/apis/supabase/planContents.types';
 
-export type PlanTime = {
-  start: { hour: string; minute: string };
-  end: { hour: string; minute: string };
-};
 type TimeWidget = {
   time: PlanTime;
   setTime: (time: PlanTime) => void;
