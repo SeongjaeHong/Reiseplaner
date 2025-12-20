@@ -4,10 +4,10 @@ import { Suspense, useReducer } from 'react';
 import CreatePlanGroupPopupBox from '@/components/planGroup/CreatePlanGroupPopupBox';
 import { useQuery } from '@tanstack/react-query';
 import { getPlanGroups } from '@/apis/supabase/planGroups';
-import { PLAN_GROUP } from './-constant';
+import { INDEX, PLAN_GROUP } from './-constant';
 import PlanGroup from '@/components/planGroup/PlanGroup';
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute(INDEX)({
   component: Index,
 });
 

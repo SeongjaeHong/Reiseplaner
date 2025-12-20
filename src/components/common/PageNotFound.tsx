@@ -1,8 +1,9 @@
+import { INDEX } from '@/routes/-constant';
 import { useNavigate } from '@tanstack/react-router';
 
 export default function PageNotFound() {
   const navigate = useNavigate();
-  const handleNavigateHome = () => void navigate({ to: '/' });
+  const handleNavigateHome = () => void navigate({ to: INDEX });
 
   return (
     <div className='absolute top-1/5 left-1/2 -translate-x-1/2 p-5 text-reisered font-bold'>
