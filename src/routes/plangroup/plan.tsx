@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { FaAngleLeft } from 'react-icons/fa6';
 import PlanContents from '@/components/planContents/PlanContents';
 import type { DetailPlansHandle } from '@/components/planContents/DetailPlans';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PLAN } from '../-constant';
 
 const planParam = z.object({
@@ -25,6 +25,7 @@ function Plan() {
     plan_id: planId,
     plan_title: planTitle,
   } = Route.useSearch();
+  const [isSaving, setIsSaving] = useState(false);
   const detailPlansRef = useRef<DetailPlansHandle>(null);
 
   useEffect(() => {
@@ -41,7 +42,9 @@ function Plan() {
   const handleBack = async () => {
     const detailPlans = detailPlansRef.current;
     if (detailPlans?.contentsStatus === 'Dirty') {
+      setIsSaving(true);
       await detailPlans.saveChanges();
+      setIsSaving(false);
     }
 
     window.history.back();
@@ -49,16 +52,24 @@ function Plan() {
 
   return (
     <div className='max-w-[1600px] mx-auto'>
-      <div className='flex items-center bg-reiseorange w-full'>
-        <button onClick={() => void handleBack()} className='px-1 py-2'>
-          <span className='text-2xl'>
-            <FaAngleLeft />
-          </span>
-        </button>
-        <div className='pb-2 leading-none'>
-          <small className='text-sm'>{groupTitle}</small>
-          <h1 className='break-all text-2xl leading-none'>{planTitle}</h1>
+      <div className='flex justify-between bg-reiseorange'>
+        <div className='flex items-center'>
+          <button onClick={() => void handleBack()} className='px-1 py-2'>
+            <span className='text-2xl'>
+              <FaAngleLeft />
+            </span>
+          </button>
+          <div className='pb-2 leading-none'>
+            <small className='text-sm'>{groupTitle}</small>
+            <h1 className='break-all text-2xl leading-none'>{planTitle}</h1>
+          </div>
         </div>
+        {isSaving && (
+          <div className='flex items-center mr-5'>
+            <p>saving...</p>
+            <div className='animate-spin size-4 border-[2px] border-t-transparent text-white rounded-full' />
+          </div>
+        )}
       </div>
 
       <PlanContents planId={planId} detailPlansRef={detailPlansRef} />
