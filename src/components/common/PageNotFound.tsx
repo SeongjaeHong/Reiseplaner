@@ -7,8 +7,10 @@ export default function PageNotFound() {
 
   return (
     <div className='absolute top-1/5 left-1/2 -translate-x-1/2 p-5 text-reisered font-bold'>
-      <h1 className='text-6xl mb-5'>Reiseplaner</h1>
-      <p className='text-xl mb-5'>The requested URL was not found.</p>
+      <h1 className='text-6xl mb-5 max-sm:text-4xl'>Reiseplaner</h1>
+      <p className='text-xl mb-5 max-sm:text-lg'>
+        The requested URL was not found.
+      </p>
       <div className='text-center'>
         <button
           onClick={handleNavigateHome}
