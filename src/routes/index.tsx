@@ -25,7 +25,7 @@ function Index() {
 
   return (
     <div className='bg-white max-w-[1600px] mx-auto'>
-      <div className='p-2 grid grid-cols-2 max-sm:grid-cols-1 xl:grid-cols-3 gap-2'>
+      <div className='p-2 grid grid-cols-2 max-md:grid-cols-1 xl:grid-cols-3 gap-2'>
         {planGroups?.map((planGroup) => (
           <Suspense fallback={<PlanGroupSkeleton />} key={planGroup.id}>
             <PlanGroup

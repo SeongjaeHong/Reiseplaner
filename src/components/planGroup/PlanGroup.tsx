@@ -57,24 +57,26 @@ export default function PlanGroup({ to, planGroup, refetch }: typePlanGroup) {
         mask={{ to: to, search: { group_id: planGroup.id } }}
       >
         <div className='group relative flex h-60 bg-reisered truncate'>
-          <div className='w-1/3 mr-2'>
+          <div className='w-1/3 flex-shrink-0'>
             <img
               src={URL.createObjectURL(thumbnail)}
               alt='A thumbnail of a plan group'
               className='h-full w-full object-fill'
             />
           </div>
-          <div className='flex-1 font-bold'>
+          <div className='flex-1 font-bold mx-2'>
             <div className='py-2'>
               <h1
                 title={planGroup.title}
-                className='text-2xl line-clamp-2 whitespace-normal break-all'
+                className='text-2xl max-md:text-xl line-clamp-2 whitespace-normal break-all'
               >
                 {planGroup.title}
               </h1>
             </div>
             <div className='inline-block rounded-lg border-1 px-2'>
-              <span className='text-sm'>{schedule}</span>
+              <span className='text-sm max-md:text-xs whitespace-normal'>
+                {schedule}
+              </span>
             </div>
           </div>
           <div className='absolute right-1 invisible group-hover:visible overflow-visible'>
