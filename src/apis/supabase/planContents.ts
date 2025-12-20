@@ -1,39 +1,23 @@
-import type { PlanTime } from '@/components/planContents/TimeWidget';
-import type { Database } from '@/database.types';
 import supabase from '@/supabaseClient';
+import { z } from 'zod';
+import {
+  ContentSchema,
+  planContentsResponseSchema,
+  type Content,
+} from './planContents.types';
 
-export type TextContent = {
-  id: string;
-  type: 'text';
-  title: string;
-  data: string;
-  box: 'plain' | 'note';
-  time: PlanTime;
-  isTimeActive: boolean;
-};
-export type ImageContent = {
-  id: string;
-  type: 'file';
-  data: string;
-  width: number;
-  height: number;
-};
-export type Content = TextContent | ImageContent;
-type PlanContentsRow = Database['public']['Tables']['planContents']['Row'];
-export type PlanContent = Omit<PlanContentsRow, 'contents'> & {
-  contents: Content[];
-};
-type InsertPlanContents = (
+const InsertPlanContentsInput = z.tuple([z.number(), ContentSchema]);
+export const insertPlanContents = async (
   plansId: number,
   contents: Content[]
-) => Promise<PlanContent>;
-export const insertPlanContents: InsertPlanContents = async (
-  plansId,
-  contents
 ) => {
+  const [validatedPlansId, validatedContents] = InsertPlanContentsInput.parse([
+    plansId,
+    contents,
+  ]);
   const insertData = {
-    plans_id: plansId,
-    contents: contents,
+    plans_id: validatedPlansId,
+    contents: validatedContents,
   };
 
   const { data, error } = await supabase
@@ -50,11 +34,10 @@ export const insertPlanContents: InsertPlanContents = async (
     throw error;
   }
 
-  return data as PlanContent;
+  return planContentsResponseSchema.parse(data);
 };
 
-type GetPlanContentsById = (planId: number) => Promise<PlanContent | null>;
-export const getPlanContentsById: GetPlanContentsById = async (planId) => {
+export const getPlanContentsById = async (planId: number) => {
   const { data, error } = await supabase
     .from('planContents')
     .select()
@@ -66,7 +49,7 @@ export const getPlanContentsById: GetPlanContentsById = async (planId) => {
     throw error;
   }
 
-  return data as PlanContent | null;
+  return planContentsResponseSchema.parse(data);
 };
 
 export const deletePlanContentsById = async (planId: number) => {
