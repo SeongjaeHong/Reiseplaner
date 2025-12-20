@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import supabase from '@/supabaseClient';
+import { imageSchema } from './buckets.types';
 
 const EMPTY_IMAGE_URL = 'empty-image.png' as const;
 export const isDefaultImage = (fileName: string) =>
@@ -18,7 +19,7 @@ export const uploadImage = async (file: File) => {
     throw error;
   }
 
-  return data;
+  return imageSchema.parse(data);
 };
 
 export const deleteImage = async (filePath: string) => {
