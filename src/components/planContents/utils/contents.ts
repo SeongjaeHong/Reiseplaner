@@ -11,10 +11,11 @@ import {
   deletePlanContentsById,
   getPlanContentsById,
   insertPlanContents,
-  type Content,
-  type ImageContent,
-  type TextContent,
 } from '@/apis/supabase/planContents';
+import type {
+  ImageContent,
+  TextContent,
+} from '@/apis/supabase/planContents.types';
 
 export type LocalContent = TextContent | LocalImageContent;
 export type LocalImageContent = Omit<ImageContent, 'data'> & {
@@ -25,6 +26,7 @@ export type LocalImageContent = Omit<ImageContent, 'data'> & {
 export const getContentsQueryKey = (planId: number) => ['DetailPlans', planId];
 
 // Fetch contents from DB
+
 export const useSuspenseQueryLocalContents = (planId: number) =>
   useSuspenseQuery({
     queryKey: getContentsQueryKey(planId),
@@ -50,29 +52,32 @@ export const useSuspenseQueryLocalContents = (planId: number) =>
 // Save contents into DB
 export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
   const { mutateAsync: saveMutation, isPending } = useMutation({
-    mutationFn: async (contents: LocalContent[]) => {
-      if (contents.length) {
+    mutationFn: async (localContents: LocalContent[]) => {
+      if (localContents.length) {
         const saveContents = await Promise.all(
-          contents.map(async (content) => {
-            if (content.type === 'file') {
-              if (content.fileDelete) {
+          localContents.map(async (localContent) => {
+            if (localContent.type === 'file') {
+              if (localContent.fileDelete) {
                 // Delete the image from DB and finally remove it from cache as well
-                if (typeof content.data === 'string') {
-                  await deletePlanGroupThumbnail(content.data);
+                if (typeof localContent.data === 'string') {
+                  await deletePlanGroupThumbnail(localContent.data);
                 }
                 return null;
               } else {
-                return await fileToURL(content);
+                const { fileDelete: _, ...content } = await fileToURL(
+                  localContent
+                );
+                return content as ImageContent;
               }
             } else {
-              return content;
+              return localContent;
             }
           })
         );
 
         const finalResults = saveContents.filter((c) => c !== null);
         if (finalResults.length) {
-          await insertPlanContents(planId, finalResults as Content[]);
+          await insertPlanContents(planId, finalResults);
         } else {
           await deletePlanContentsById(planId);
         }
@@ -108,14 +113,12 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
 };
 
 // Replace a File object in Content.data with Supabase Storage URL
-const fileToURL = async (content: LocalContent) => {
+const fileToURL = async (content: LocalImageContent) => {
   if (content.type === 'file' && content.data instanceof File) {
-    const { fullPath: filePath } = await uploadPlanGroupThumbnail(
-      content.data as unknown as File
-    );
+    const { fullPath: filePath } = await uploadPlanGroupThumbnail(content.data);
 
     if (filePath) {
-      return { ...content, data: filePath } as LocalContent;
+      return { ...content, data: filePath };
     } else {
       console.error('Failed to upload an image:', content);
     }
