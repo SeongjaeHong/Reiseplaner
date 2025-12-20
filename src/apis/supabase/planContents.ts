@@ -20,43 +20,35 @@ export const insertPlanContents = async (
     contents: validatedContents,
   };
 
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('planContents')
     .upsert([insertData], {
       onConflict: 'plans_id',
       ignoreDuplicates: false,
     })
     .select()
-    .single();
-
-  if (error) {
-    console.error('Error inserting plan contents:', error.message);
-    throw error;
-  }
+    .single()
+    .throwOnError();
 
   return planContentsResponseSchema.parse(data);
 };
 
 export const getPlanContentsById = async (planId: number) => {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('planContents')
     .select()
     .eq('plans_id', planId)
-    .maybeSingle();
-
-  if (error) {
-    console.error('Error fetching plan by ID:', error.message);
-    throw error;
-  }
+    .maybeSingle()
+    .throwOnError();
 
   return planContentsResponseSchema.parse(data);
 };
 
 export const deletePlanContentsById = async (planId: number) => {
-  const response = await supabase
+  const { status } = await supabase
     .from('planContents')
     .delete()
     .eq('plans_id', planId);
 
-  return response;
+  return status === 204 ? true : false;
 };
