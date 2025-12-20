@@ -1,5 +1,6 @@
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 import { INDEX } from './-constant';
+import PageNotFound from '@/components/common/PageNotFound';
 
 const RootLayout = () => (
   <>
@@ -14,4 +15,7 @@ const RootLayout = () => (
   </>
 );
 
-export const Route = createRootRoute({ component: RootLayout });
+export const Route = createRootRoute({
+  component: RootLayout,
+  errorComponent: () => <PageNotFound />,
+});

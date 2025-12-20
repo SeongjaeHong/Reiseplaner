@@ -7,6 +7,7 @@ import { useReducer } from 'react';
 import { z } from 'zod';
 import CreatePlanPopupBox from '@/components/plan/CreatePlanPopupBox';
 import Plan from '@/components/plan/Plan';
+import PageNotFound from '@/components/common/PageNotFound';
 
 const planGroupParam = z.object({
   group_id: z.number(),
@@ -17,6 +18,7 @@ type PlanGroupParam = z.infer<typeof planGroupParam>;
 export const Route = createFileRoute(PLAN_GROUP)({
   validateSearch: (search): PlanGroupParam => planGroupParam.parse(search),
   component: Index,
+  errorComponent: () => <PageNotFound />,
 });
 
 function Index() {
