@@ -5,29 +5,32 @@ import {
 } from './planGroups.types';
 
 export const createPlanGroup = async (title: string) => {
-  const { error } = await supabase.from('plangroups').insert([{ title }]);
+  const { status } = await supabase
+    .from('plangroups')
+    .insert([{ title }])
+    .throwOnError();
 
-  if (error) console.error(error);
+  return status === 201 ? true : false;
 };
 
 export const getPlanGroups = async () => {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('plangroups')
     .select()
-    .order('id', { ascending: true });
-
-  if (error) console.error(error);
+    .order('id', { ascending: true })
+    .throwOnError();
 
   return planGroupArrayResponseSchema.parse(data);
 };
 
 export const deletePlanGroups = async (planGroupId: number) => {
-  const response = await supabase
+  const { status } = await supabase
     .from('plangroups')
     .delete()
-    .eq('id', planGroupId);
+    .eq('id', planGroupId)
+    .throwOnError();
 
-  return response;
+  return status === 204 ? true : false;
 };
 
 export const updatePlanGroupByGroupId = async (
@@ -44,11 +47,11 @@ export const updatePlanGroupByGroupId = async (
     end_time: endTime,
   });
 
-  const res = await supabase
+  const { status } = await supabase
     .from('plangroups')
     .update(update)
     .eq('id', groupId)
     .throwOnError();
 
-  return res;
+  return status === 204 ? true : false;
 };
