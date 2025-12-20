@@ -1,6 +1,6 @@
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import { deleteImage, uploadPlanGroupThumbnail } from '@/apis/supabase/buckets';
+import { deleteImage, uploadImage } from '@/apis/supabase/buckets';
 import { useReducer, useState } from 'react';
 import { updatePlanGroupByGroupId } from '@/apis/supabase/planGroups';
 import type { Database } from '@/database.types';
@@ -200,13 +200,11 @@ function useMutatePlanGroup({
       if (isThumbnailDirty) {
         // Save a new thumbnail image in DB.
         if (curThumbnail) {
-          const res = await uploadPlanGroupThumbnail(curThumbnail).catch(
-            (e) => {
-              console.log('Fail to upload a new image in db.');
-              console.log(e);
-              throw e;
-            }
-          );
+          const res = await uploadImage(curThumbnail).catch((e) => {
+            console.error('Fail to upload a new image in db.');
+            console.error(e);
+            throw e;
+          });
           thumbnailPath = res.fullPath;
         } else {
           thumbnailPath = null;

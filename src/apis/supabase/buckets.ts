@@ -5,7 +5,7 @@ const EMPTY_IMAGE_URL = 'empty-image.png' as const;
 export const isDefaultImage = (fileName: string) =>
   fileName === EMPTY_IMAGE_URL ? true : false;
 
-export const uploadPlanGroupThumbnail = async (file: File) => {
+export const uploadImage = async (file: File) => {
   const ext = file.name.split('.').pop();
   const name = uuid();
   const filePath = `${name}.${ext}`;

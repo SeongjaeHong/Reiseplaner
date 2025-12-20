@@ -3,7 +3,7 @@ import {
   useMutation,
   useSuspenseQuery,
 } from '@tanstack/react-query';
-import { deleteImage, uploadPlanGroupThumbnail } from '@/apis/supabase/buckets';
+import { deleteImage, uploadImage } from '@/apis/supabase/buckets';
 import {
   deletePlanContentsById,
   getPlanContentsById,
@@ -112,7 +112,7 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
 // Replace a File object in Content.data with Supabase Storage URL
 const fileToURL = async (content: LocalImageContent) => {
   if (content.type === 'file' && content.data instanceof File) {
-    const { fullPath: filePath } = await uploadPlanGroupThumbnail(content.data);
+    const { fullPath: filePath } = await uploadImage(content.data);
 
     if (filePath) {
       return { ...content, data: filePath };
