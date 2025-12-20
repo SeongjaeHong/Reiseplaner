@@ -50,13 +50,6 @@ export default function Plan({ to, plan, groupTitle, refetch }: Plan) {
           plan_id: plan.id,
           plan_title: plan.title,
         }}
-        mask={{
-          to: to,
-          search: {
-            group_id: plan.group_id,
-            plan_id: plan.id,
-          },
-        }}
         key={plan.id}
       >
         <div

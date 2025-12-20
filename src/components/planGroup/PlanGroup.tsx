@@ -54,7 +54,6 @@ export default function PlanGroup({ to, planGroup, refetch }: typePlanGroup) {
       <Link
         to={to}
         search={{ group_id: planGroup.id, group_title: planGroup.title }}
-        mask={{ to: to, search: { group_id: planGroup.id } }}
       >
         <div className='group relative flex h-60 bg-reisered truncate'>
           <div className='w-1/3 flex-shrink-0'>
