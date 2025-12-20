@@ -110,6 +110,7 @@ export default function PlanGroup({ to, planGroup, refetch }: typePlanGroup) {
       {showDeleteBox && (
         <DeletePlanGroupPopupBox
           planGroupId={planGroup.id}
+          thumbnail={thumbnail}
           onClose={toggleShowDeleteBox}
           refetch={refetch}
         />
