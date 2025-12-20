@@ -69,7 +69,10 @@ function Index() {
 function useFetchPlans(groupId: number) {
   return useQuery({
     queryKey: ['fetchPlans', groupId],
-    queryFn: () => getPlansByGroupId(groupId),
+    queryFn: async () => {
+      const data = await getPlansByGroupId(groupId);
+      return data ?? [];
+    },
     staleTime: Infinity,
     throwOnError: true,
   });
