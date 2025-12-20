@@ -1,20 +1,13 @@
 import supabase from '@/supabaseClient';
+import {
+  planGroupArrayResponseSchema,
+  planGroupSchema,
+} from './planGroups.types';
 
 export const createPlanGroup = async (title: string) => {
   const { error } = await supabase.from('plangroups').insert([{ title }]);
 
   if (error) console.error(error);
-};
-
-export const getPlanGroupByGroupId = async (groupId: number) => {
-  const { data } = await supabase
-    .from('plangroups')
-    .select()
-    .eq('id', groupId)
-    .single()
-    .throwOnError();
-
-  return data;
 };
 
 export const getPlanGroups = async () => {
@@ -25,7 +18,7 @@ export const getPlanGroups = async () => {
 
   if (error) console.error(error);
 
-  return data;
+  return planGroupArrayResponseSchema.parse(data);
 };
 
 export const deletePlanGroups = async (planGroupId: number) => {
@@ -44,17 +37,12 @@ export const updatePlanGroupByGroupId = async (
   startTime: string | null,
   endTime: string | null
 ) => {
-  const update: Partial<{
-    title: string;
-    thumbnailURL: string | null;
-    start_time: string | null;
-    end_time: string | null;
-  }> = {
+  const update = planGroupSchema.parse({
     title,
     thumbnailURL,
     start_time: startTime,
     end_time: endTime,
-  };
+  });
 
   const res = await supabase
     .from('plangroups')
