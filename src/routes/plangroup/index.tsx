@@ -9,7 +9,7 @@ import CreatePlanPopupBox from '@/components/plan/CreatePlanPopupBox';
 import Plan from '@/components/plan/Plan';
 
 const planGroupParam = z.object({
-  group_id: z.number(),
+  group_id: z.coerce.number(),
   group_title: z.string(),
 });
 type PlanGroupParam = z.infer<typeof planGroupParam>;
