@@ -8,7 +8,7 @@ import { PLAN } from '../-constant';
 
 const planParam = z.object({
   group_title: z.string(),
-  plan_id: z.number(),
+  plan_id: z.coerce.number(),
   plan_title: z.string(),
 });
 
