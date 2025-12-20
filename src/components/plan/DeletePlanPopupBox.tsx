@@ -17,11 +17,10 @@ export default function DeletePlanPopupBox({
     mutationFn: () => deletePlan(planId),
     onSuccess: async (res) => {
       {
-        if (res.status === 204) {
+        if (res) {
           await refetch();
         } else {
-          console.log('Delete 실패');
-          console.log(res);
+          console.log('Fail to delete the plan');
         }
         onClose();
       }
