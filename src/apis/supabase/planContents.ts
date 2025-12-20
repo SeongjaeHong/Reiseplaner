@@ -6,7 +6,7 @@ import {
   type Content,
 } from './planContents.types';
 
-const InsertPlanContentsInput = z.tuple([z.number(), ContentSchema]);
+const InsertPlanContentsInput = z.tuple([z.number(), z.array(ContentSchema)]);
 export const insertPlanContents = async (
   plansId: number,
   contents: Content[]
