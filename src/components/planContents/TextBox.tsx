@@ -1,8 +1,8 @@
-import type { TextContent } from '@/apis/supabase/planContents';
 import { FaRegTrashCan, FaTag } from 'react-icons/fa6';
 import { useImperativeHandle, useReducer, useRef, useState } from 'react';
 import TimeWidget from './TimeWidget';
 import type { LocalContent } from './utils/contents';
+import type { TextContent } from '@/apis/supabase/planContents.types';
 
 export type TextBoxHandle = {
   scrollIntoView: (options?: ScrollIntoViewOptions) => void;
@@ -11,9 +11,9 @@ export type TextBoxHandle = {
 type TextBox = {
   content: TextContent;
   isEdit: boolean;
-  isFocused: boolean; // 추가
+  isFocused: boolean;
   setEditingId: (id: string | null) => void;
-  onFocus: () => void; // 추가
+  onFocus: () => void;
   updateContents: (content: LocalContent) => void;
   deleteContents: (content: LocalContent) => void;
   ref: React.Ref<TextBoxHandle>;
