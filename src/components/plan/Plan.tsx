@@ -61,10 +61,10 @@ export default function Plan({ to, plan, groupTitle, refetch }: Plan) {
         key={plan.id}
       >
         <div
-          className='group relative flex justify-between w-full my-1 p-3 h-20 bg-zinc-300 truncate'
+          className='group relative flex justify-between my-1 p-3 h-20 bg-reisered'
           id={plan.id.toString()}
         >
-          <h1>{plan.title}</h1>
+          <h1 className='font-bold truncate'>{plan.title}</h1>
           <div className='absolute right-1 invisible group-hover:visible'>
             <button
               className='hover:bg-green-300 rounded-full p-2'
