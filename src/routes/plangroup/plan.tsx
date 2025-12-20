@@ -4,6 +4,7 @@ import { FaAngleLeft } from 'react-icons/fa6';
 import PlanContents from '@/components/planContents/PlanContents';
 import type { DetailPlansHandle } from '@/components/planContents/DetailPlans';
 import { useEffect, useRef } from 'react';
+import { PLAN } from '../-constant';
 
 const planParam = z.object({
   group_id: z.number(),
@@ -14,7 +15,7 @@ const planParam = z.object({
 
 type PlanParam = z.infer<typeof planParam>;
 
-export const Route = createFileRoute('/plangroup/plan')({
+export const Route = createFileRoute(PLAN)({
   validateSearch: (search): PlanParam => planParam.parse(search),
   component: Plan,
 });

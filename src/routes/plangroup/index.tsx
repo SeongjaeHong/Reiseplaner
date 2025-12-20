@@ -2,7 +2,7 @@ import { getPlansByGroupId } from '@/apis/supabase/plans';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { FaAngleLeft, FaPenToSquare } from 'react-icons/fa6';
-import { PLAN } from '../-constant';
+import { PLAN, PLAN_GROUP } from '../-constant';
 import { useReducer } from 'react';
 import { z } from 'zod';
 import CreatePlanPopupBox from '@/components/plan/CreatePlanPopupBox';
@@ -14,7 +14,7 @@ const planGroupParam = z.object({
 });
 type PlanGroupParam = z.infer<typeof planGroupParam>;
 
-export const Route = createFileRoute('/plangroup/')({
+export const Route = createFileRoute(PLAN_GROUP)({
   validateSearch: (search): PlanGroupParam => planGroupParam.parse(search),
   component: Index,
 });
