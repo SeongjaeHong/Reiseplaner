@@ -1,9 +1,6 @@
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import {
-  deletePlanGroupThumbnail,
-  uploadPlanGroupThumbnail,
-} from '@/apis/supabase/buckets';
+import { deleteImage, uploadPlanGroupThumbnail } from '@/apis/supabase/buckets';
 import { useReducer, useState } from 'react';
 import { updatePlanGroupByGroupId } from '@/apis/supabase/planGroups';
 import type { Database } from '@/database.types';
@@ -217,9 +214,9 @@ function useMutatePlanGroup({
 
         // Remove a previously saved thumbnail image from DB.
         if (prevThumbnail) {
-          await deletePlanGroupThumbnail(prevThumbnail.name).catch((e) => {
-            console.log('Fail to remove an image from db.');
-            console.log(e);
+          await deleteImage(prevThumbnail.name).catch((e) => {
+            console.error('Fail to remove an image from db.');
+            console.error(e);
           });
         }
       }

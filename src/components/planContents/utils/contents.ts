@@ -3,10 +3,7 @@ import {
   useMutation,
   useSuspenseQuery,
 } from '@tanstack/react-query';
-import {
-  deletePlanGroupThumbnail,
-  uploadPlanGroupThumbnail,
-} from '@/apis/supabase/buckets';
+import { deleteImage, uploadPlanGroupThumbnail } from '@/apis/supabase/buckets';
 import {
   deletePlanContentsById,
   getPlanContentsById,
@@ -60,7 +57,7 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
               if (localContent.fileDelete) {
                 // Delete the image from DB and finally remove it from cache as well
                 if (typeof localContent.data === 'string') {
-                  await deletePlanGroupThumbnail(localContent.data);
+                  await deleteImage(localContent.data);
                 }
                 return null;
               } else {
