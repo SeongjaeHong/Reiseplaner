@@ -1,4 +1,4 @@
-import InputPopupBox from '@/components/popupBoxes/InputPopupBox';
+import InputPopupBox from '@/components/common/popupBoxes/InputPopupBox';
 import { useMutation } from '@tanstack/react-query';
 import { renamePlanByPlanId } from '@/apis/supabase/plans';
 

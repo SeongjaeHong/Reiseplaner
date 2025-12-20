@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import Popupbox from '@/components/popupBoxes/Popupbox';
+import Popupbox from '@/components/common/popupBoxes/Popupbox';
 import { deletePlan } from '@/apis/supabase/plans';
 
 type DeletePlanPopupBoxParam = {

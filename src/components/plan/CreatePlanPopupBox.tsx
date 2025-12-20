@@ -1,6 +1,6 @@
 import { createPlan } from '@/apis/supabase/plans';
 import { useMutation } from '@tanstack/react-query';
-import InputPopupBox from '@/components/popupBoxes/InputPopupBox';
+import InputPopupBox from '@/components/common/popupBoxes/InputPopupBox';
 
 type createPlanPopupBoxParam = {
   groupId: number;

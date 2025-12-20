@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useRef, useState } from 'react';
 import useOutsideClick from '@/utils/useOutsideClick';
 import { isDefaultImage } from '@/apis/supabase/buckets';
-import SimplePopupbox from '@/components/popupBoxes/SimplePopupbox';
+import SimplePopupbox from '@/components/common/popupBoxes/SimplePopupbox';
 
 type ThumbnailParams = {
   image: File | null;

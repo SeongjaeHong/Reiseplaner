@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { deletePlanGroups } from '@/apis/supabase/planGroups';
-import Popupbox from '@/components/popupBoxes/Popupbox';
+import Popupbox from '@/components/common/popupBoxes/Popupbox';
 
 type DeletePlanGroupPopupBoxParam = {
   planGroupId: number;
