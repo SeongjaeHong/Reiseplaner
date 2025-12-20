@@ -7,7 +7,6 @@ import { useEffect, useRef } from 'react';
 import { PLAN } from '../-constant';
 
 const planParam = z.object({
-  group_id: z.number(),
   group_title: z.string(),
   plan_id: z.number(),
   plan_title: z.string(),

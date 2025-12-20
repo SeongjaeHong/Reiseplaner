@@ -46,7 +46,6 @@ export default function Plan({ to, plan, groupTitle, refetch }: Plan) {
       <Link
         to={to}
         search={{
-          group_id: plan.group_id,
           group_title: groupTitle,
           plan_id: plan.id,
           plan_title: plan.title,
