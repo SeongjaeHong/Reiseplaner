@@ -27,15 +27,13 @@ export const deleteImage = async (filePath: string) => {
     return Promise.resolve(null);
   }
 
-  const { data, error } = await supabase.storage
-    .from('images')
-    .remove([filePath]);
+  const { error } = await supabase.storage.from('images').remove([filePath]);
 
   if (error) {
     throw error;
   }
 
-  return data;
+  return null;
 };
 
 export const downloadImage = async (filePath: string | null) => {
