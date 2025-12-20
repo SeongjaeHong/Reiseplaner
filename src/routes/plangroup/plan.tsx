@@ -5,7 +5,6 @@ import PlanContents from '@/components/planContents/PlanContents';
 import type { DetailPlansHandle } from '@/components/planContents/DetailPlans';
 import { useEffect, useRef } from 'react';
 import { PLAN } from '../-constant';
-import PageNotFound from '@/components/common/PageNotFound';
 
 const planParam = z.object({
   group_title: z.string(),
@@ -18,7 +17,6 @@ type PlanParam = z.infer<typeof planParam>;
 export const Route = createFileRoute(PLAN)({
   validateSearch: (search): PlanParam => planParam.parse(search),
   component: Plan,
-  errorComponent: () => <PageNotFound />,
 });
 
 function Plan() {
