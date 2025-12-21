@@ -34,6 +34,7 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
   };
 
   const previewUrl = useImagePreview(image);
+  const isValidImage = image && previewUrl && !isDefaultImage(image.name);
 
    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -46,7 +47,7 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
 
   return (
     <div className='relative w-1/2 h-full mr-2'>
-      {image && previewUrl && (
+      {isValidImage && (
         <div className='w-full h-full'>
           {showImageMenu && (
             <ul
@@ -81,7 +82,7 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
         </div>
       )}
 
-      {!image && (
+      {!isValidImage && (
         <div
           onClick={() => refInput.current?.click()}
           className='w-full h-full flex justify-center items-center bg-zinc-300 hover:cursor-pointer'
