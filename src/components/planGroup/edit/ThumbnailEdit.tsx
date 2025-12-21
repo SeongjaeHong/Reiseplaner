@@ -35,6 +35,15 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
 
   const previewUrl = useImagePreview(image);
 
+   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    if (isImageFile(file)) {
+      onChange(file);
+    } else {
+      toggleShowPopupMsg();
+    }
+  };
+
   return (
     <div className='relative w-1/2 h-full mr-2'>
       {image && previewUrl && (
@@ -84,17 +93,8 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
       <input
         type='file'
         accept='image/*'
-        ref={(e) => {
-          refInput.current = e;
-        }}
-        onChange={(e) => {
-          const file = e.target.files?.[0] ?? null;
-          if (isImageFile(file)) {
-            onChange(file);
-          } else {
-            toggleShowPopupMsg();
-          }
-        }}
+        ref={refInput}
+        onChange={handleFileChange}
         className='hidden'
       />
       {showPopupMsg && (
@@ -107,19 +107,8 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
   );
 }
 
-const isImageFile = (file: unknown): file is File => {
-  if (!file) {
-    return false;
-  }
-
-  const isFile = (file: object) => file instanceof File;
-
-  if (isFile(file) && file.type.startsWith('image/')) {
-    return true;
-  }
-
-  return false;
-};
+const isImageFile = (file: File | null): file is File => 
+  !!file && file.type.startsWith('image/');
 
 function useImagePreview(file: File | null) {
   const [url, setUrl] = useState<string | null>(null);
