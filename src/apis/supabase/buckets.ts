@@ -3,6 +3,9 @@ import supabase from '@/supabaseClient';
 import { imageSchema } from './buckets.types';
 
 const EMPTY_IMAGE_URL = 'empty-image.png' as const;
+
+const getFileName = (path: string) => path.split('/').pop() ?? '';
+
 export const isDefaultImage = (fileName: string) =>
   fileName === EMPTY_IMAGE_URL ? true : false;
 
@@ -23,9 +26,9 @@ export const uploadImage = async (file: File) => {
 };
 
 export const deleteImage = async (filePath: string) => {
-  filePath = filePath.split('/').at(-1) as string;
+  filePath = getFileName(filePath);
   if (filePath === EMPTY_IMAGE_URL) {
-    return Promise.resolve(null);
+    return null;
   }
 
   const { error } = await supabase.storage.from('images').remove([filePath]);
@@ -38,22 +41,15 @@ export const deleteImage = async (filePath: string) => {
 };
 
 export const downloadImage = async (filePath: string | null) => {
-  if (!filePath) {
-    filePath = EMPTY_IMAGE_URL;
-  }
-
-  filePath = filePath.split('/').at(-1) as string;
+  const fileName = getFileName(filePath ?? EMPTY_IMAGE_URL);
 
   const { data, error } = await supabase.storage
     .from('images')
-    .download(filePath);
+    .download(fileName);
 
   if (error) {
     throw error;
   }
 
-  const name = filePath.split('/').at(-1) as string;
-  const imageFile = new File([data], name, { type: data.type });
-
-  return imageFile;
+  return new File([data], fileName, { type: data.type });
 };
