@@ -5,9 +5,7 @@ import { imageSchema } from './buckets.types';
 const EMPTY_IMAGE_URL = 'empty-image.png' as const;
 
 const getFileName = (path: string) => path.split('/').pop() ?? '';
-
-export const isDefaultImage = (fileName: string) =>
-  fileName === EMPTY_IMAGE_URL ? true : false;
+export const isDefaultImage = (name: string) => name === EMPTY_IMAGE_URL;
 
 export const uploadImage = async (file: File) => {
   const ext = file.name.split('.').pop();
@@ -27,7 +25,7 @@ export const uploadImage = async (file: File) => {
 
 export const deleteImage = async (filePath: string) => {
   filePath = getFileName(filePath);
-  if (filePath === EMPTY_IMAGE_URL) {
+  if (isDefaultImage(filePath)) {
     return null;
   }
 
