@@ -11,10 +11,7 @@ type ThumbnailParams = {
 export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
   const outsideclick = useOutsideClick();
   const refImg = useRef<HTMLImageElement | null>(null);
-  const [showImageMenu, toggleShowImageMenu] = useReducer(
-    (prev) => !prev,
-    false
-  );
+  const [showImageMenu, toggleShowImageMenu] = useReducer((prev) => !prev, false);
   const [showPopupMsg, toggleShowPopupMsg] = useReducer((prev) => !prev, false);
 
   const refInput = useRef<HTMLInputElement | null>(null);
@@ -34,39 +31,36 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
   };
 
   const previewUrl = useImagePreview(image);
-  const isValidImage = image && previewUrl && !isDefaultImage(image.name);
+  const isValidImage = !!(image && previewUrl && !isDefaultImage(image.name));
 
-   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     if (isImageFile(file)) {
       onChange(file);
     } else {
       toggleShowPopupMsg();
     }
+
+    e.target.value = '';
   };
 
   return (
-    <div className='relative w-1/2 h-full mr-2'>
+    <div className="relative w-1/2 h-full mr-2">
       {isValidImage && (
-        <div className='w-full h-full'>
+        <div className="w-full h-full">
           {showImageMenu && (
             <ul
               ref={outsideclick(toggleShowImageMenu, [refImg])}
               onClick={(e) => e.preventDefault()}
               className={`absolute left-0 top-0 text-center divide-y divide-zinc-600 bg-zinc-500`}
             >
-              <li
-                onClick={handlerInputClick}
-                className={'w-full px-2 py-1 hover:bg-zinc-700'}
-              >
+              <li onClick={handlerInputClick} className={'w-full px-2 py-1 hover:bg-zinc-700'}>
                 <span>Bearbeiten</span>
               </li>
               <li
                 onClick={handlerDeleteClick}
                 className={`w-full px-2 py-1 hover:bg-zinc-700 ${
-                  isDefaultImage(image.name)
-                    ? 'opacity-50 cursor-not-allowed'
-                    : ''
+                  isDefaultImage(image.name) ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
                 <span>Löschen</span>
@@ -77,7 +71,7 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
             ref={refImg}
             src={previewUrl}
             onClick={toggleShowImageMenu}
-            className='w-full h-full object-cover hover:cursor-pointer'
+            className="w-full h-full object-cover hover:cursor-pointer"
           />
         </div>
       )}
@@ -85,45 +79,62 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
       {!isValidImage && (
         <div
           onClick={() => refInput.current?.click()}
-          className='w-full h-full flex justify-center items-center bg-zinc-300 hover:cursor-pointer'
+          className="w-full h-full flex justify-center items-center bg-zinc-300 hover:cursor-pointer"
         >
           Add an image
         </div>
       )}
 
       <input
-        type='file'
-        accept='image/*'
+        type="file"
+        accept="image/*"
         ref={refInput}
         onChange={handleFileChange}
-        className='hidden'
+        className="hidden"
       />
       {showPopupMsg && (
-        <SimplePopupbox
-          text='You can upload only an image file.'
-          onAccept={toggleShowPopupMsg}
-        />
+        <SimplePopupbox text="You can upload only an image file." onAccept={toggleShowPopupMsg} />
       )}
     </div>
   );
 }
 
-const isImageFile = (file: File | null): file is File => 
-  !!file && file.type.startsWith('image/');
+const isImageFile = (file: File | null): file is File => !!file && file.type.startsWith('image/');
 
 function useImagePreview(file: File | null) {
   const [url, setUrl] = useState<string | null>(null);
+  const activeUrlsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!file) {
       setUrl(null);
       return;
     }
+
+    const currentUrls = activeUrlsRef.current;
     const newUrl = URL.createObjectURL(file);
+    currentUrls.add(newUrl);
     setUrl(newUrl);
 
-    return () => URL.revokeObjectURL(newUrl);
+    return () => {
+      setTimeout(() => {
+        // Prevent duplicated url revoking
+        if (currentUrls.has(newUrl)) {
+          URL.revokeObjectURL(newUrl);
+          currentUrls.delete(newUrl);
+        }
+      }, 0); // Prevent Not-found error on <img> tag
+    };
   }, [file]);
+
+  useEffect(() => {
+    const currentUrls = activeUrlsRef.current;
+
+    return () => {
+      currentUrls.forEach((u) => URL.revokeObjectURL(u));
+      currentUrls.clear();
+    };
+  }, []);
 
   return url;
 }
