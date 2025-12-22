@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "dbtype": "dotenv -- bash -c 'pnpm dlx supabase gen types typescript --project-id $PROJECT_ID --schema public > ./src/database.types.ts",
+    "dbtype": "dotenv -- bash -c 'pnpm dlx supabase gen types typescript --project-id $PROJECT_ID --schema public,storage > ./src/database.types.ts",
     "preview": "vite preview"
   },
   "dependencies": {
