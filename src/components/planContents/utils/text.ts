@@ -1,6 +1,6 @@
-import type { TextContent } from '@/apis/supabase/planContents';
 import { v4 as uuid } from 'uuid';
 import type { LocalContent } from './contents';
+import type { TextContent } from '@/apis/supabase/planContents.types';
 
 type UseAddText = {
   updateLocalContents: (content: LocalContent) => void;
