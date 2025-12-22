@@ -1,18 +1,12 @@
-import {
-  type QueryClient,
-  useMutation,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
+import { type QueryClient, useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { deleteImage, uploadImage } from '@/apis/supabase/buckets';
 import {
   deletePlanContentsById,
   getPlanContentsById,
   insertPlanContents,
 } from '@/apis/supabase/planContents';
-import type {
-  ImageContent,
-  TextContent,
-} from '@/apis/supabase/planContents.types';
+import type { ImageContent, TextContent } from '@/apis/supabase/planContents.types';
+import { toast } from '@/components/common/Toast/toast';
 
 export type LocalContent = TextContent | LocalImageContent;
 export type LocalImageContent = Omit<ImageContent, 'data'> & {
@@ -28,20 +22,27 @@ export const useSuspenseQueryLocalContents = (planId: number) =>
   useSuspenseQuery({
     queryKey: getContentsQueryKey(planId),
     queryFn: async () => {
-      const data = await getPlanContentsById(planId);
-      if (!data) {
+      let data;
+      try {
+        data = await getPlanContentsById(planId);
+        if (!data) {
+          return null;
+        }
+
+        // Add fileDelete attribute to file contents
+        const processedContents: LocalContent[] = data.contents.map((content) => {
+          if (content.type === 'file') {
+            return { ...content, fileDelete: false };
+          }
+          return content;
+        });
+
+        return { ...data, contents: getSortedContents(processedContents) };
+      } catch (error) {
+        toast.error('Failed to load contents.');
+        console.error(error);
         return null;
       }
-
-      // Add fileDelete attribute to file contents
-      const processedContents: LocalContent[] = data.contents.map((content) => {
-        if (content.type === 'file') {
-          return { ...content, fileDelete: false };
-        }
-        return content;
-      });
-
-      return { ...data, contents: getSortedContents(processedContents) };
     },
     staleTime: Infinity,
   });
@@ -57,13 +58,15 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
               if (localContent.fileDelete) {
                 // Delete the image from DB and finally remove it from cache as well
                 if (typeof localContent.data === 'string') {
-                  await deleteImage(localContent.data);
+                  try {
+                    await deleteImage(localContent.data);
+                  } catch {
+                    console.error('Failed to delete an image from the server.');
+                  }
                 }
                 return null;
               } else {
-                const { fileDelete: _, ...content } = await fileToURL(
-                  localContent
-                );
+                const { fileDelete: _, ...content } = await fileToURL(localContent);
                 return content as ImageContent;
               }
             } else {
@@ -86,12 +89,16 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
         await deletePlanContentsById(planId);
       }
     },
+    onError: (error) => {
+      toast.error('Failed to save plan contents.');
+      console.error(error);
+    },
   });
 
   const handleSave = async () => {
     if (isPending) {
-      console.log('Save operation already in progress. Ignoring new request.');
-      return;
+      console.warn('Save operation already in progress. Ignoring new request.');
+      return false;
     }
 
     const currentData = queryClient.getQueryData<{
@@ -99,8 +106,15 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
     }>(getContentsQueryKey(planId));
 
     if (currentData) {
-      await saveMutation(currentData.contents);
+      try {
+        await saveMutation(currentData.contents);
+        return true;
+      } catch {
+        return false;
+      }
     }
+
+    return false;
   };
 
   return {
@@ -113,26 +127,18 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
 const fileToURL = async (content: LocalImageContent) => {
   if (content.type === 'file' && content.data instanceof File) {
     const { fullPath: filePath } = await uploadImage(content.data);
-
-    if (filePath) {
-      return { ...content, data: filePath };
-    } else {
-      console.error('Failed to upload an image:', content);
-    }
+    return { ...content, data: filePath };
   }
   return content;
 };
 
 // Add or update a content in cache
-export const useUpdateLocalContents = (
-  queryClient: QueryClient,
-  planId: number
-) => {
+export const useUpdateLocalContents = (queryClient: QueryClient, planId: number) => {
   return (updatedContent: LocalContent, replace = true) => {
     const queryKey = getContentsQueryKey(planId);
-    const previousData = queryClient.getQueryData<{ contents: LocalContent[] }>(
-      queryKey
-    ) ?? { contents: [] };
+    const previousData = queryClient.getQueryData<{ contents: LocalContent[] }>(queryKey) ?? {
+      contents: [],
+    };
     const prevContents = previousData.contents;
 
     if (!prevContents) return;
@@ -143,8 +149,7 @@ export const useUpdateLocalContents = (
       updatedList = prevContents
         .map((item) => (item.id === updatedContent.id ? updatedContent : item))
         .filter((item) => {
-          if (item.type === 'text')
-            return item.title !== '' || item.data !== '';
+          if (item.type === 'text') return item.title !== '' || item.data !== '';
           return item.data !== '';
         });
     } else {
@@ -158,10 +163,7 @@ export const useUpdateLocalContents = (
 };
 
 // Delete a content from cache
-export const useDeleteLocalContents = (
-  queryClient: QueryClient,
-  planId: number
-) => {
+export const useDeleteLocalContents = (queryClient: QueryClient, planId: number) => {
   return (deletedContent: LocalContent) => {
     const previousData = queryClient.getQueryData<{ contents: LocalContent[] }>(
       getContentsQueryKey(planId)
@@ -197,12 +199,8 @@ export const useDeleteLocalContents = (
 
 // Sort contents by time
 export const getSortedContents = (contents: LocalContent[]): LocalContent[] => {
-  const active = contents.filter(
-    (c) => c.type === 'text' && c.isTimeActive
-  ) as TextContent[];
-  const inactive = contents.filter(
-    (c) => !(c.type === 'text' && c.isTimeActive)
-  );
+  const active = contents.filter((c) => c.type === 'text' && c.isTimeActive) as TextContent[];
+  const inactive = contents.filter((c) => !(c.type === 'text' && c.isTimeActive));
 
   active.sort((a, b) => {
     const timeA = Number(a.time.start.hour) * 60 + Number(a.time.start.minute);
