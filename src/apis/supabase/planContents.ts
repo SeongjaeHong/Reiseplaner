@@ -1,54 +1,60 @@
 import supabase from '@/supabaseClient';
 import { z } from 'zod';
-import {
-  ContentSchema,
-  planContentsResponseSchema,
-  type Content,
-} from './planContents.types';
+import { ContentSchema, planContentsResponseSchema, type Content } from './planContents.types';
+import { ApiError } from '@/errors/ApiError';
 
 const InsertPlanContentsInput = z.tuple([z.number(), z.array(ContentSchema)]);
-export const insertPlanContents = async (
-  plansId: number,
-  contents: Content[]
-) => {
-  const [validatedPlansId, validatedContents] = InsertPlanContentsInput.parse([
-    plansId,
-    contents,
-  ]);
+export const insertPlanContents = async (plansId: number, contents: Content[]) => {
+  const validation = InsertPlanContentsInput.safeParse([plansId, contents]);
+
+  if (!validation.success) {
+    throw new ApiError('VALIDATION', { cause: validation.error });
+  }
+
+  const [validatedPlansId, validatedContents] = validation.data;
+
   const insertData = {
     plans_id: validatedPlansId,
     contents: validatedContents,
   };
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('planContents')
     .upsert([insertData], {
       onConflict: 'plans_id',
       ignoreDuplicates: false,
     })
     .select()
-    .single()
-    .throwOnError();
+    .single();
 
-  return planContentsResponseSchema.parse(data);
+  if (error) {
+    throw new ApiError('DATABASE', { message: 'Failed to update plan contents.', cause: error });
+  }
+
+  const res = planContentsResponseSchema.safeParse(data);
+  if (!res.success) {
+    throw new ApiError('SERVER_RESPONSE', { cause: res.error });
+  }
+
+  return res.data;
 };
 
 export const getPlanContentsById = async (planId: number) => {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('planContents')
     .select()
     .eq('plans_id', planId)
-    .maybeSingle()
-    .throwOnError();
+    .maybeSingle();
+
+  if (error) {
+    throw new ApiError('DATABASE', { message: 'Failed to fetch plan contents.', cause: error });
+  }
 
   return planContentsResponseSchema.parse(data);
 };
 
 export const deletePlanContentsById = async (planId: number) => {
-  const { status } = await supabase
-    .from('planContents')
-    .delete()
-    .eq('plans_id', planId);
+  const { status } = await supabase.from('planContents').delete().eq('plans_id', planId);
 
   return status === 204 ? true : false;
 };

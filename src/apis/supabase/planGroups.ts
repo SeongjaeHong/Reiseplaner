@@ -1,14 +1,16 @@
 import supabase from '@/supabaseClient';
-import {
-  planGroupArrayResponseSchema,
-  planGroupSchema,
-} from './planGroups.types';
+import { planGroupArrayResponseSchema, planGroupSchema } from './planGroups.types';
+import { ApiError } from '@/errors/ApiError';
 
 export const createPlanGroup = async (title: string) => {
-  const { status } = await supabase
-    .from('plangroups')
-    .insert([{ title }])
-    .throwOnError();
+  const { status, error } = await supabase.from('plangroups').insert([{ title }]);
+
+  if (error) {
+    throw new ApiError('DATABASE', {
+      message: `Failed to create a plan group: ${title}`,
+      cause: error,
+    });
+  }
 
   return status === 201 ? true : false;
 };
@@ -24,17 +26,20 @@ export const getPlanGroups = async () => {
 };
 
 export const deletePlanGroups = async (planGroupId: number) => {
-  const { status } = await supabase
-    .from('plangroups')
-    .delete()
-    .eq('id', planGroupId)
-    .throwOnError();
+  const { status, error } = await supabase.from('plangroups').delete().eq('id', planGroupId);
+
+  if (error) {
+    throw new ApiError('DATABASE', {
+      message: `Failed to delete a plan group by id: ${planGroupId}`,
+      cause: error,
+    });
+  }
 
   return status === 204 ? true : false;
 };
 
 export const updatePlanGroupByGroupId = async (
-  groupId: number,
+  planGroupId: number,
   title: string,
   thumbnailURL: string | null,
   startTime: string | null,
@@ -47,11 +52,14 @@ export const updatePlanGroupByGroupId = async (
     end_time: endTime,
   });
 
-  const { status } = await supabase
-    .from('plangroups')
-    .update(update)
-    .eq('id', groupId)
-    .throwOnError();
+  const { status, error } = await supabase.from('plangroups').update(update).eq('id', planGroupId);
+
+  if (error) {
+    throw new ApiError('DATABASE', {
+      message: `Failed to update a plan group by id: ${planGroupId}`,
+      cause: error,
+    });
+  }
 
   return status === 204 ? true : false;
 };
