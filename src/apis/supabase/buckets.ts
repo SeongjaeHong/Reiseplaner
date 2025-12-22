@@ -39,7 +39,10 @@ export const deleteImage = async (filePath: string) => {
   const { error } = await supabase.storage.from('images').remove([fileName]);
 
   if (error) {
-    throw new ApiError('DATABASE', { message: 'Failed to delete an image.', cause: error });
+    throw new ApiError('DATABASE', {
+      message: 'Failed to delete an image from the server.',
+      cause: error,
+    });
   }
 
   return null;
