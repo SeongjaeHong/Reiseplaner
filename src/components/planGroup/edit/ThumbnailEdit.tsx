@@ -45,14 +45,14 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
   };
 
   return (
-    <div className="relative w-1/2 h-full mr-2">
+    <div className='relative mr-2 h-full w-1/2'>
       {isValidImage && (
-        <div className="w-full h-full">
+        <div className='h-full w-full'>
           {showImageMenu && (
             <ul
               ref={outsideclick(toggleShowImageMenu, [refImg])}
               onClick={(e) => e.preventDefault()}
-              className={`absolute left-0 top-0 text-center divide-y divide-zinc-600 bg-zinc-500`}
+              className={`absolute top-0 left-0 divide-y divide-zinc-600 bg-zinc-500 text-center`}
             >
               <li onClick={handlerInputClick} className={'w-full px-2 py-1 hover:bg-zinc-700'}>
                 <span>Bearbeiten</span>
@@ -60,7 +60,7 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
               <li
                 onClick={handlerDeleteClick}
                 className={`w-full px-2 py-1 hover:bg-zinc-700 ${
-                  isDefaultImage(image.name) ? 'opacity-50 cursor-not-allowed' : ''
+                  isDefaultImage(image.name) ? 'cursor-not-allowed opacity-50' : ''
                 }`}
               >
                 <span>Löschen</span>
@@ -71,7 +71,7 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
             ref={refImg}
             src={previewUrl}
             onClick={toggleShowImageMenu}
-            className="w-full h-full object-cover hover:cursor-pointer"
+            className='h-full w-full object-cover hover:cursor-pointer'
           />
         </div>
       )}
@@ -79,21 +79,21 @@ export default function ThumbnailEdit({ image, onChange }: ThumbnailParams) {
       {!isValidImage && (
         <div
           onClick={() => refInput.current?.click()}
-          className="w-full h-full flex justify-center items-center bg-zinc-300 hover:cursor-pointer"
+          className='flex h-full w-full items-center justify-center bg-zinc-300 hover:cursor-pointer'
         >
           Add an image
         </div>
       )}
 
       <input
-        type="file"
-        accept="image/*"
+        type='file'
+        accept='image/*'
         ref={refInput}
         onChange={handleFileChange}
-        className="hidden"
+        className='hidden'
       />
       {showPopupMsg && (
-        <SimplePopupbox text="You can upload only an image file." onAccept={toggleShowPopupMsg} />
+        <SimplePopupbox text='You can upload only an image file.' onAccept={toggleShowPopupMsg} />
       )}
     </div>
   );

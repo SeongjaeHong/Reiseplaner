@@ -22,15 +22,15 @@ export default function PlanContents({ planId, detailPlansRef }: PlanContents) {
 
   return (
     <Suspense fallback={<PlanContentsSkeleton />}>
-      <div className='flex gap-1 py-1 min-h-30'>
-        <div className='w-1/3 2xl:w-1/5 border-1 border-reiseorange bg-white px-2 pb-2'>
+      <div className='flex min-h-30 gap-1 py-1'>
+        <div className='border-reiseorange w-1/3 border-1 bg-white px-2 pb-2 2xl:w-1/5'>
           <ScheduleTable
             planId={planId}
             focusedId={focusedId}
             onSelectContent={handleScheduleClick}
           />
         </div>
-        <div className='flex-1 min-w-0 border-1 border-reiseorange bg-white p-1'>
+        <div className='border-reiseorange min-w-0 flex-1 border-1 bg-white p-1'>
           <DetailPlans
             planId={planId}
             ref={detailPlansRef}
@@ -46,10 +46,10 @@ export default function PlanContents({ planId, detailPlansRef }: PlanContents) {
 function PlanContentsSkeleton() {
   return (
     <div className='flex gap-1 py-1'>
-      <div className='border-1 border-reiseorange bg-zinc-300 p-1 w-1/3  min-h-30 animate-pulse'></div>
-      <div className='border-1 border-reiseorange bg-zinc-300 p-1 flex-1 min-h-30 animate-pulse'>
-        <div className='rounded-md h-10 bg-zinc-500 animate-pulse' />
-        <div className='rounded-md my-1 h-20 bg-zinc-500 animate-pulse' />
+      <div className='border-reiseorange min-h-30 w-1/3 animate-pulse border-1 bg-zinc-300 p-1'></div>
+      <div className='border-reiseorange min-h-30 flex-1 animate-pulse border-1 bg-zinc-300 p-1'>
+        <div className='h-10 animate-pulse rounded-md bg-zinc-500' />
+        <div className='my-1 h-20 animate-pulse rounded-md bg-zinc-500' />
       </div>
     </div>
   );

@@ -84,7 +84,7 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
     void handleSubmit(
       (value) => submit(value),
       (error) => {
-        console.log('Validity check error:', error);
+        console.error('Validity check error:', error);
       }
     )(e);
   };
@@ -93,14 +93,14 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
   const isSubmitDisabled = !isDirty || !isValid || isPending;
 
   return (
-    <div className="fixed z-1 w-screen h-screen">
+    <div className='fixed z-1 h-screen w-screen'>
       <form
         onSubmit={onFormSubmit}
-        className="fixed flex top-50 left-1/2 -translate-x-1/2 w-3/5 h-70 rounded-sm p-2 bg-reiseorange xl:w-1/3"
+        className='bg-reiseorange fixed top-50 left-1/2 flex h-70 w-3/5 -translate-x-1/2 rounded-sm p-2 xl:w-1/3'
       >
         {/* Thumbnail area */}
         <Controller
-          name="thumbnail"
+          name='thumbnail'
           control={control}
           render={({ field: { value, onChange } }) => (
             <ThumbnailEdit
@@ -112,42 +112,42 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
             />
           )}
         />
-        <div className="flex flex-col justify-between w-1/2">
+        <div className='flex w-1/2 flex-col justify-between'>
           <div>
-            <div className="relative mb-10">
-              <div className="rounded-sm border-1">
+            <div className='relative mb-10'>
+              <div className='rounded-sm border-1'>
                 {/* Title input area */}
                 <input
-                  type="text"
+                  type='text'
                   defaultValue={planGroup.title}
                   {...register('title')}
-                  className="w-full px-1 text-lg font-bold"
+                  className='w-full px-1 text-lg font-bold'
                 />
               </div>
               {errors.title && (
-                <div className="absolute">
-                  <span className="text-rose-500">{errors.title.message}</span>
+                <div className='absolute'>
+                  <span className='text-rose-500'>{errors.title.message}</span>
                 </div>
               )}
             </div>
 
             {/* Plan schedule area */}
-            <div className="inline rounded-lg border-1 hover:bg-zinc-300">
+            <div className='inline rounded-lg border-1 hover:bg-zinc-300'>
               <button
                 onClick={(e) => {
                   e.preventDefault();
                   toggleShowCalendar();
                 }}
                 disabled={showCalendar}
-                className="inline-flex gap-1 py-1 px-3 text-xs"
+                className='inline-flex gap-1 px-3 py-1 text-xs'
               >
                 <span>{scheduleText}</span>
               </button>
             </div>
             {showCalendar && (
-              <div className="absolute top-27 left-1/2 -translate-x-1/2 z-1">
+              <div className='absolute top-27 left-1/2 z-1 -translate-x-1/2'>
                 <Controller
-                  name="schedule"
+                  name='schedule'
                   control={control}
                   render={({ field: { onChange } }) => (
                     <Calendar
@@ -162,15 +162,15 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
           </div>
 
           {/* Botton button area */}
-          <div className="flex justify-center gap-2">
-            <button type="button" onClick={onClose} className="py-1 px-2 rounded-lg bg-red-400">
+          <div className='flex justify-center gap-2'>
+            <button type='button' onClick={onClose} className='rounded-lg bg-red-400 px-2 py-1'>
               Zurück
             </button>
             <button
-              type="submit"
+              type='submit'
               disabled={isSubmitDisabled}
-              className={`py-1 px-2 rounded-lg bg-green-300 ${
-                isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : ''
+              className={`rounded-lg bg-green-300 px-2 py-1 ${
+                isSubmitDisabled ? 'cursor-not-allowed opacity-50' : ''
               }`}
             >
               Speichern

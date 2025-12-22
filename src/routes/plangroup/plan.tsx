@@ -20,11 +20,7 @@ export const Route = createFileRoute(PLAN)({
 });
 
 function Plan() {
-  const {
-    group_title: groupTitle,
-    plan_id: planId,
-    plan_title: planTitle,
-  } = Route.useSearch();
+  const { group_title: groupTitle, plan_id: planId, plan_title: planTitle } = Route.useSearch();
   const [isSaving, setIsSaving] = useState(false);
   const detailPlansRef = useRef<DetailPlansHandle>(null);
 
@@ -51,8 +47,8 @@ function Plan() {
   };
 
   return (
-    <div className='max-w-[1600px] mx-auto'>
-      <div className='flex justify-between bg-reiseorange'>
+    <div className='mx-auto max-w-[1600px]'>
+      <div className='bg-reiseorange flex justify-between'>
         <div className='flex items-center'>
           <button onClick={() => void handleBack()} className='px-1 py-2'>
             <span className='text-2xl'>
@@ -61,13 +57,13 @@ function Plan() {
           </button>
           <div className='pb-2 leading-none'>
             <small className='text-sm'>{groupTitle}</small>
-            <h1 className='break-all text-2xl leading-none'>{planTitle}</h1>
+            <h1 className='text-2xl leading-none break-all'>{planTitle}</h1>
           </div>
         </div>
         {isSaving && (
-          <div className='flex items-center mr-5'>
+          <div className='mr-5 flex items-center'>
             <p>saving...</p>
-            <div className='animate-spin size-4 border-[2px] border-t-transparent text-white rounded-full' />
+            <div className='size-4 animate-spin rounded-full border-[2px] border-t-transparent text-white' />
           </div>
         )}
       </div>

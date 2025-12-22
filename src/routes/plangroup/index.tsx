@@ -23,14 +23,11 @@ function Index() {
   const { group_id: groupId, group_title: groupTitle } = Route.useSearch();
   const { data: plans, isLoading, refetch } = useFetchPlans(groupId);
 
-  const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer(
-    (prev) => !prev,
-    false
-  );
+  const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer((prev) => !prev, false);
 
   return (
-    <div className='max-w-[1600px] mx-auto'>
-      <div className='flex items-center p-2 min-h-20 bg-reiseorange'>
+    <div className='mx-auto max-w-[1600px]'>
+      <div className='bg-reiseorange flex min-h-20 items-center p-2'>
         <button onClick={() => window.history.back()} className='px-1 py-2'>
           <span className='text-2xl'>
             <FaAngleLeft />
@@ -38,29 +35,19 @@ function Index() {
         </button>
         <h1 className='text-2xl font-bold'>{groupTitle}</h1>
       </div>
-      <div className='relative p-2 min-h-100 bg-white'>
+      <div className='relative min-h-100 bg-white p-2'>
         {isLoading && <PlansSkeleton />}
         {plans?.map((plan) => (
-          <Plan
-            to={PLAN}
-            plan={plan}
-            groupTitle={groupTitle}
-            refetch={refetch}
-            key={plan.id}
-          />
+          <Plan to={PLAN} plan={plan} groupTitle={groupTitle} refetch={refetch} key={plan.id} />
         ))}
         <div className='flex justify-end'>
-          <button className='mr-1 mt-1' onClick={toggleShowCreatePlanBox}>
-            <FaPenToSquare className='text-3xl text-reiseorange' />
+          <button className='mt-1 mr-1' onClick={toggleShowCreatePlanBox}>
+            <FaPenToSquare className='text-reiseorange text-3xl' />
           </button>
         </div>
       </div>
       {showCreatePlanBox && (
-        <CreatePlanPopupBox
-          groupId={groupId}
-          onClose={toggleShowCreatePlanBox}
-          refetch={refetch}
-        />
+        <CreatePlanPopupBox groupId={groupId} onClose={toggleShowCreatePlanBox} refetch={refetch} />
       )}
     </div>
   );
@@ -81,8 +68,8 @@ function useFetchPlans(groupId: number) {
 function PlansSkeleton() {
   return (
     <>
-      <div className='my-1 p-3 h-20 bg-zinc-300 animate-pulse' />
-      <div className='my-1 p-3 h-20 bg-zinc-300 animate-pulse' />
+      <div className='my-1 h-20 animate-pulse bg-zinc-300 p-3' />
+      <div className='my-1 h-20 animate-pulse bg-zinc-300 p-3' />
     </>
   );
 }

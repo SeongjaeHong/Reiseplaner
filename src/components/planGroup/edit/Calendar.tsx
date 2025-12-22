@@ -8,8 +8,8 @@ type Calendar = {
 };
 export default function Calendar({ range, setRange, onClose }: Calendar) {
   return (
-    <div className='p-4 rounded-lg shadow-md bg-white font-bold text-black'>
-      <h2 className='text-lg font-bold mb-4'>여행 일정 선택</h2>
+    <div className='rounded-lg bg-white p-4 font-bold text-black shadow-md'>
+      <h2 className='mb-4 text-lg font-bold'>여행 일정 선택</h2>
       <DayPicker
         mode='range'
         selected={range}
@@ -27,10 +27,10 @@ export default function Calendar({ range, setRange, onClose }: Calendar) {
           today: 'text-black',
         }}
       />
-      <div className='flex justify-end mt-2'>
+      <div className='mt-2 flex justify-end'>
         <button
           onClick={onClose}
-          className='rounded-lg text-white py-1 px-2 bg-reiseorange hover:bg-orange-300'
+          className='bg-reiseorange rounded-lg px-2 py-1 text-white hover:bg-orange-300'
         >
           Anwenden
         </button>

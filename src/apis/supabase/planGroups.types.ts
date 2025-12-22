@@ -12,6 +12,4 @@ export const planGroupResponseSchema = planGroupSchema.extend({
   created_at: z.string(),
 });
 
-export const planGroupArrayResponseSchema = z
-  .array(planGroupResponseSchema)
-  .nullable();
+export const planGroupArrayResponseSchema = z.array(planGroupResponseSchema).nullable();

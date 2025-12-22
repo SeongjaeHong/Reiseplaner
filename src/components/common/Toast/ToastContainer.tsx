@@ -16,17 +16,17 @@ export function ToastContainer() {
   }, []);
 
   return (
-    <div className="fixed top-20 left-1/2 z-99 -translate-x-1/2">
+    <div className='fixed top-20 left-1/2 z-99 -translate-x-1/2'>
       {toasts.map((t) => (
         <div
           key={t.id}
           className={`flex min-h-14 min-w-80 items-center rounded-sm p-2 ${t.type === 'SUCCESS' ? 'bg-green-500' : 'bg-red-500'}`}
         >
-          <span className="mx-2 text-lg">
+          <span className='mx-2 text-lg'>
             {t.type === 'SUCCESS' && <FaCircleCheck />}
             {t.type === 'ERROR' && <FaCircleXmark />}
           </span>
-          <span className="text-white">{t.message}</span>
+          <span className='text-white'>{t.message}</span>
         </div>
       ))}
     </div>

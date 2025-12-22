@@ -30,8 +30,7 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('scheduler'))
-              return 'react-vendor';
+            if (id.includes('react') || id.includes('scheduler')) return 'react-vendor';
             if (id.includes('tanstack')) return 'tanstack-vendor';
             if (id.includes('@supabase')) return 'supabase-vendor';
             return 'vendor';

@@ -11,11 +11,7 @@ type ImageBox = {
 };
 const PROJECT_ID = import.meta.env.VITE_PROJECT_ID as string;
 const defaultMaxLength = 400;
-export default function ImageBox({
-  content,
-  updateContents,
-  deleteContents,
-}: ImageBox) {
+export default function ImageBox({ content, updateContents, deleteContents }: ImageBox) {
   let contentWidth: number;
   let contentHeight: number;
 
@@ -23,10 +19,7 @@ export default function ImageBox({
     const ratio = content.height / content.width;
     contentWidth = defaultMaxLength;
     contentHeight = ratio * contentWidth;
-  } else if (
-    content.height > content.width &&
-    content.height > defaultMaxLength
-  ) {
+  } else if (content.height > content.width && content.height > defaultMaxLength) {
     const ratio = content.width / content.height;
     contentHeight = defaultMaxLength;
     contentWidth = ratio * contentHeight;
@@ -39,10 +32,7 @@ export default function ImageBox({
   const [height, setHeight] = useState(contentHeight);
   const refUpdateTimer = useRef<number | null>(null);
 
-  const handleResize = (
-    _: React.SyntheticEvent<Element, Event>,
-    { size }: ResizeCallbackData
-  ) => {
+  const handleResize = (_: React.SyntheticEvent<Element, Event>, { size }: ResizeCallbackData) => {
     setWidth(size.width);
     setHeight(size.height);
 
@@ -77,12 +67,9 @@ export default function ImageBox({
       maxConstraints={[500, 500]}
       className='group relativ mb-2 max-w-full'
     >
-      <img src={imgSrc} alt='Image' className='object-contain rounded-lg' />
-      <div className='absolute top-0 right-0 bg-reiseorange rounded-full w-6 h-6 text-center invisible group-hover:visible'>
-        <button
-          onClick={() => void handleDeleteContent()}
-          className='text-white text-lg'
-        >
+      <img src={imgSrc} alt='Image' className='rounded-lg object-contain' />
+      <div className='bg-reiseorange invisible absolute top-0 right-0 h-6 w-6 rounded-full text-center group-hover:visible'>
+        <button onClick={() => void handleDeleteContent()} className='text-lg text-white'>
           <FaRegTrashCan />
         </button>
       </div>

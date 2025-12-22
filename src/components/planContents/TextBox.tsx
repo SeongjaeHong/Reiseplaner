@@ -32,10 +32,7 @@ export default function TextBox({
   const [timeActive, setTimeActive] = useState(content.isTimeActive);
 
   const handleDeleteContent = () => deleteContents(content);
-  const [isNoteBox, toggleIsNoteBox] = useReducer(
-    (prev) => !prev,
-    content.box === 'note'
-  );
+  const [isNoteBox, toggleIsNoteBox] = useReducer((prev) => !prev, content.box === 'note');
 
   const containerRef = useRef<HTMLDivElement>(null);
   const refTitle = useRef<HTMLInputElement | null>(null);
@@ -69,9 +66,7 @@ export default function TextBox({
 
   useImperativeHandle(ref, () => ({
     scrollIntoView: (options?: ScrollIntoViewOptions) => {
-      containerRef.current?.scrollIntoView(
-        options ?? { behavior: 'smooth', block: 'center' }
-      );
+      containerRef.current?.scrollIntoView(options ?? { behavior: 'smooth', block: 'center' });
     },
   }));
 
@@ -85,13 +80,9 @@ export default function TextBox({
       ref={containerRef}
       onClick={(e) => e.stopPropagation()}
       onBlur={(e) => void handleClearEditOnBlur(e)}
-      className={`group relative rounded-md py-1 px-2 mb-2
-        ${isFocused ? 'ring-2 ring-reiseorange shadow-lg' : ''} 
-        ${
-          isNoteBox
-            ? 'bg-reisered min-h-5'
-            : 'border-2 border-reiseyellow min-h-2'
-        }`}
+      className={`group relative mb-2 rounded-md px-2 py-1 ${isFocused ? 'ring-reiseorange shadow-lg ring-2' : ''} ${
+        isNoteBox ? 'bg-reisered min-h-5' : 'border-reiseyellow min-h-2 border-2'
+      }`}
     >
       {isNoteBox && <h1 className='mb-2 px-2 text-xl font-bold'>NOTE</h1>}
       {isEdit && (
@@ -102,7 +93,7 @@ export default function TextBox({
             placeholder='Titel'
             defaultValue={content.title}
             autoFocus={content.title ? false : true}
-            className={`w-full px-2 outline-0 text-xl border-b-1 border-red-300 truncate ${
+            className={`w-full truncate border-b-1 border-red-300 px-2 text-xl outline-0 ${
               isNoteBox ? 'text-white' : 'text-black'
             }`}
           />
@@ -116,17 +107,15 @@ export default function TextBox({
             onFocus={handleTextAreaResize}
             placeholder='Input here.'
             autoFocus={content.title ? true : false}
-            className={`w-full resize-none outline-0 py-1 px-2 ${
+            className={`w-full resize-none px-2 py-1 outline-0 ${
               isNoteBox ? 'text-white' : 'text-black'
             }`}
           />
           <div className='flex flex-row-reverse gap-3 pb-2'>
             <button
               onClick={toggleIsNoteBox}
-              className={`flex items-center gap-1 rounded-xl py-1 px-3 ${
-                isNoteBox
-                  ? 'bg-reiseorange hover:bg-orange-300'
-                  : 'bg-zinc-300 hover:bg-zinc-200'
+              className={`flex items-center gap-1 rounded-xl px-3 py-1 ${
+                isNoteBox ? 'bg-reiseorange hover:bg-orange-300' : 'bg-zinc-300 hover:bg-zinc-200'
               }`}
             >
               <FaTag />
@@ -144,9 +133,9 @@ export default function TextBox({
       {!isEdit && (
         <div
           onClick={handleTextBoxClick}
-          className={`py-1 px-2 ${isNoteBox ? 'text-white' : 'text-black'}`}
+          className={`px-2 py-1 ${isNoteBox ? 'text-white' : 'text-black'}`}
         >
-          <div className='text-xl border-b-1 mb-1 truncate'>
+          <div className='mb-1 truncate border-b-1 text-xl'>
             {content.title && <h1>{content.title}</h1>}
             {!content.title && <h1 className='text-zinc-300'>Titel</h1>}
           </div>
@@ -155,7 +144,7 @@ export default function TextBox({
       )}
 
       {/* Delete button to delete the TextBox */}
-      <div className='absolute top-0 right-0 bg-reiseorange rounded-full w-6 h-6 text-center invisible group-hover:visible'>
+      <div className='bg-reiseorange invisible absolute top-0 right-0 h-6 w-6 rounded-full text-center group-hover:visible'>
         <button onClick={handleDeleteContent} className='text-white'>
           <FaRegTrashCan />
         </button>
@@ -165,9 +154,7 @@ export default function TextBox({
 }
 
 const handleTextAreaResize = (
-  obj:
-    | React.ChangeEvent<HTMLTextAreaElement>
-    | React.RefObject<HTMLTextAreaElement | null>
+  obj: React.ChangeEvent<HTMLTextAreaElement> | React.RefObject<HTMLTextAreaElement | null>
 ) => {
   let target: HTMLTextAreaElement | null = null;
   if ('currentTarget' in obj) {

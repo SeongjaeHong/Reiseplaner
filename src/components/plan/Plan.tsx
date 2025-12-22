@@ -14,14 +14,8 @@ type Plan = {
 
 export default function Plan({ to, plan, groupTitle, refetch }: Plan) {
   const [showMenu, setShowMenu] = useState(false);
-  const [showDeleteBox, toggleShowDeleteBox] = useReducer(
-    (prev) => !prev,
-    false
-  );
-  const [showChangeNameBox, toggleShowChangeNameBox] = useReducer(
-    (prev) => !prev,
-    false
-  );
+  const [showDeleteBox, toggleShowDeleteBox] = useReducer((prev) => !prev, false);
+  const [showChangeNameBox, toggleShowChangeNameBox] = useReducer((prev) => !prev, false);
 
   const refTimer = useRef<number | null>(null);
   const handleMenuMouseEnter = () => {
@@ -53,13 +47,13 @@ export default function Plan({ to, plan, groupTitle, refetch }: Plan) {
         key={plan.id}
       >
         <div
-          className='group relative flex justify-between my-1 p-3 h-20 bg-reisered'
+          className='group bg-reisered relative my-1 flex h-20 justify-between p-3'
           id={plan.id.toString()}
         >
-          <h1 className='font-bold truncate'>{plan.title}</h1>
-          <div className='absolute right-1 invisible group-hover:visible'>
+          <h1 className='truncate font-bold'>{plan.title}</h1>
+          <div className='invisible absolute right-1 group-hover:visible'>
             <button
-              className='hover:bg-green-300 rounded-full p-2'
+              className='rounded-full p-2 hover:bg-green-300'
               onMouseEnter={handleMenuMouseEnter}
               onMouseLeave={handleMenuMouseLeave}
               onClick={(e) => e.preventDefault()}
@@ -86,11 +80,7 @@ export default function Plan({ to, plan, groupTitle, refetch }: Plan) {
       )}
 
       {showDeleteBox && (
-        <DeletePlanPopupBox
-          planId={plan.id}
-          onClose={toggleShowDeleteBox}
-          refetch={refetch}
-        />
+        <DeletePlanPopupBox planId={plan.id} onClose={toggleShowDeleteBox} refetch={refetch} />
       )}
     </>
   );
@@ -125,10 +115,7 @@ function PlanMenuUI({
       onMouseLeave={onMouseLeave}
       onClick={(e) => e.preventDefault()}
     >
-      <div
-        className={`${StyleMenu} border-b-1 border-zinc-600`}
-        onClick={toggleShowChangeNameBox}
-      >
+      <div className={`${StyleMenu} border-b-1 border-zinc-600`} onClick={toggleShowChangeNameBox}>
         <span>이름 변경</span>
       </div>
       <div className={StyleMenu} onClick={toggleShowDeleteBox}>

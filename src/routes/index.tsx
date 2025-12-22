@@ -12,10 +12,7 @@ export const Route = createFileRoute(INDEX)({
 });
 
 function Index() {
-  const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer(
-    (prev) => !prev,
-    false
-  );
+  const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer((prev) => !prev, false);
   const { data: planGroups, refetch } = useQuery({
     queryKey: ['getPlanGroups'],
     queryFn: getPlanGroups,
@@ -24,34 +21,25 @@ function Index() {
   });
 
   return (
-    <div className='bg-white max-w-[1600px] mx-auto'>
-      <div className='p-2 grid grid-cols-2 max-md:grid-cols-1 xl:grid-cols-3 gap-2'>
+    <div className='mx-auto max-w-[1600px] bg-white'>
+      <div className='grid grid-cols-2 gap-2 p-2 max-md:grid-cols-1 xl:grid-cols-3'>
         {planGroups?.map((planGroup) => (
           <Suspense fallback={<PlanGroupSkeleton />} key={planGroup.id}>
-            <PlanGroup
-              to={PLAN_GROUP}
-              planGroup={planGroup}
-              refetch={() => refetch()}
-            />
+            <PlanGroup to={PLAN_GROUP} planGroup={planGroup} refetch={() => refetch()} />
           </Suspense>
         ))}
       </div>
       <div className='flex justify-end'>
         <button className='mr-2 mb-2' onClick={toggleShowCreatePlanBox}>
-          <FaCirclePlus className='text-3xl text-reiseorange' />
+          <FaCirclePlus className='text-reiseorange text-3xl' />
         </button>
       </div>
 
       {showCreatePlanBox && (
-        <CreatePlanGroupPopupBox
-          refetch={() => refetch()}
-          onClose={toggleShowCreatePlanBox}
-        />
+        <CreatePlanGroupPopupBox refetch={() => refetch()} onClose={toggleShowCreatePlanBox} />
       )}
     </div>
   );
 }
 
-const PlanGroupSkeleton = () => (
-  <div className='h-60 bg-zinc-300 animate-pulse' />
-);
+const PlanGroupSkeleton = () => <div className='h-60 animate-pulse bg-zinc-300' />;

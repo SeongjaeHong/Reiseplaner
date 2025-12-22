@@ -8,11 +8,7 @@ type createPlanPopupBoxParam = {
   refetch: () => Promise<unknown>;
 };
 
-export default function CreatePlanPopupBox({
-  groupId,
-  onClose,
-  refetch,
-}: createPlanPopupBoxParam) {
+export default function CreatePlanPopupBox({ groupId, onClose, refetch }: createPlanPopupBoxParam) {
   const { mutate } = useMutation({
     mutationFn: (title: string) => createPlan(groupId, title),
     onSuccess: async () => {

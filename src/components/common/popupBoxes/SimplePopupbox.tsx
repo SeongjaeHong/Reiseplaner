@@ -5,15 +5,12 @@ type SimplePopupbox = {
 
 export default function SimplePopupbox({ text, onAccept }: SimplePopupbox) {
   return (
-    <div className='fixed z-1 top-50 left-1/2 -translate-x-1/2 py-2 px-3 w-70 bg-zinc-100 border-2 border-reiseorange rounded-md'>
+    <div className='border-reiseorange fixed top-50 left-1/2 z-1 w-70 -translate-x-1/2 rounded-md border-2 bg-zinc-100 px-3 py-2'>
       <div>
         <span className='text-reiseorange text-sm font-bold'>{text}</span>
       </div>
-      <div className='flex justify-center pt-3 w-full'>
-        <button
-          className='py-1 px-5 mx-3 rounded-lg bg-reisered'
-          onClick={() => void onAccept()}
-        >
+      <div className='flex w-full justify-center pt-3'>
+        <button className='bg-reisered mx-3 rounded-lg px-5 py-1' onClick={() => void onAccept()}>
           OK
         </button>
       </div>

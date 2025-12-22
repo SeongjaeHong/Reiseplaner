@@ -9,23 +9,12 @@ type TimeWidget = {
   timeActive: boolean;
   setTimeActive: (state: boolean) => void;
 };
-export default function TimeWidget({
-  time,
-  setTime,
-  timeActive,
-  setTimeActive,
-}: TimeWidget) {
+export default function TimeWidget({ time, setTime, timeActive, setTimeActive }: TimeWidget) {
   const [isOpen, setIsOpen] = useState(timeActive);
   const [isContentVisible, setIsContentVisible] = useState(timeActive);
 
-  const isStartTimeEarlierThanEndTime = (
-    start: PlanTime['start'],
-    end: PlanTime['end']
-  ) => {
-    return (
-      start.hour < end.hour ||
-      (start.hour === end.hour && start.minute < end.minute)
-    );
+  const isStartTimeEarlierThanEndTime = (start: PlanTime['start'], end: PlanTime['end']) => {
+    return start.hour < end.hour || (start.hour === end.hour && start.minute < end.minute);
   };
 
   const handleOpen = () => {
@@ -72,12 +61,9 @@ export default function TimeWidget({
     <button
       onTransitionEnd={handleTransitionEnd}
       onClick={handleOpen}
-      className={`flex items-center gap-1 rounded-xl py-1 px-3 transition-[width] duration-700 
-        ${
-          isOpen
-            ? 'w-69 bg-reiseorange hover:bg-orange-300'
-            : 'w-21 bg-zinc-300 hover:bg-zinc-200'
-        }`}
+      className={`flex items-center gap-1 rounded-xl px-3 py-1 transition-[width] duration-700 ${
+        isOpen ? 'bg-reiseorange w-69 hover:bg-orange-300' : 'w-21 bg-zinc-300 hover:bg-zinc-200'
+      }`}
     >
       <FaClock />
       <span>Time</span>
@@ -121,11 +107,7 @@ type TimeInputProps = {
   value: string;
   onChange: (value: string) => boolean;
 };
-const TimeInputWithDropdown: React.FC<TimeInputProps> = ({
-  type,
-  value,
-  onChange,
-}) => {
+const TimeInputWithDropdown: React.FC<TimeInputProps> = ({ type, value, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [warning, setWarning] = useState(false);
   const options = Array.from({ length: type === 'hour' ? 24 : 60 }, (_, i) =>
@@ -170,10 +152,7 @@ const TimeInputWithDropdown: React.FC<TimeInputProps> = ({
   };
 
   return (
-    <div
-      className='relative inline-block'
-      ref={refClickOutside(handleClickOutside)}
-    >
+    <div className='relative inline-block' ref={refClickOutside(handleClickOutside)}>
       <input
         type='text'
         value={value}
@@ -181,17 +160,17 @@ const TimeInputWithDropdown: React.FC<TimeInputProps> = ({
         onFocus={() => setIsOpen(true)}
         placeholder='00'
         maxLength={2}
-        className={`w-10 border-1 rounded-md text-center text-sm ${
-          warning ? 'text-red-500 border-red-500' : 'border-zinc-200'
+        className={`w-10 rounded-md border-1 text-center text-sm ${
+          warning ? 'border-red-500 text-red-500' : 'border-zinc-200'
         }`}
       />
       {isOpen && (
-        <ul className='absolute text-gray-700 bg-white border-1 border-zinc-300 rounded-sm max-h-30 overflow-y-scroll no-scrollbar z-1'>
+        <ul className='no-scrollbar absolute z-1 max-h-30 overflow-y-scroll rounded-sm border-1 border-zinc-300 bg-white text-gray-700'>
           {options.map((option) => (
             <li
               key={option}
               onClick={() => handleOptionClick(option)}
-              className='px-2 cursor-pointer hover:bg-zinc-300'
+              className='cursor-pointer px-2 hover:bg-zinc-300'
             >
               {option}
             </li>

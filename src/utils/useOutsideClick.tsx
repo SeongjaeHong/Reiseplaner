@@ -19,9 +19,7 @@ export default function useClickOutside() {
       const target = e.target as Node;
 
       handlersRef.current.forEach(({ callback, exceptions }, element) => {
-        const isException = exceptions?.some((ref) =>
-          ref.current?.contains(target)
-        );
+        const isException = exceptions?.some((ref) => ref.current?.contains(target));
 
         if (element?.contains(target) || isException) return;
 

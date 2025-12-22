@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 import { defineConfig } from 'eslint/config';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 import pluginRouter from '@tanstack/eslint-plugin-router';
-import eslintConfigPrettier from "eslint-config-prettier";
+import eslintConfigPrettier from 'eslint-config-prettier';
 
 const queryRules = pluginQuery.configs.recommended.rules;
 const routerRules = pluginRouter.configs.recommended.rules;
@@ -51,5 +51,5 @@ export default defineConfig([
       },
     },
   },
-  eslintConfigPrettier
+  eslintConfigPrettier,
 ]);

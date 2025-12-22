@@ -8,11 +8,7 @@ type DeletePlanPopupBoxParam = {
   refetch: () => Promise<unknown>;
 };
 
-export default function DeletePlanPopupBox({
-  planId,
-  onClose,
-  refetch,
-}: DeletePlanPopupBoxParam) {
+export default function DeletePlanPopupBox({ planId, onClose, refetch }: DeletePlanPopupBoxParam) {
   const { mutate } = useMutation({
     mutationFn: () => deletePlan(planId),
     onSuccess: async (res) => {
@@ -32,11 +28,5 @@ export default function DeletePlanPopupBox({
     onClose();
   };
 
-  return (
-    <Popupbox
-      text='Remove this plan.'
-      onAccept={mutate}
-      onCancel={handleClickCancel}
-    />
-  );
+  return <Popupbox text='Remove this plan.' onAccept={mutate} onCancel={handleClickCancel} />;
 }

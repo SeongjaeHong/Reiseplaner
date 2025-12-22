@@ -26,10 +26,7 @@ const imageContentSchema = z.object({
 });
 export type ImageContent = z.infer<typeof imageContentSchema>;
 
-export const ContentSchema = z.discriminatedUnion('type', [
-  textContentSchema,
-  imageContentSchema,
-]);
+export const ContentSchema = z.discriminatedUnion('type', [textContentSchema, imageContentSchema]);
 export type Content = z.infer<typeof ContentSchema>;
 
 export const planContentsResponseSchema = z
