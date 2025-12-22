@@ -55,6 +55,7 @@ export default function InputPopupBox({
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           onKeyDown={handleEnterPress}
+          autoFocus
         />
         <div>
           <span className={`${showMsg ? `visible` : `invisible`} text-red-500`}>
