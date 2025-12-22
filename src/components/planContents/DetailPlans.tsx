@@ -1,11 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import {
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { IoIosAttach } from 'react-icons/io';
 import TextBox, { type TextBoxHandle } from './TextBox';
@@ -19,6 +13,7 @@ import {
   useUpdateLocalContents,
   type LocalContent,
 } from './utils/contents';
+import { toast } from '../common/Toast/toast';
 
 export type DetailPlansHandle = {
   saveChanges: () => Promise<void>;
@@ -34,12 +29,7 @@ type DetailPlans = {
   ref: React.Ref<DetailPlansHandle>;
 };
 
-export default function DetailPlans({
-  planId,
-  ref,
-  focusedId,
-  setFocusedId,
-}: DetailPlans) {
+export default function DetailPlans({ planId, ref, focusedId, setFocusedId }: DetailPlans) {
   const queryClient = useQueryClient();
   const { data } = useSuspenseQueryLocalContents(planId);
 
@@ -50,17 +40,14 @@ export default function DetailPlans({
     saveStatusRef.current = status;
   };
 
-  const { saveChanges, isPending: isSavePending } = useSaveChanges(
-    queryClient,
-    planId
-  );
+  const { saveChanges, isPending: isSavePending } = useSaveChanges(queryClient, planId);
   const isSavePendingRef = useRef(isSavePending);
 
   const handleSaveChanges = useCallback(async () => {
     if (isSavePendingRef.current) {
       try {
         await waitFor(() => !isSavePendingRef.current, 5000);
-      } catch (error: unknown) {
+      } catch (error) {
         if (error instanceof Error) {
           console.error(error.message);
         } else {
@@ -73,22 +60,19 @@ export default function DetailPlans({
     updateContentsStatus('Pending');
     isSavePendingRef.current = true;
 
-    await saveChanges();
-
-    isSavePendingRef.current = false;
-    if (saveStatusRef.current === 'Pending') {
+    const isSaveSuccess = await saveChanges();
+    if (isSaveSuccess && saveStatusRef.current === 'Pending') {
       // Set saveStatus to "Clean" only when contents hasn't been changed while saving.
       updateContentsStatus('Clean');
     }
+
+    isSavePendingRef.current = false;
   }, [saveChanges]);
 
   const autoSave = useAutoSave(handleSaveChanges);
 
   const updateLocalContents = useUpdateLocalContents(queryClient, planId);
-  const handleUpdateLocalContents = (
-    updatedContent: LocalContent,
-    replace = true
-  ) => {
+  const handleUpdateLocalContents = (updatedContent: LocalContent, replace = true) => {
     updateLocalContents(updatedContent, replace);
     updateContentsStatus('Dirty');
     autoSave();
@@ -159,14 +143,14 @@ export default function DetailPlans({
       })}
 
       {/* A function layer at the bottom*/}
-      <div className='flex justify-between mt-5'>
-        <div className='flex items-center gap-2 ml-2'>
+      <div className='mt-5 flex justify-between'>
+        <div className='ml-2 flex items-center gap-2'>
           <button onClick={handleAddText}>
-            <FaCirclePlus className='text-3xl text-reiseorange hover:text-orange-400' />
+            <FaCirclePlus className='text-reiseorange text-3xl hover:text-orange-400' />
           </button>
           <button
             onClick={() => refFileInput.current?.click()}
-            className='flex rounded-xl py-1 pr-2 text-white font-bold bg-reiseorange hover:bg-orange-400'
+            className='bg-reiseorange flex rounded-xl py-1 pr-2 font-bold text-white hover:bg-orange-400'
           >
             <input
               type='file'
@@ -175,7 +159,12 @@ export default function DetailPlans({
               onChange={(e) => {
                 const fileInput = e.currentTarget;
                 void (async () => {
-                  await addFile(e);
+                  try {
+                    await addFile(e);
+                  } catch (error) {
+                    toast.error('Failed to upload an image.');
+                    console.error(error);
+                  }
                   fileInput.value = '';
                 })();
               }}
