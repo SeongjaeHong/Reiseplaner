@@ -1,12 +1,12 @@
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 import { INDEX } from './-constant';
-import PageNotFound from '@/components/common/PageNotFound';
+import PageNotFound from '@/errors/PageNotFound';
 
 const RootLayout = () => (
   <>
-    <div className='flex items-center h-20 pl-5 bg-reiseblue'>
+    <div className='bg-reiseblue flex h-20 items-center pl-5'>
       <Link to={INDEX}>
-        <h1 className='font-bold text-5xl'>Reiseplaner</h1>
+        <h1 className='text-5xl font-bold'>Reiseplaner</h1>
       </Link>
     </div>
     <div className='m-5'>
