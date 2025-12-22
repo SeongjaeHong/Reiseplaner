@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import useClickOutside from '@/utils/useOutsideClick';
+import useClickOutside from '@/utils/useClickOutside';
 import { FaClock } from 'react-icons/fa6';
 import type { PlanTime } from '@/apis/supabase/planContents.types';
 
