@@ -67,7 +67,7 @@ export default function ImageBox({ content, updateContents, deleteContents }: Im
       maxConstraints={[500, 500]}
       className='group relativ mb-2 max-w-full'
     >
-      <img src={imgSrc} alt='Image' className='rounded-lg object-contain' />
+      <img src={imgSrc} alt='Image' className='rounded-lg object-contain text-black' />
       <div className='bg-reiseorange invisible absolute top-0 right-0 h-6 w-6 rounded-full text-center group-hover:visible'>
         <button onClick={() => void handleDeleteContent()} className='text-lg text-white'>
           <FaRegTrashCan />
