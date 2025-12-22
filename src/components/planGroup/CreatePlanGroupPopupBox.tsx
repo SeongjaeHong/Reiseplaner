@@ -1,6 +1,7 @@
 import { createPlanGroup } from '@/apis/supabase/planGroups';
 import { useMutation } from '@tanstack/react-query';
 import InputPopupBox from '@/components/common/popupBoxes/InputPopupBox';
+import { toast } from '../common/Toast/toast';
 
 type createPlanGroupPopupBoxParam = {
   onClose: () => void;
@@ -14,9 +15,13 @@ export default function CreatePlanGroupPopupBox({
   const { mutate } = useMutation({
     mutationFn: (title: string) => createPlanGroup(title),
     onSuccess: async () => {
+      toast.success('A plan group has been created.');
       await refetch();
     },
-    throwOnError: true,
+    onError: (error) => {
+      toast.error(error.message);
+      throw error;
+    },
   });
 
   return (

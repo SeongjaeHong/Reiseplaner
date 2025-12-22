@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { deleteImage, uploadImage } from '@/apis/supabase/buckets';
 import { updatePlanGroupByGroupId } from '@/apis/supabase/planGroups';
 import type { PlanGroupForm } from '../PlanGroupEdit';
+import { toast } from '@/components/common/Toast/toast';
 
 type UsePlanGroupUpdate = {
   planGroupId: number;
@@ -22,11 +23,7 @@ export function usePlanGroupUpdate({
 
       // Save a new thumbnail image in DB.
       if (data.thumbnail) {
-        const res = await uploadImage(data.thumbnail).catch((e) => {
-          console.error('Fail to upload a new image in db.');
-          console.error(e);
-          throw e;
-        });
+        const res = await uploadImage(data.thumbnail);
         thumbnailPath = res.fullPath;
       } else {
         thumbnailPath = null;
@@ -34,10 +31,11 @@ export function usePlanGroupUpdate({
 
       // Remove a previously saved thumbnail image from DB.
       if (prevThumbnail) {
-        await deleteImage(prevThumbnail.name).catch((e) => {
-          console.error('Fail to remove an image from db.');
-          console.error(e);
-        });
+        try {
+          await deleteImage(prevThumbnail.name);
+        } catch {
+          console.error('Fail to delete an image from the server.');
+        }
       }
 
       // Update a title and a thumbnail path of a plan group in DB
@@ -52,6 +50,10 @@ export function usePlanGroupUpdate({
     onSuccess: async () => {
       await refetch();
       onClose();
+    },
+    onError: (error) => {
+      toast.error('Failed to update a plan group.');
+      console.error(error);
     },
   });
 }
