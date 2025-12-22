@@ -50,11 +50,20 @@ export const getPlanContentsById = async (planId: number) => {
     throw new ApiError('DATABASE', { message: 'Failed to fetch plan contents.', cause: error });
   }
 
-  return planContentsResponseSchema.parse(data);
+  const res = planContentsResponseSchema.safeParse(data);
+  if (!res.success) {
+    throw new ApiError('VALIDATION', { cause: res.error });
+  }
+
+  return res.data;
 };
 
 export const deletePlanContentsById = async (planId: number) => {
-  const { status } = await supabase.from('planContents').delete().eq('plans_id', planId);
+  const { status, error } = await supabase.from('planContents').delete().eq('plans_id', planId);
+
+  if (error) {
+    throw new ApiError('DATABASE', { cause: error });
+  }
 
   return status === 204 ? true : false;
 };
