@@ -1,3 +1,4 @@
+import useClickOutside from '@/utils/useClickOutside';
 import { useState } from 'react';
 
 type InputPopupBoxParams = {
@@ -15,6 +16,7 @@ export default function InputPopupBox({
 }: InputPopupBoxParams) {
   const [userInput, setUserInput] = useState('');
   const [showMsg, setShowMsg] = useState(false);
+  const outsideclick = useClickOutside();
 
   const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -38,7 +40,10 @@ export default function InputPopupBox({
   };
 
   return (
-    <div className='border-reiseorange fixed top-50 left-1/2 z-1 w-70 -translate-x-1/2 rounded-md border-2 bg-zinc-100 px-3 py-2'>
+    <div
+      ref={outsideclick(onClose)}
+      className='border-reiseorange fixed top-50 left-1/2 z-1 w-70 -translate-x-1/2 rounded-md border-2 bg-zinc-100 px-3 py-2'
+    >
       <div className='mb-2'>
         <span className='text-reiseorange text-sm font-bold'>{title}</span>
       </div>
