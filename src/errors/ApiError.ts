@@ -21,7 +21,7 @@ export class ApiError extends Error {
     if (options?.cause instanceof z.ZodError) {
       currentZodError = options.cause;
       causeDetail = `\n(${currentZodError.issues
-        .map((i) => `${i.path.join('.')}: ${i.message}`)
+        .map((i) => `[${i.path.join(',')}]: ${i.message}`)
         .join(', ')})`;
     } else if (options?.cause instanceof Error) {
       currentServerError = options.cause;
