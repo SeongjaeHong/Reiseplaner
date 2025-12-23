@@ -11,7 +11,7 @@ export function ToastContainer() {
 
       setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== newToast.id));
-      }, 1000);
+      }, 3000);
     });
   }, []);
 
