@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { ResizableBox, type ResizeCallbackData } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { FaRegTrashCan } from 'react-icons/fa6';
-import type { LocalContent, LocalImageContent } from './utils/contents';
+import type { LocalContent, LocalImageContent } from '../../utils/contents';
 
 type ImageBox = {
   content: LocalImageContent;

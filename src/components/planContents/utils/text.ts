@@ -9,8 +9,8 @@ type UseAddText = {
 export function useAddText({ updateLocalContents, setEditingId }: UseAddText) {
   return () => {
     const defaultTime = {
-      start: { hour: '00', minute: '00' },
-      end: { hour: '00', minute: '00' },
+      start: { hour: null, minute: null },
+      end: { hour: null, minute: null },
     };
 
     const newContent: TextContent = {

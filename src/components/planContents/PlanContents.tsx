@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useState } from 'react';
-import ScheduleTable from './ScheduleTable';
-import DetailPlans, { type DetailPlansHandle } from './DetailPlans';
+import ScheduleTable from './components/ScheduleTable/ScheduleTable';
+import type { DetailPlansHandle } from './components/DetailPlans/DetailPlans';
+import DetailPlans from './components/DetailPlans/DetailPlans';
 
 type PlanContents = {
   planId: number;

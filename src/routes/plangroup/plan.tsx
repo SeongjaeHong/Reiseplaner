@@ -2,9 +2,9 @@ import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { FaAngleLeft } from 'react-icons/fa6';
 import PlanContents from '@/components/planContents/PlanContents';
-import type { DetailPlansHandle } from '@/components/planContents/DetailPlans';
 import { useEffect, useRef, useState } from 'react';
 import { PLAN } from '../-constant';
+import type { DetailPlansHandle } from '@/components/planContents/components/DetailPlans/DetailPlans';
 
 const planParam = z.object({
   group_title: z.string(),

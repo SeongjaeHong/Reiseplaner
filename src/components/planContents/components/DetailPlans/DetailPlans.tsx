@@ -2,18 +2,19 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { IoIosAttach } from 'react-icons/io';
-import TextBox, { type TextBoxHandle } from './TextBox';
-import ImageBox from './ImageBox';
-import { useAddImage } from './utils/image';
-import { useAddText } from './utils/text';
 import {
   useDeleteLocalContents,
   useSaveChanges,
   useSuspenseQueryLocalContents,
   useUpdateLocalContents,
   type LocalContent,
-} from './utils/contents';
-import { toast } from '../common/Toast/toast';
+} from '../../utils/contents';
+import { useAddText } from '../../utils/text';
+import { useAddImage } from '../../utils/image';
+import type { TextBoxHandle } from './TextBox';
+import TextBox from './TextBox';
+import ImageBox from './ImageBox';
+import { toast } from '@/components/common/Toast/toast';
 
 export type DetailPlansHandle = {
   saveChanges: () => Promise<void>;

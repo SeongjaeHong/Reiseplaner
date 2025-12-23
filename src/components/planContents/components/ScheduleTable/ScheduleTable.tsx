@@ -1,4 +1,4 @@
-import { useSuspenseQueryLocalContents } from './utils/contents';
+import { useSuspenseQueryLocalContents } from '../../utils/contents';
 
 type ScheduleTable = {
   planId: number;
@@ -19,7 +19,10 @@ export default function ScheduleTable({ planId, focusedId, onSelectContent }: Sc
         {data?.contents.map((content) => {
           if (content.type === 'text' && content.isTimeActive) {
             const text = content.title ? content.title : content.data.slice(0, 50);
-            const startTime = content.time.start.hour + ':' + content.time.start.minute;
+            const startTime =
+              String(content.time.start.hour).padStart(2, '0') +
+              ':' +
+              String(content.time.start.minute).padStart(2, '0');
             const isFocused = focusedId === content.id;
 
             return (
