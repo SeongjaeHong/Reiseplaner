@@ -1,8 +1,8 @@
 import z from 'zod';
 
 const planTimeSchema = z.object({
-  start: z.object({ hour: z.string(), minute: z.string() }),
-  end: z.object({ hour: z.string(), minute: z.string() }),
+  start: z.object({ hour: z.number().nullable(), minute: z.number().nullable() }),
+  end: z.object({ hour: z.number().nullable(), minute: z.number().nullable() }),
 });
 export type PlanTime = z.infer<typeof planTimeSchema>;
 
