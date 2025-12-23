@@ -107,7 +107,7 @@ type TimeInputProps = {
   value: string;
   onChange: (value: string) => boolean;
 };
-const TimeInputWithDropdown: React.FC<TimeInputProps> = ({ type, value, onChange }) => {
+function TimeInputWithDropdown({ type, value, onChange }: TimeInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [warning, setWarning] = useState(false);
   const options = Array.from({ length: type === 'hour' ? 24 : 60 }, (_, i) =>
@@ -179,4 +179,4 @@ const TimeInputWithDropdown: React.FC<TimeInputProps> = ({ type, value, onChange
       )}
     </div>
   );
-};
+}
