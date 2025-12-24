@@ -144,40 +144,35 @@ export default function DetailPlans({ planId, ref, focusedId, setFocusedId }: De
       })}
 
       {/* A function layer at the bottom*/}
-      <div className='mt-5 flex justify-between'>
-        <div className='ml-2 flex items-center gap-2'>
-          <button onClick={handleAddText}>
-            <FaCirclePlus className='text-reiseorange text-3xl hover:text-orange-400' />
-          </button>
-          <button
-            onClick={() => refFileInput.current?.click()}
-            className='bg-reiseorange flex rounded-xl py-1 pr-2 font-bold text-white hover:bg-orange-400'
-          >
-            <input
-              type='file'
-              accept='image/*'
-              ref={refFileInput}
-              onChange={(e) => {
-                const fileInput = e.currentTarget;
-                void (async () => {
-                  try {
-                    await addFile(e);
-                  } catch (error) {
-                    toast.error('Failed to upload an image.');
-                    console.error(error);
-                  }
-                  fileInput.value = '';
-                })();
-              }}
-              className='hidden'
-            />
-            <IoIosAttach className='text-2xl' />
-            <span>File</span>
-          </button>
-        </div>
-        <div className='mr-2'>
-          {contentsStatus === 'Pending' && <p className='text-sm'>Saving...</p>}
-        </div>
+      <div className='mt-5 ml-2 flex items-center gap-2'>
+        <button onClick={handleAddText}>
+          <FaCirclePlus className='text-reiseorange text-3xl hover:text-orange-400' />
+        </button>
+        <button
+          onClick={() => refFileInput.current?.click()}
+          className='bg-reiseorange flex rounded-xl py-1 pr-2 font-bold text-white hover:bg-orange-400'
+        >
+          <input
+            type='file'
+            accept='image/*'
+            ref={refFileInput}
+            onChange={(e) => {
+              const fileInput = e.currentTarget;
+              void (async () => {
+                try {
+                  await addFile(e);
+                } catch (error) {
+                  toast.error('Failed to upload an image.');
+                  console.error(error);
+                }
+                fileInput.value = '';
+              })();
+            }}
+            className='hidden'
+          />
+          <IoIosAttach className='text-2xl' />
+          <span>File</span>
+        </button>
       </div>
     </>
   );
