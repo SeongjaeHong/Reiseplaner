@@ -1,8 +1,8 @@
 import { FaRegTrashCan, FaTag } from 'react-icons/fa6';
 import { useImperativeHandle, useReducer, useRef, useState } from 'react';
 import TimeWidget from './TimeWidget';
-import type { LocalContent } from './utils/contents';
 import type { TextContent } from '@/apis/supabase/planContents.types';
+import type { LocalContent } from '../../utils/contents';
 
 export type TextBoxHandle = {
   scrollIntoView: (options?: ScrollIntoViewOptions) => void;
