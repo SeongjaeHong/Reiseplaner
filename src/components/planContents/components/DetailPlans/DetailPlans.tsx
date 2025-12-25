@@ -8,8 +8,7 @@ import {
   useUpdateLocalContents,
 } from '../../utils/contents';
 import { useAddText } from '../../utils/text';
-import PlanEditor from '../Editor/PlanEditor';
-import type { TextBoxHandle } from './TextBox';
+import PlanEditor, { type PlanEditorHandle } from '../Editor/PlanEditor';
 import type { Content } from '@/apis/supabase/planContents.types';
 
 export type DetailPlansHandle = {
@@ -88,7 +87,7 @@ export default function DetailPlans({ planId, ref, focusedId, setFocusedId }: De
     setEditingId,
   });
 
-  const contentRefs = useRef<Record<string, TextBoxHandle | null>>({});
+  const contentRefs = useRef<Record<string, PlanEditorHandle | null>>({});
   useImperativeHandle(
     ref,
     (): DetailPlansHandle => ({

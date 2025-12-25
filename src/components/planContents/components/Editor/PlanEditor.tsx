@@ -3,7 +3,6 @@ import { FaRegTrashCan } from 'react-icons/fa6';
 import EditorMode from './EditorMode';
 import ViewerMode from './ViewerMode';
 import type { Content } from '@/apis/supabase/planContents.types';
-import type { TextBoxHandle } from '../DetailPlans/TextBox';
 import { editorContentSchema } from './editor.types';
 
 const EMPTY_CONTENT =
@@ -21,6 +20,10 @@ const getSafeEditorState = (data: string) => {
   return EMPTY_CONTENT;
 };
 
+export type PlanEditorHandle = {
+  scrollIntoView: (options?: ScrollIntoViewOptions) => void;
+};
+
 type PlanEditor = {
   content: Content;
   isEdit: boolean;
@@ -29,7 +32,7 @@ type PlanEditor = {
   onFocus: () => void;
   updateContents: (content: Content) => void;
   deleteContents: (content: Content) => void;
-  ref: React.Ref<TextBoxHandle>;
+  ref: React.Ref<PlanEditorHandle>;
 };
 export default function PlanEditor({
   content,
@@ -56,7 +59,6 @@ export default function PlanEditor({
   return (
     <div
       ref={containerRef}
-      // onBlur={handleBlur}
       onClick={() => {
         onFocus();
         if (!isEdit) setEditingId(content.id);
