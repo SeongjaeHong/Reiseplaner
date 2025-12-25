@@ -1,5 +1,5 @@
 import { DecoratorNode, type NodeKey, type Spread, type SerializedLexicalNode } from 'lexical';
-import ImageComponent from '../DetailPlans/ImageComponent';
+import ImageComponent from './ImageComponent';
 import { isBase64DataUrl } from '../../utils/image';
 
 type SerializedImageNode = Spread<
