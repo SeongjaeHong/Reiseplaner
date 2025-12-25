@@ -52,7 +52,6 @@ export default function EditorMode({
   const refEditor = useRef<HTMLDivElement>(null);
   const handleBlur = (e: React.FocusEvent) => {
     const isChild = refEditor.current?.contains(e.relatedTarget as Node);
-    console.log(isUploading, isChild);
     if (isUploading || isChild) {
       return;
     }
