@@ -1,23 +1,19 @@
 import { type QueryClient, useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import { deleteImage, uploadImage } from '@/apis/supabase/buckets';
+import { uploadImage } from '@/apis/supabase/buckets';
 import {
   deletePlanContentsById,
   getPlanContentsById,
   insertPlanContents,
 } from '@/apis/supabase/planContents';
-import type { ImageContent, TextContent } from '@/apis/supabase/planContents.types';
+import type { Content } from '@/apis/supabase/planContents.types';
 import { toast } from '@/components/common/Toast/toast';
-
-export type LocalContent = TextContent | LocalImageContent;
-export type LocalImageContent = Omit<ImageContent, 'data'> & {
-  data: string | File;
-  fileDelete: boolean;
-};
+import { isBase64DataUrl } from './image';
+import { editorContentSchema, type NODE } from '../components/Editor/editor.types';
+import { ApiError } from '@/errors/ApiError';
 
 export const getContentsQueryKey = (planId: number) => ['DetailPlans', planId];
 
 // Fetch contents from DB
-
 export const useSuspenseQueryLocalContents = (planId: number) =>
   useSuspenseQuery({
     queryKey: getContentsQueryKey(planId),
@@ -29,15 +25,7 @@ export const useSuspenseQueryLocalContents = (planId: number) =>
           return null;
         }
 
-        // Add fileDelete attribute to file contents
-        const processedContents: LocalContent[] = data.contents.map((content) => {
-          if (content.type === 'file') {
-            return { ...content, fileDelete: false };
-          }
-          return content;
-        });
-
-        return { ...data, contents: getSortedContents(processedContents) };
+        return { ...data, contents: getSortedContents(data.contents) };
       } catch (error) {
         toast.error('Failed to load contents.');
         console.error(error);
@@ -50,28 +38,26 @@ export const useSuspenseQueryLocalContents = (planId: number) =>
 // Save contents into DB
 export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
   const { mutateAsync: saveMutation, isPending } = useMutation({
-    mutationFn: async (localContents: LocalContent[]) => {
-      if (localContents.length) {
+    mutationFn: async (contents: Content[]) => {
+      if (contents.length) {
         const saveContents = await Promise.all(
-          localContents.map(async (localContent) => {
-            if (localContent.type === 'file') {
-              if (localContent.fileDelete) {
-                // Delete the image from DB and finally remove it from cache as well
-                if (typeof localContent.data === 'string') {
-                  try {
-                    await deleteImage(localContent.data);
-                  } catch {
-                    console.error('Failed to delete an image from the server.');
-                  }
-                }
-                return null;
-              } else {
-                const { fileDelete: _, ...content } = await fileToURL(localContent);
-                return content as ImageContent;
-              }
-            } else {
-              return localContent;
+          contents.map(async (content) => {
+            const res = editorContentSchema.safeParse(JSON.parse(content.data));
+
+            if (res.error) {
+              throw new ApiError('VALIDATION', { cause: res.error });
             }
+
+            const parsed = res.data;
+            parsed.root.children = await Promise.all(
+              parsed.root.children.map(async (child) => {
+                child.children = await convertContent(child.children);
+                return child;
+              })
+            );
+
+            content.data = JSON.stringify(parsed);
+            return content;
           })
         );
 
@@ -95,6 +81,22 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
     },
   });
 
+  const convertContent = async (children: NODE[]) => {
+    return await Promise.all(
+      children.map(async (child) => {
+        if (child.type === 'text') {
+          return child;
+        }
+
+        // child.type === 'file'
+        if (isBase64DataUrl(child.src)) {
+          child.src = await Base64ToURL(child.src);
+        }
+        return child;
+      })
+    );
+  };
+
   const handleSave = async () => {
     if (isPending) {
       console.warn('Save operation already in progress. Ignoring new request.');
@@ -102,7 +104,7 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
     }
 
     const currentData = queryClient.getQueryData<{
-      contents: LocalContent[];
+      contents: Content[];
     }>(getContentsQueryKey(planId));
 
     if (currentData) {
@@ -124,26 +126,27 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
 };
 
 // Replace a File object in Content.data with Supabase Storage URL
-const fileToURL = async (content: LocalImageContent) => {
-  if (content.type === 'file' && content.data instanceof File) {
-    const { fullPath: filePath } = await uploadImage(content.data);
-    return { ...content, data: filePath };
-  }
-  return content;
+const Base64ToURL = async (content: string) => {
+  const res = await fetch(content);
+  const blob = await res.blob();
+
+  const file = new File([blob], 'png', { type: blob.type });
+  const { fullPath: filePath } = await uploadImage(file);
+  return filePath;
 };
 
 // Add or update a content in cache
 export const useUpdateLocalContents = (queryClient: QueryClient, planId: number) => {
-  return (updatedContent: LocalContent, replace = true) => {
+  return (updatedContent: Content, replace = true) => {
     const queryKey = getContentsQueryKey(planId);
-    const previousData = queryClient.getQueryData<{ contents: LocalContent[] }>(queryKey) ?? {
+    const previousData = queryClient.getQueryData<{ contents: Content[] }>(queryKey) ?? {
       contents: [],
     };
     const prevContents = previousData.contents;
 
     if (!prevContents) return;
 
-    let updatedList: LocalContent[];
+    let updatedList: Content[];
 
     if (replace) {
       updatedList = prevContents
@@ -164,8 +167,8 @@ export const useUpdateLocalContents = (queryClient: QueryClient, planId: number)
 
 // Delete a content from cache
 export const useDeleteLocalContents = (queryClient: QueryClient, planId: number) => {
-  return (deletedContent: LocalContent) => {
-    const previousData = queryClient.getQueryData<{ contents: LocalContent[] }>(
+  return (deletedContent: Content) => {
+    const previousData = queryClient.getQueryData<{ contents: Content[] }>(
       getContentsQueryKey(planId)
     ) ?? { contents: [] };
     const prevContents = previousData.contents;
@@ -175,21 +178,12 @@ export const useDeleteLocalContents = (queryClient: QueryClient, planId: number)
     }
 
     const newContents = prevContents.reduce((acc, current) => {
-      if (current.id === deletedContent.id) {
-        if (deletedContent.type === 'file') {
-          if (typeof deletedContent.data === 'string') {
-            // If an image is already stored in DB, simply mark it to delete it from DB while saving changes
-            // and then this will be removed from cache
-            deletedContent.fileDelete = true;
-            acc.push(deletedContent);
-          }
-        }
-      } else {
+      if (current.id !== deletedContent.id) {
         acc.push(current);
       }
 
       return acc;
-    }, [] as LocalContent[]);
+    }, [] as Content[]);
 
     queryClient.setQueryData(getContentsQueryKey(planId), {
       contents: newContents,
@@ -198,8 +192,8 @@ export const useDeleteLocalContents = (queryClient: QueryClient, planId: number)
 };
 
 // Sort contents by time
-export const getSortedContents = (contents: LocalContent[]): LocalContent[] => {
-  const active = contents.filter((c) => c.type === 'text' && c.isTimeActive) as TextContent[];
+export const getSortedContents = (contents: Content[]): Content[] => {
+  const active = contents.filter((c) => c.type === 'text' && c.isTimeActive);
   const inactive = contents.filter((c) => !(c.type === 'text' && c.isTimeActive));
 
   active.sort((a, b) => {
