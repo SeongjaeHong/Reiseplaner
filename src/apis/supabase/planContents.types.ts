@@ -6,27 +6,19 @@ const planTimeSchema = z.object({
 });
 export type PlanTime = z.infer<typeof planTimeSchema>;
 
-const textContentSchema = z.object({
+const lexcialEmptyRoot =
+  '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
+
+export const ContentSchema = z.object({
   id: z.string(),
   type: z.literal('text'),
   title: z.string(),
-  data: z.string(),
+  data: z.string().default(lexcialEmptyRoot),
   box: z.enum(['plain', 'note']),
   time: planTimeSchema,
   isTimeActive: z.boolean(),
 });
-export type TextContent = z.infer<typeof textContentSchema>;
 
-const imageContentSchema = z.object({
-  id: z.string(),
-  type: z.literal('file'),
-  data: z.string(),
-  width: z.number(),
-  height: z.number(),
-});
-export type ImageContent = z.infer<typeof imageContentSchema>;
-
-export const ContentSchema = z.discriminatedUnion('type', [textContentSchema, imageContentSchema]);
 export type Content = z.infer<typeof ContentSchema>;
 
 export const planContentsResponseSchema = z
