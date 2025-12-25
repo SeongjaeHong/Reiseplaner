@@ -1,5 +1,7 @@
 import { $insertNodes, type LexicalEditor } from 'lexical';
 import { ImageNode } from '../components/Editor/ImageNode';
+import { editorContentSchema } from '../components/Editor/editor.types';
+import { deleteImage } from '@/apis/supabase/buckets';
 
 export function useAddImage() {
   return async (e: React.ChangeEvent<HTMLInputElement>, editor: LexicalEditor) => {
@@ -58,3 +60,44 @@ export function isBase64DataUrl(src: string) {
 
   return src.startsWith('data:') && src.includes(';base64,');
 }
+
+export const deleteEditorImagesFromDB = async (prev: string, curr?: string) => {
+  const prevImageSrcs = extractImageSrcs(prev);
+
+  let deletedImages: string[];
+  if (curr) {
+    // delete images only removed from the editor.
+    const currentImageSrcs = extractImageSrcs(curr);
+    deletedImages = [...prevImageSrcs].filter((src) => !currentImageSrcs.has(src));
+  } else {
+    // delete all images in the editor.
+    deletedImages = [...prevImageSrcs];
+  }
+
+  if (deletedImages.length > 0) {
+    await deleteImage(deletedImages);
+  }
+};
+
+// Extract all image sources from contents.
+const extractImageSrcs = (data: string): Set<string> => {
+  const srcs = new Set<string>();
+
+  const res = editorContentSchema.safeParse(JSON.parse(data));
+
+  if (!res.success) {
+    return srcs;
+  }
+
+  res.data.root.children.forEach((block) => {
+    block.children?.forEach((child) => {
+      if (child.type === 'file' && typeof child.src === 'string') {
+        if (!isBase64DataUrl(child.src)) {
+          srcs.add(child.src);
+        }
+      }
+    });
+  });
+
+  return srcs;
+};

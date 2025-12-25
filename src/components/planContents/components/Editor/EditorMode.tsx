@@ -9,10 +9,8 @@ import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import TimeWidget from '../DetailPlans/TimeWidget';
 import { ImageNode } from './ImageNode';
-import { deleteImage } from '@/apis/supabase/buckets';
-import { isBase64DataUrl, useAddImage } from '../../utils/image';
+import { deleteEditorImagesFromDB, useAddImage } from '../../utils/image';
 import { toast } from '@/components/common/Toast/toast';
-import { editorContentSchema } from './editor.types';
 import { FaImage, FaTag } from 'react-icons/fa6';
 import type { Content } from '@/apis/supabase/planContents.types';
 
@@ -27,29 +25,6 @@ const editorConfig = {
   },
   onError: (error: Error) => console.error(error),
   nodes: [ImageNode],
-};
-
-// Extract all image sources from contents.
-const extractImageSrcs = (data: string): Set<string> => {
-  const srcs = new Set<string>();
-
-  const res = editorContentSchema.safeParse(JSON.parse(data));
-
-  if (!res.success) {
-    return srcs;
-  }
-
-  res.data.root.children.forEach((block) => {
-    block.children?.forEach((child) => {
-      if (child.type === 'file' && typeof child.src === 'string') {
-        if (!isBase64DataUrl(child.src)) {
-          srcs.add(child.src);
-        }
-      }
-    });
-  });
-
-  return srcs;
 };
 
 type EditorMode = {
@@ -83,12 +58,7 @@ export default function EditorMode({
     }
 
     // If images were removed from the editor, it deletes the same images from DB
-    const prevImageSrcs = extractImageSrcs(initialState);
-    const currentImageSrcs = extractImageSrcs(editorState);
-    const deletedImages = [...prevImageSrcs].filter((src) => !currentImageSrcs.has(src));
-    if (deletedImages.length > 0) {
-      void deleteImage(deletedImages);
-    }
+    void deleteEditorImagesFromDB(initialState, editorState);
 
     updateContents({
       ...content,
