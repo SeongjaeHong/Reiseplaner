@@ -1,20 +1,16 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { FaCirclePlus } from 'react-icons/fa6';
-import { IoIosAttach } from 'react-icons/io';
 import {
   useDeleteLocalContents,
   useSaveChanges,
   useSuspenseQueryLocalContents,
   useUpdateLocalContents,
-  type LocalContent,
 } from '../../utils/contents';
 import { useAddText } from '../../utils/text';
-import { useAddImage } from '../../utils/image';
+import PlanEditor from '../Editor/PlanEditor';
 import type { TextBoxHandle } from './TextBox';
-import TextBox from './TextBox';
-import ImageBox from './ImageBox';
-import { toast } from '@/components/common/Toast/toast';
+import type { Content } from '@/apis/supabase/planContents.types';
 
 export type DetailPlansHandle = {
   saveChanges: () => Promise<void>;
@@ -73,14 +69,14 @@ export default function DetailPlans({ planId, ref, focusedId, setFocusedId }: De
   const autoSave = useAutoSave(handleSaveChanges);
 
   const updateLocalContents = useUpdateLocalContents(queryClient, planId);
-  const handleUpdateLocalContents = (updatedContent: LocalContent, replace = true) => {
+  const handleUpdateLocalContents = (updatedContent: Content, replace = true) => {
     updateLocalContents(updatedContent, replace);
     updateContentsStatus('Dirty');
     autoSave();
   };
 
   const deleteLocalContents = useDeleteLocalContents(queryClient, planId);
-  const handleDeleteLocalContents = (deletedContent: LocalContent) => {
+  const handleDeleteLocalContents = (deletedContent: Content) => {
     deleteLocalContents(deletedContent);
     updateContentsStatus('Dirty');
     autoSave();
@@ -90,11 +86,6 @@ export default function DetailPlans({ planId, ref, focusedId, setFocusedId }: De
   const handleAddText = useAddText({
     updateLocalContents: (content) => handleUpdateLocalContents(content, false),
     setEditingId,
-  });
-
-  const refFileInput = useRef<HTMLInputElement | null>(null);
-  const addFile = useAddImage({
-    updateLocalContents: (content) => handleUpdateLocalContents(content, false),
   });
 
   const contentRefs = useRef<Record<string, TextBoxHandle | null>>({});
@@ -115,63 +106,27 @@ export default function DetailPlans({ planId, ref, focusedId, setFocusedId }: De
   return (
     <>
       {data?.contents?.map((content) => {
-        if (content.type === 'text') {
-          return (
-            <TextBox
-              ref={(el) => {
-                contentRefs.current[content.id] = el;
-              }}
-              content={content}
-              isFocused={focusedId === content.id}
-              isEdit={editingId === content.id}
-              onFocus={() => setFocusedId(content.id)}
-              setEditingId={setEditingId}
-              updateContents={handleUpdateLocalContents}
-              deleteContents={handleDeleteLocalContents}
-              key={content.id}
-            />
-          );
-        } else if (content.type === 'file' && !content.fileDelete) {
-          return (
-            <ImageBox
-              content={content}
-              updateContents={handleUpdateLocalContents}
-              deleteContents={handleDeleteLocalContents}
-              key={content.id}
-            />
-          );
-        }
+        return (
+          <PlanEditor
+            ref={(el) => {
+              contentRefs.current[content.id] = el;
+            }}
+            content={content}
+            isFocused={focusedId === content.id}
+            isEdit={editingId === content.id}
+            onFocus={() => setFocusedId(content.id)}
+            setEditingId={setEditingId}
+            updateContents={handleUpdateLocalContents}
+            deleteContents={handleDeleteLocalContents}
+            key={content.id}
+          />
+        );
       })}
 
       {/* A function layer at the bottom*/}
       <div className='mt-5 ml-2 flex items-center gap-2'>
         <button onClick={handleAddText}>
           <FaCirclePlus className='text-reiseorange text-3xl hover:text-orange-400' />
-        </button>
-        <button
-          onClick={() => refFileInput.current?.click()}
-          className='bg-reiseorange flex rounded-xl py-1 pr-2 font-bold text-white hover:bg-orange-400'
-        >
-          <input
-            type='file'
-            accept='image/*'
-            ref={refFileInput}
-            onChange={(e) => {
-              const fileInput = e.currentTarget;
-              void (async () => {
-                try {
-                  await addFile(e);
-                } catch (error) {
-                  toast.error('Failed to upload an image.');
-                  console.error(error);
-                }
-                fileInput.value = '';
-              })();
-            }}
-            className='hidden'
-          />
-          <IoIosAttach className='text-2xl' />
-          <span>File</span>
         </button>
       </div>
     </>
