@@ -4,6 +4,7 @@ import EditorMode from './EditorMode';
 import ViewerMode from './ViewerMode';
 import type { Content } from '@/apis/supabase/planContents.types';
 import { editorContentSchema } from './editor.types';
+import { deleteEditorImagesFromDB } from '../../utils/image';
 
 const EMPTY_CONTENT =
   '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
@@ -55,6 +56,11 @@ export default function PlanEditor({
   }));
 
   const initialState = getSafeEditorState(content.data);
+  const handleDelete = () => {
+    // If images were removed from the editor, it deletes the same images from DB
+    void deleteEditorImagesFromDB(initialState);
+    deleteContents(content);
+  };
 
   return (
     <div
@@ -82,7 +88,7 @@ export default function PlanEditor({
 
       {/* 삭제 버튼 */}
       <div className='bg-reiseorange invisible absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full group-hover:visible'>
-        <button onClick={() => deleteContents(content)} className='text-xs text-white'>
+        <button onClick={handleDelete} className='text-xs text-white'>
           <FaRegTrashCan />
         </button>
       </div>
