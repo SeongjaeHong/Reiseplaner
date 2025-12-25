@@ -1,27 +1,19 @@
-import { v4 as uuid } from 'uuid';
-import type { LocalContent, LocalImageContent } from './contents';
+import { $insertNodes, type LexicalEditor } from 'lexical';
+import { ImageNode } from '../components/Editor/ImageNode';
 
-type UseAddImage = {
-  updateLocalContents: (content: LocalContent) => void;
-};
-export function useAddImage({ updateLocalContents }: UseAddImage) {
-  return async (e: React.ChangeEvent<HTMLInputElement>) => {
+export function useAddImage() {
+  return async (e: React.ChangeEvent<HTMLInputElement>, editor: LexicalEditor) => {
     const file = e.target.files?.[0] ?? null;
     if (!file) {
-      return null;
+      return;
     }
 
     const dataURL = await readFileAsDataURL(file);
     const { width, height } = await getImageDimensions(dataURL);
-    const newContent: LocalImageContent = {
-      id: uuid(),
-      type: 'file',
-      data: file,
-      width,
-      height,
-      fileDelete: false,
-    };
-    updateLocalContents(newContent);
+    editor.update(() => {
+      const imageNode = new ImageNode(dataURL, width, height); // 미리보기용 base64 주입
+      $insertNodes([imageNode]);
+    });
   };
 }
 
@@ -57,4 +49,12 @@ function getImageDimensions(src: string): Promise<{ width: number; height: numbe
     };
     img.src = src;
   });
+}
+
+export function isBase64DataUrl(src: string) {
+  if (typeof src !== 'string') {
+    return false;
+  }
+
+  return src.startsWith('data:') && src.includes(';base64,');
 }
