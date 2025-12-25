@@ -30,13 +30,25 @@ export const uploadImage = async (file: File) => {
   return res.data;
 };
 
-export const deleteImage = async (filePath: string) => {
-  const fileName = getFileName(filePath);
-  if (isDefaultImage(fileName)) {
-    return null;
+export const deleteImage = async (filePath: string | string[]) => {
+  let paths: string[];
+  if (typeof filePath === 'string') {
+    paths = [filePath];
+  } else {
+    paths = filePath;
   }
 
-  const { error } = await supabase.storage.from('images').remove([fileName]);
+  const fileNames = paths
+    .map((path) => {
+      const name = getFileName(path);
+      if (isDefaultImage(name)) {
+        return null;
+      }
+      return name;
+    })
+    .filter((name) => name !== null);
+
+  const { error } = await supabase.storage.from('images').remove(fileNames);
 
   if (error) {
     throw new ApiError('DATABASE', {
