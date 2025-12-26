@@ -43,13 +43,8 @@ export default function DetailPlans({ planId, ref, focusedId, setFocusedId }: De
     if (isSavePendingRef.current) {
       try {
         await waitFor(() => !isSavePendingRef.current, 5000);
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message);
-        } else {
-          console.error('An unknown error occurred while waiting for saving');
-        }
-        return;
+      } catch {
+        throw new Error('Saving in progress. Please try again in a moment.');
       }
     }
 
@@ -159,7 +154,7 @@ const waitFor = (condition: () => boolean, timeout = 5000): Promise<void> => {
       if (condition()) {
         resolve();
       } else if (Date.now() - startTime > timeout) {
-        reject(new Error('waitFor timeout exceeded'));
+        reject(new Error('waitFor timeout exceeded.'));
       } else {
         setTimeout(checkCondition, 100);
       }
