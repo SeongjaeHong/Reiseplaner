@@ -4,10 +4,9 @@ import { Suspense, useReducer } from 'react';
 import CreatePlanGroupPopupBox from '@/components/planGroup/CreatePlanGroupPopupBox';
 import { useQuery } from '@tanstack/react-query';
 import { getPlanGroups } from '@/apis/supabase/planGroups';
-import { INDEX, PLAN_GROUP } from './-constant';
 import PlanGroup from '@/components/planGroup/PlanGroup';
 
-export const Route = createFileRoute(INDEX)({
+export const Route = createFileRoute('/')({
   component: Index,
 });
 
@@ -25,7 +24,7 @@ function Index() {
       <div className='grid grid-cols-2 gap-2 p-2 max-md:grid-cols-1 xl:grid-cols-3'>
         {planGroups?.map((planGroup) => (
           <Suspense fallback={<PlanGroupSkeleton />} key={planGroup.id}>
-            <PlanGroup to={PLAN_GROUP} planGroup={planGroup} refetch={() => refetch()} />
+            <PlanGroup planGroup={planGroup} refetch={() => refetch()} />
           </Suspense>
         ))}
       </div>

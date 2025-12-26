@@ -6,13 +6,12 @@ import ChangePlanNamePopupBox from './ChangePlanNamePopupBox';
 import type { Database } from '@/database.types';
 
 type Plan = {
-  to: string;
   plan: Database['public']['Tables']['plans']['Row'];
   groupTitle: string;
   refetch: () => Promise<unknown>;
 };
 
-export default function Plan({ to, plan, groupTitle, refetch }: Plan) {
+export default function Plan({ plan, groupTitle, refetch }: Plan) {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteBox, toggleShowDeleteBox] = useReducer((prev) => !prev, false);
   const [showChangeNameBox, toggleShowChangeNameBox] = useReducer((prev) => !prev, false);
@@ -38,7 +37,7 @@ export default function Plan({ to, plan, groupTitle, refetch }: Plan) {
   return (
     <>
       <Link
-        to={to}
+        to={'/plangroup/plan/'}
         search={{
           group_title: groupTitle,
           plan_id: plan.id,

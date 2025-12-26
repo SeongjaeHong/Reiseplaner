@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { FaAngleLeft } from 'react-icons/fa6';
 import PlanContents from '@/components/planContents/PlanContents';
 import { useEffect, useRef, useState } from 'react';
-import { PLAN } from '../-constant';
 import type { DetailPlansHandle } from '@/components/planContents/components/DetailPlans/DetailPlans';
 import { toast } from '@/components/common/Toast/toast';
 
@@ -15,7 +14,7 @@ const planParam = z.object({
 
 type PlanParam = z.infer<typeof planParam>;
 
-export const Route = createFileRoute(PLAN)({
+export const Route = createFileRoute('/plangroup/plan')({
   validateSearch: (search): PlanParam => planParam.parse(search),
   component: Plan,
 });

@@ -2,7 +2,6 @@ import { getPlansByGroupId } from '@/apis/supabase/plans';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { FaAngleLeft, FaPenToSquare } from 'react-icons/fa6';
-import { PLAN, PLAN_GROUP } from '../-constant';
 import { useReducer } from 'react';
 import { z } from 'zod';
 import CreatePlanPopupBox from '@/components/plan/CreatePlanPopupBox';
@@ -14,7 +13,7 @@ const planGroupParam = z.object({
 });
 type PlanGroupParam = z.infer<typeof planGroupParam>;
 
-export const Route = createFileRoute(PLAN_GROUP)({
+export const Route = createFileRoute('/plangroup/')({
   validateSearch: (search): PlanGroupParam => planGroupParam.parse(search),
   component: Index,
 });
@@ -38,7 +37,7 @@ function Index() {
       <div className='relative min-h-100 bg-white p-2'>
         {isLoading && <PlansSkeleton />}
         {plans?.map((plan) => (
-          <Plan to={PLAN} plan={plan} groupTitle={groupTitle} refetch={refetch} key={plan.id} />
+          <Plan plan={plan} groupTitle={groupTitle} refetch={refetch} key={plan.id} />
         ))}
         <div className='flex justify-end'>
           <button className='mt-1 mr-1' onClick={toggleShowCreatePlanBox}>
