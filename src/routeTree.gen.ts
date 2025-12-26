@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SigninIndexRouteImport } from './routes/signin/index'
 import { Route as PlangroupIndexRouteImport } from './routes/plangroup/index'
 import { Route as PlangroupPlanRouteImport } from './routes/plangroup/plan'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SigninIndexRoute = SigninIndexRouteImport.update({
+  id: '/signin/',
+  path: '/signin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlangroupIndexRoute = PlangroupIndexRouteImport.update({
@@ -33,30 +39,34 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/plangroup/plan': typeof PlangroupPlanRoute
   '/plangroup': typeof PlangroupIndexRoute
+  '/signin': typeof SigninIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/plangroup/plan': typeof PlangroupPlanRoute
   '/plangroup': typeof PlangroupIndexRoute
+  '/signin': typeof SigninIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/plangroup/plan': typeof PlangroupPlanRoute
   '/plangroup/': typeof PlangroupIndexRoute
+  '/signin/': typeof SigninIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/plangroup/plan' | '/plangroup'
+  fullPaths: '/' | '/plangroup/plan' | '/plangroup' | '/signin'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/plangroup/plan' | '/plangroup'
-  id: '__root__' | '/' | '/plangroup/plan' | '/plangroup/'
+  to: '/' | '/plangroup/plan' | '/plangroup' | '/signin'
+  id: '__root__' | '/' | '/plangroup/plan' | '/plangroup/' | '/signin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PlangroupPlanRoute: typeof PlangroupPlanRoute
   PlangroupIndexRoute: typeof PlangroupIndexRoute
+  SigninIndexRoute: typeof SigninIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signin/': {
+      id: '/signin/'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/plangroup/': {
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PlangroupPlanRoute: PlangroupPlanRoute,
   PlangroupIndexRoute: PlangroupIndexRoute,
+  SigninIndexRoute: SigninIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
