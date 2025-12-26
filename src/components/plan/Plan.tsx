@@ -37,7 +37,7 @@ export default function Plan({ plan, groupTitle, refetch }: Plan) {
   return (
     <>
       <Link
-        to={'/plangroup/plan/'}
+        to={'/plangroup/plan'}
         search={{
           group_title: groupTitle,
           plan_id: plan.id,

@@ -51,7 +51,7 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
 
   return (
     <>
-      <Link to={'/plangroup/'} search={{ group_id: planGroup.id, group_title: planGroup.title }}>
+      <Link to={'/plangroup'} search={{ group_id: planGroup.id, group_title: planGroup.title }}>
         <div className='group bg-reisered relative flex h-60 truncate'>
           <div className='w-1/3 flex-shrink-0'>
             {thumbnail && (
