@@ -25,7 +25,7 @@ function RouteComponent() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(signUpSchema),
   });
@@ -103,8 +103,14 @@ function RouteComponent() {
               )}
             </div>
 
-            <button type='submit' className='bg-reiseorange w-full rounded-md py-1'>
+            <button
+              type='submit'
+              className='bg-reiseorange flex w-full items-center justify-center gap-2 rounded-md py-1'
+            >
               <span className='text-white'>Sign up</span>
+              {isSubmitting && (
+                <div className='size-4 animate-spin rounded-full border-[2px] border-t-transparent text-white' />
+              )}
             </button>
           </form>
         </div>
