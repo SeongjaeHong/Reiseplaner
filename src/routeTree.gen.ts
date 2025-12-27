@@ -9,68 +9,74 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as SignupIndexRouteImport } from './routes/signup/index'
-import { Route as SigninIndexRouteImport } from './routes/signin/index'
-import { Route as PlangroupIndexRouteImport } from './routes/plangroup/index'
-import { Route as SignupSuccessRouteImport } from './routes/signup/success'
-import { Route as PlangroupPlanRouteImport } from './routes/plangroup/plan'
+import { Route as privateRouteRouteImport } from './routes/(private)/route'
+import { Route as privateIndexRouteImport } from './routes/(private)/index'
+import { Route as publicSignupIndexRouteImport } from './routes/(public)/signup/index'
+import { Route as publicSigninIndexRouteImport } from './routes/(public)/signin/index'
+import { Route as privatePlangroupIndexRouteImport } from './routes/(private)/plangroup/index'
+import { Route as publicSignupSuccessRouteImport } from './routes/(public)/signup/success'
+import { Route as privatePlangroupPlanRouteImport } from './routes/(private)/plangroup/plan'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const privateRouteRoute = privateRouteRouteImport.update({
+  id: '/(private)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SignupIndexRoute = SignupIndexRouteImport.update({
-  id: '/signup/',
+const privateIndexRoute = privateIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => privateRouteRoute,
+} as any)
+const publicSignupIndexRoute = publicSignupIndexRouteImport.update({
+  id: '/(public)/signup/',
   path: '/signup/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SigninIndexRoute = SigninIndexRouteImport.update({
-  id: '/signin/',
+const publicSigninIndexRoute = publicSigninIndexRouteImport.update({
+  id: '/(public)/signin/',
   path: '/signin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlangroupIndexRoute = PlangroupIndexRouteImport.update({
+const privatePlangroupIndexRoute = privatePlangroupIndexRouteImport.update({
   id: '/plangroup/',
   path: '/plangroup/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => privateRouteRoute,
 } as any)
-const SignupSuccessRoute = SignupSuccessRouteImport.update({
-  id: '/signup/success',
+const publicSignupSuccessRoute = publicSignupSuccessRouteImport.update({
+  id: '/(public)/signup/success',
   path: '/signup/success',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlangroupPlanRoute = PlangroupPlanRouteImport.update({
+const privatePlangroupPlanRoute = privatePlangroupPlanRouteImport.update({
   id: '/plangroup/plan',
   path: '/plangroup/plan',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => privateRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/plangroup/plan': typeof PlangroupPlanRoute
-  '/signup/success': typeof SignupSuccessRoute
-  '/plangroup': typeof PlangroupIndexRoute
-  '/signin': typeof SigninIndexRoute
-  '/signup': typeof SignupIndexRoute
+  '/': typeof privateIndexRoute
+  '/plangroup/plan': typeof privatePlangroupPlanRoute
+  '/signup/success': typeof publicSignupSuccessRoute
+  '/plangroup': typeof privatePlangroupIndexRoute
+  '/signin': typeof publicSigninIndexRoute
+  '/signup': typeof publicSignupIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/plangroup/plan': typeof PlangroupPlanRoute
-  '/signup/success': typeof SignupSuccessRoute
-  '/plangroup': typeof PlangroupIndexRoute
-  '/signin': typeof SigninIndexRoute
-  '/signup': typeof SignupIndexRoute
+  '/': typeof privateIndexRoute
+  '/plangroup/plan': typeof privatePlangroupPlanRoute
+  '/signup/success': typeof publicSignupSuccessRoute
+  '/plangroup': typeof privatePlangroupIndexRoute
+  '/signin': typeof publicSigninIndexRoute
+  '/signup': typeof publicSignupIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/plangroup/plan': typeof PlangroupPlanRoute
-  '/signup/success': typeof SignupSuccessRoute
-  '/plangroup/': typeof PlangroupIndexRoute
-  '/signin/': typeof SigninIndexRoute
-  '/signup/': typeof SignupIndexRoute
+  '/(private)': typeof privateRouteRouteWithChildren
+  '/(private)/': typeof privateIndexRoute
+  '/(private)/plangroup/plan': typeof privatePlangroupPlanRoute
+  '/(public)/signup/success': typeof publicSignupSuccessRoute
+  '/(private)/plangroup/': typeof privatePlangroupIndexRoute
+  '/(public)/signin/': typeof publicSigninIndexRoute
+  '/(public)/signup/': typeof publicSignupIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,77 +97,97 @@ export interface FileRouteTypes {
     | '/signup'
   id:
     | '__root__'
-    | '/'
-    | '/plangroup/plan'
-    | '/signup/success'
-    | '/plangroup/'
-    | '/signin/'
-    | '/signup/'
+    | '/(private)'
+    | '/(private)/'
+    | '/(private)/plangroup/plan'
+    | '/(public)/signup/success'
+    | '/(private)/plangroup/'
+    | '/(public)/signin/'
+    | '/(public)/signup/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  PlangroupPlanRoute: typeof PlangroupPlanRoute
-  SignupSuccessRoute: typeof SignupSuccessRoute
-  PlangroupIndexRoute: typeof PlangroupIndexRoute
-  SigninIndexRoute: typeof SigninIndexRoute
-  SignupIndexRoute: typeof SignupIndexRoute
+  privateRouteRoute: typeof privateRouteRouteWithChildren
+  publicSignupSuccessRoute: typeof publicSignupSuccessRoute
+  publicSigninIndexRoute: typeof publicSigninIndexRoute
+  publicSignupIndexRoute: typeof publicSignupIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/(private)': {
+      id: '/(private)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof privateRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(private)/': {
+      id: '/(private)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof privateIndexRouteImport
+      parentRoute: typeof privateRouteRoute
     }
-    '/signup/': {
-      id: '/signup/'
+    '/(public)/signup/': {
+      id: '/(public)/signup/'
       path: '/signup'
       fullPath: '/signup'
-      preLoaderRoute: typeof SignupIndexRouteImport
+      preLoaderRoute: typeof publicSignupIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/signin/': {
-      id: '/signin/'
+    '/(public)/signin/': {
+      id: '/(public)/signin/'
       path: '/signin'
       fullPath: '/signin'
-      preLoaderRoute: typeof SigninIndexRouteImport
+      preLoaderRoute: typeof publicSigninIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/plangroup/': {
-      id: '/plangroup/'
+    '/(private)/plangroup/': {
+      id: '/(private)/plangroup/'
       path: '/plangroup'
       fullPath: '/plangroup'
-      preLoaderRoute: typeof PlangroupIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof privatePlangroupIndexRouteImport
+      parentRoute: typeof privateRouteRoute
     }
-    '/signup/success': {
-      id: '/signup/success'
+    '/(public)/signup/success': {
+      id: '/(public)/signup/success'
       path: '/signup/success'
       fullPath: '/signup/success'
-      preLoaderRoute: typeof SignupSuccessRouteImport
+      preLoaderRoute: typeof publicSignupSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/plangroup/plan': {
-      id: '/plangroup/plan'
+    '/(private)/plangroup/plan': {
+      id: '/(private)/plangroup/plan'
       path: '/plangroup/plan'
       fullPath: '/plangroup/plan'
-      preLoaderRoute: typeof PlangroupPlanRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof privatePlangroupPlanRouteImport
+      parentRoute: typeof privateRouteRoute
     }
   }
 }
 
+interface privateRouteRouteChildren {
+  privateIndexRoute: typeof privateIndexRoute
+  privatePlangroupPlanRoute: typeof privatePlangroupPlanRoute
+  privatePlangroupIndexRoute: typeof privatePlangroupIndexRoute
+}
+
+const privateRouteRouteChildren: privateRouteRouteChildren = {
+  privateIndexRoute: privateIndexRoute,
+  privatePlangroupPlanRoute: privatePlangroupPlanRoute,
+  privatePlangroupIndexRoute: privatePlangroupIndexRoute,
+}
+
+const privateRouteRouteWithChildren = privateRouteRoute._addFileChildren(
+  privateRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  PlangroupPlanRoute: PlangroupPlanRoute,
-  SignupSuccessRoute: SignupSuccessRoute,
-  PlangroupIndexRoute: PlangroupIndexRoute,
-  SigninIndexRoute: SigninIndexRoute,
-  SignupIndexRoute: SignupIndexRoute,
+  privateRouteRoute: privateRouteRouteWithChildren,
+  publicSignupSuccessRoute: publicSignupSuccessRoute,
+  publicSigninIndexRoute: publicSigninIndexRoute,
+  publicSignupIndexRoute: publicSignupIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

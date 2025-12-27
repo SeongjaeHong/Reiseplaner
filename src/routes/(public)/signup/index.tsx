@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
-export const Route = createFileRoute('/signup/')({
+export const Route = createFileRoute('/(public)/signup/')({
   component: RouteComponent,
 });
 
@@ -36,6 +36,7 @@ function RouteComponent() {
     void handleSubmit(async (value) => {
       try {
         await signUp(value.email, value.password);
+        void navigate({ to: '/signup/success' });
       } catch {
         setShowMsg(true);
       }
@@ -43,7 +44,7 @@ function RouteComponent() {
   };
   return (
     <>
-      <div className='fixed left-1/2 -translate-x-1/2'>
+      <div className='fixed top-30 left-1/2 -translate-x-1/2'>
         <h1 className='text-reisered mb-8 text-center text-5xl font-bold text-black'>
           Reiseplaner
         </h1>
@@ -106,12 +107,6 @@ function RouteComponent() {
               <span className='text-white'>Sign up</span>
             </button>
           </form>
-          <button
-            onClick={() => void navigate({ to: '/signup/success' })}
-            className='my-2 w-full rounded-md bg-red-300 py-2 text-white'
-          >
-            이동
-          </button>
         </div>
       </div>
       {showMsg && (

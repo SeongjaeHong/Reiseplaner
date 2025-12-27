@@ -13,7 +13,7 @@ const planGroupParam = z.object({
 });
 type PlanGroupParam = z.infer<typeof planGroupParam>;
 
-export const Route = createFileRoute('/plangroup/')({
+export const Route = createFileRoute('/(private)/plangroup/')({
   validateSearch: (search): PlanGroupParam => planGroupParam.parse(search),
   component: Index,
 });

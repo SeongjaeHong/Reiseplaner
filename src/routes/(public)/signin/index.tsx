@@ -6,7 +6,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { signIn, signInWithOAuth } from '@/apis/supabase/auth';
 import { useState } from 'react';
 
-export const Route = createFileRoute('/signin/')({
+export const Route = createFileRoute('/(public)/signin/')({
   component: RouteComponent,
 });
 
@@ -38,7 +38,7 @@ function RouteComponent() {
   };
 
   return (
-    <div className='fixed left-1/2 -translate-x-1/2'>
+    <div className='fixed top-30 left-1/2 -translate-x-1/2'>
       <h1 className='text-reisered mb-8 text-center text-5xl font-bold text-black'>Reiseplaner</h1>
       <div className='w-100 rounded-md bg-white p-8 text-black max-[430px]:w-80'>
         <h1 className='text-center text-xl font-bold'>Sign in to Reiseplaner</h1>

@@ -1,10 +1,10 @@
+import { useEffect, useRef, useState } from 'react';
 import { createFileRoute, useBlocker, useRouter } from '@tanstack/react-router';
 import { z } from 'zod';
 import { FaAngleLeft } from 'react-icons/fa6';
-import PlanContents from '@/components/planContents/PlanContents';
-import { useEffect, useRef, useState } from 'react';
-import type { DetailPlansHandle } from '@/components/planContents/components/DetailPlans/DetailPlans';
 import { toast } from '@/components/common/Toast/toast';
+import type { DetailPlansHandle } from '@/components/planContents/components/DetailPlans/DetailPlans';
+import PlanContents from '@/components/planContents/PlanContents';
 
 const planParam = z.object({
   group_title: z.string(),
@@ -14,7 +14,7 @@ const planParam = z.object({
 
 type PlanParam = z.infer<typeof planParam>;
 
-export const Route = createFileRoute('/plangroup/plan')({
+export const Route = createFileRoute('/(private)/plangroup/plan')({
   validateSearch: (search): PlanParam => planParam.parse(search),
   component: Plan,
 });

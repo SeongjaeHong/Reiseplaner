@@ -1,14 +1,14 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { MdEmail } from 'react-icons/md';
 
-export const Route = createFileRoute('/signup/success')({
+export const Route = createFileRoute('/(public)/signup/success')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const navigate = useNavigate();
   return (
-    <div className='mx-auto w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-sm'>
+    <div className='fixed top-30 left-1/2 w-4/5 max-w-md -translate-x-1/2 rounded-2xl bg-white p-8 text-center shadow-sm'>
       <div className='mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100'>
         <MdEmail className='h-8 w-8 text-blue-600' />
       </div>
