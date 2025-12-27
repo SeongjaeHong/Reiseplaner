@@ -1,21 +1,27 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
-import { INDEX } from './-constant';
+import { createRootRouteWithContext, Outlet, useNavigate } from '@tanstack/react-router';
 import PageNotFound from '@/errors/PageNotFound';
+import type { RouterContext } from '@/main';
+import { useContext, useEffect } from 'react';
+import { AuthContext } from '@/components/auth/AuthContext';
 
-const RootLayout = () => (
-  <>
-    <div className='bg-reiseblue flex h-20 items-center pl-5'>
-      <Link to={INDEX}>
-        <h1 className='text-5xl font-bold'>Reiseplaner</h1>
-      </Link>
-    </div>
-    <div className='m-5'>
-      <Outlet />
-    </div>
-  </>
-);
-
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
   errorComponent: () => <PageNotFound />,
 });
+
+function RootLayout() {
+  const { user, loading } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (user) {
+      void navigate({ to: '/' });
+    } else {
+      void navigate({ to: '/signin' });
+    }
+  }, [user, loading, navigate]);
+
+  return <Outlet />;
+}
