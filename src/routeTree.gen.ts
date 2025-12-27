@@ -10,13 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SignupIndexRouteImport } from './routes/signup/index'
 import { Route as SigninIndexRouteImport } from './routes/signin/index'
 import { Route as PlangroupIndexRouteImport } from './routes/plangroup/index'
+import { Route as SignupSuccessRouteImport } from './routes/signup/success'
 import { Route as PlangroupPlanRouteImport } from './routes/plangroup/plan'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupIndexRoute = SignupIndexRouteImport.update({
+  id: '/signup/',
+  path: '/signup/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SigninIndexRoute = SigninIndexRouteImport.update({
@@ -29,6 +36,11 @@ const PlangroupIndexRoute = PlangroupIndexRouteImport.update({
   path: '/plangroup/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupSuccessRoute = SignupSuccessRouteImport.update({
+  id: '/signup/success',
+  path: '/signup/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlangroupPlanRoute = PlangroupPlanRouteImport.update({
   id: '/plangroup/plan',
   path: '/plangroup/plan',
@@ -38,35 +50,62 @@ const PlangroupPlanRoute = PlangroupPlanRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/plangroup/plan': typeof PlangroupPlanRoute
+  '/signup/success': typeof SignupSuccessRoute
   '/plangroup': typeof PlangroupIndexRoute
   '/signin': typeof SigninIndexRoute
+  '/signup': typeof SignupIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/plangroup/plan': typeof PlangroupPlanRoute
+  '/signup/success': typeof SignupSuccessRoute
   '/plangroup': typeof PlangroupIndexRoute
   '/signin': typeof SigninIndexRoute
+  '/signup': typeof SignupIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/plangroup/plan': typeof PlangroupPlanRoute
+  '/signup/success': typeof SignupSuccessRoute
   '/plangroup/': typeof PlangroupIndexRoute
   '/signin/': typeof SigninIndexRoute
+  '/signup/': typeof SignupIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/plangroup/plan' | '/plangroup' | '/signin'
+  fullPaths:
+    | '/'
+    | '/plangroup/plan'
+    | '/signup/success'
+    | '/plangroup'
+    | '/signin'
+    | '/signup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/plangroup/plan' | '/plangroup' | '/signin'
-  id: '__root__' | '/' | '/plangroup/plan' | '/plangroup/' | '/signin/'
+  to:
+    | '/'
+    | '/plangroup/plan'
+    | '/signup/success'
+    | '/plangroup'
+    | '/signin'
+    | '/signup'
+  id:
+    | '__root__'
+    | '/'
+    | '/plangroup/plan'
+    | '/signup/success'
+    | '/plangroup/'
+    | '/signin/'
+    | '/signup/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PlangroupPlanRoute: typeof PlangroupPlanRoute
+  SignupSuccessRoute: typeof SignupSuccessRoute
   PlangroupIndexRoute: typeof PlangroupIndexRoute
   SigninIndexRoute: typeof SigninIndexRoute
+  SignupIndexRoute: typeof SignupIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -76,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup/': {
+      id: '/signup/'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signin/': {
@@ -92,6 +138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlangroupIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup/success': {
+      id: '/signup/success'
+      path: '/signup/success'
+      fullPath: '/signup/success'
+      preLoaderRoute: typeof SignupSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/plangroup/plan': {
       id: '/plangroup/plan'
       path: '/plangroup/plan'
@@ -105,8 +158,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PlangroupPlanRoute: PlangroupPlanRoute,
+  SignupSuccessRoute: SignupSuccessRoute,
   PlangroupIndexRoute: PlangroupIndexRoute,
   SigninIndexRoute: SigninIndexRoute,
+  SignupIndexRoute: SignupIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
