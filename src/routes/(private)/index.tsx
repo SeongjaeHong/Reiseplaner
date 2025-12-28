@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { FaCirclePlus } from 'react-icons/fa6';
 import { Suspense, useContext, useReducer } from 'react';
 import CreatePlanGroupPopupBox from '@/components/planGroup/CreatePlanGroupPopupBox';
@@ -9,18 +9,6 @@ import { AuthContext } from '@/components/auth/AuthContext';
 
 export const Route = createFileRoute('/(private)/')({
   component: Index,
-  beforeLoad: ({ context }) => {
-    const { user, loading } = context.auth;
-
-    if (loading) {
-      // supabase session has not been read yet.
-      return;
-    }
-
-    if (!user) {
-      return redirect({ to: '/signin' });
-    }
-  },
 });
 
 function Index() {
