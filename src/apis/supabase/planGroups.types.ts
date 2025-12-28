@@ -10,6 +10,7 @@ export const planGroupSchema = z.object({
 export const planGroupResponseSchema = planGroupSchema.extend({
   id: z.number(),
   created_at: z.string(),
+  owner: z.string().nullable(),
 });
 
 export const planGroupArrayResponseSchema = z.array(planGroupResponseSchema).nullable();
