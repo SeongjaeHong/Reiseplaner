@@ -19,18 +19,21 @@ export type Database = {
           contents: Json
           created_at: string
           id: number
+          owner: string
           plans_id: number
         }
         Insert: {
           contents: Json
           created_at?: string
           id?: number
+          owner?: string
           plans_id: number
         }
         Update: {
           contents?: Json
           created_at?: string
           id?: number
+          owner?: string
           plans_id?: number
         }
         Relationships: [
@@ -48,6 +51,7 @@ export type Database = {
           created_at: string
           end_time: string | null
           id: number
+          owner: string | null
           start_time: string | null
           thumbnailURL: string | null
           title: string
@@ -56,6 +60,7 @@ export type Database = {
           created_at?: string
           end_time?: string | null
           id?: number
+          owner?: string | null
           start_time?: string | null
           thumbnailURL?: string | null
           title?: string
@@ -64,6 +69,7 @@ export type Database = {
           created_at?: string
           end_time?: string | null
           id?: number
+          owner?: string | null
           start_time?: string | null
           thumbnailURL?: string | null
           title?: string
@@ -75,18 +81,21 @@ export type Database = {
           created_at: string
           group_id: number
           id: number
+          owner: string | null
           title: string
         }
         Insert: {
           created_at?: string
           group_id: number
           id?: number
+          owner?: string | null
           title?: string
         }
         Update: {
           created_at?: string
           group_id?: number
           id?: number
+          owner?: string | null
           title?: string
         }
         Relationships: [
@@ -98,6 +107,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          email: string
+          id: number
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: number
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: number
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
