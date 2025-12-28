@@ -22,7 +22,12 @@ export const getPlanGroups = async () => {
     .order('id', { ascending: true })
     .throwOnError();
 
-  return planGroupArrayResponseSchema.parse(data);
+  const res = planGroupArrayResponseSchema.safeParse(data);
+  if (!res.success) {
+    throw new ApiError('VALIDATION', { cause: res.error });
+  }
+
+  return res.data;
 };
 
 export const deletePlanGroups = async (planGroupId: number) => {
