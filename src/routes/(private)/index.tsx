@@ -1,10 +1,11 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { FaCirclePlus } from 'react-icons/fa6';
-import { Suspense, useReducer } from 'react';
+import { Suspense, useContext, useReducer } from 'react';
 import CreatePlanGroupPopupBox from '@/components/planGroup/CreatePlanGroupPopupBox';
 import { useQuery } from '@tanstack/react-query';
 import { getPlanGroups } from '@/apis/supabase/planGroups';
 import PlanGroup from '@/components/planGroup/PlanGroup';
+import { AuthContext } from '@/components/auth/AuthContext';
 
 export const Route = createFileRoute('/(private)/')({
   component: Index,
@@ -24,8 +25,9 @@ export const Route = createFileRoute('/(private)/')({
 
 function Index() {
   const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer((prev) => !prev, false);
+  const { user } = useContext(AuthContext);
   const { data: planGroups, refetch } = useQuery({
-    queryKey: ['getPlanGroups'],
+    queryKey: ['getPlanGroups', user],
     queryFn: getPlanGroups,
     staleTime: Infinity,
     throwOnError: true,
