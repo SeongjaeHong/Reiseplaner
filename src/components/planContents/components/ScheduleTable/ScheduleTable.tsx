@@ -1,4 +1,5 @@
 import { useSuspenseQueryLocalContents } from '../../utils/contents';
+import { editorContentSchema } from '../Editor/editor.types';
 
 type ScheduleTable = {
   planId: number;
@@ -18,7 +19,19 @@ export default function ScheduleTable({ planId, focusedId, onSelectContent }: Sc
         <div className='bg-reiseorange absolute left-[46px] h-full w-[2px] max-sm:hidden' />
         {data?.contents.map((content) => {
           if (content.type === 'text' && content.isTimeActive) {
-            const text = content.title ? content.title : content.data.slice(0, 50);
+            const contentBody = editorContentSchema.safeParse(JSON.parse(content.data));
+            let contentBodyText: string;
+            if (!contentBody.success) {
+              contentBodyText = 'Empty';
+            } else {
+              contentBodyText =
+                contentBody.data.root.children[0]?.children
+                  .find((child) => child.type === 'text')
+                  ?.text?.slice(0, 30) ?? 'Empty';
+            }
+
+            const text = content.title ? content.title : contentBodyText;
+
             const startTime =
               String(content.time.start.hour).padStart(2, '0') +
               ':' +
