@@ -10,7 +10,7 @@ const _editorMetaSchema = z.object({
 
 const _nodeMetaSchema = _editorMetaSchema.extend({ textFormat: z.number(), textStyle: z.string() });
 
-export const _textNodeSchema = z.object({
+const _textNodeSchema = z.object({
   type: z.literal('text'),
   text: z.string(),
   detail: z.number(),
@@ -20,7 +20,7 @@ export const _textNodeSchema = z.object({
   version: z.number(),
 });
 
-export const _fileNodeSchema = z.object({
+const _fileNodeSchema = z.object({
   type: z.literal('file'),
   src: z.string(),
   width: z.number(),
