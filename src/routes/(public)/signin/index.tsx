@@ -1,10 +1,10 @@
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
+import { signIn, signInWithOAuth } from '@/apis/supabase/auth';
 import z from 'zod';
 import { FcGoogle } from 'react-icons/fc';
-import { signIn, signInWithOAuth } from '@/apis/supabase/auth';
-import { useState } from 'react';
 
 export const Route = createFileRoute('/(public)/signin/')({
   component: RouteComponent,
@@ -98,23 +98,24 @@ function RouteComponent() {
 
         <p className='my-3 text-center text-zinc-500'>or</p>
 
-        <Link
-          to='/signup'
-          className='mb-1 block w-full rounded-md border-1 border-zinc-300 py-1 text-center hover:border-zinc-400'
-        >
-          <span className='w-full'>Create a new Reiseplaner accout </span>
-        </Link>
-
-        <button
-          type='button'
-          onClick={() => void signInWithOAuth('google')}
-          className='relative flex w-full items-center rounded-md border-1 border-zinc-300 py-1 hover:border-zinc-400'
-        >
-          <span className='absolute left-3 text-lg'>
-            <FcGoogle />
-          </span>
-          <span className='w-full'>Sign in with Google</span>
-        </button>
+        <div className='flex flex-col gap-1'>
+          <Link
+            to='/signup'
+            className='block w-full rounded-md border-1 border-zinc-300 py-1 text-center hover:border-zinc-400'
+          >
+            <span className='w-full'>Create a new Reiseplaner accout </span>
+          </Link>
+          <button
+            type='button'
+            onClick={() => void signInWithOAuth('google')}
+            className='relative flex w-full items-center rounded-md border-1 border-zinc-300 py-1 hover:border-zinc-400'
+          >
+            <span className='absolute left-3 text-lg'>
+              <FcGoogle />
+            </span>
+            <span className='w-full'>Sign in with Google</span>
+          </button>
+        </div>
       </div>
     </div>
   );
