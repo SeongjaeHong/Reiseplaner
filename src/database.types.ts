@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      error_logs: {
+        Row: {
+          context: string | null
+          created_at: string | null
+          error_detail: string | null
+          error_message: string | null
+          id: string
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string | null
+          error_detail?: string | null
+          error_message?: string | null
+          id?: string
+        }
+        Update: {
+          context?: string | null
+          created_at?: string | null
+          error_detail?: string | null
+          error_message?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
       planContents: {
         Row: {
           contents: Json
