@@ -16,8 +16,7 @@ export const Route = createFileRoute('/(private)')({
     const { user, loading } = context.auth;
 
     if (loading) {
-      // supabase session has not been read yet.
-      console.log('Session 로딩 중...');
+      // supabase session has not been read yet.a
       return;
     }
 
@@ -54,7 +53,7 @@ function RouteComponent() {
         </Link>
         <div>
           {user ? (
-            <div className='relative flex items-center justify-end gap-2 bg-red-500'>
+            <div className='relative flex items-center justify-end gap-2'>
               <p className='max w-50 truncate text-right font-bold text-orange-500 max-[570px]:w-40 max-[540px]:text-sm max-[470px]:w-30 max-[420px]:hidden'>
                 {user.name}
               </p>
@@ -68,7 +67,7 @@ function RouteComponent() {
               {showBox && (
                 <div
                   ref={refOutsideClick(() => setShowBox(false), [refProfile])}
-                  className='absolute top-0 -left-52 w-60 rounded-md bg-zinc-600'
+                  className='absolute top-9 w-60 rounded-md bg-zinc-600'
                 >
                   <ul>
                     <li className='truncate border-b-1 border-zinc-400 px-2 py-1'>{user?.name}</li>
