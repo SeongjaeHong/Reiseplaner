@@ -79,7 +79,6 @@ function RouteComponent() {
                   id='email'
                   type='email'
                   {...register('email', { required: 'Email is empty.' })}
-                  autoFocus
                   className='transition-ring w-full rounded-sm border-1 border-zinc-500 leading-7 duration-300 ease-in outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500'
                 />
                 {errors.email && (
