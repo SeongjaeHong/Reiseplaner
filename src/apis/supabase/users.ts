@@ -23,3 +23,9 @@ export const getUser = async () => {
 
   return res.data;
 };
+
+export const isGuestId = (id: string | undefined) => {
+  const guestId = (import.meta.env.VITE_GUEST_ID as string) ?? '';
+
+  return id === guestId;
+};
