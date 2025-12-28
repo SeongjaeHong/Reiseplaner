@@ -1,10 +1,15 @@
 import supabase from '@/supabaseClient';
 import type { Provider } from '@supabase/supabase-js';
 
-export const signUp = async (email: string, password: string) => {
+export const signUp = async (name: string, email: string, password: string) => {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      data: {
+        display_name: name,
+      },
+    },
   });
 
   if (error) {
@@ -15,7 +20,7 @@ export const signUp = async (email: string, password: string) => {
 };
 
 export const signIn = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -23,32 +28,25 @@ export const signIn = async (email: string, password: string) => {
   if (error) {
     throw error;
   }
-
-  return data;
 };
 
 export const signInWithOAuth = async (provider: Provider = 'google') => {
-  await supabase.auth.signInWithOAuth({
+  const { error } = await supabase.auth.signInWithOAuth({
     provider: provider,
     options: {
       redirectTo: 'http://localhost:5173/',
     },
   });
+
+  if (error) {
+    throw error;
+  }
 };
 
 export const signOut = async () => {
-  await supabase.auth.signOut();
-};
-
-export const getUser = async () => {
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+  const { error } = await supabase.auth.signOut();
 
   if (error) {
-    throw new Error(error.message);
+    throw error;
   }
-
-  return user;
 };
