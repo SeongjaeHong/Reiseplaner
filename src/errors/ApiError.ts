@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export type ErrorType = 'VALIDATION' | 'SERVER_RESPONSE' | 'DATABASE';
+type ErrorType = 'VALIDATION' | 'SERVER_RESPONSE' | 'DATABASE';
 
 const DEFAULT_MESSAGES: Record<ErrorType, string> = {
   VALIDATION: 'Wrong input types.',
