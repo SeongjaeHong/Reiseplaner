@@ -6,24 +6,12 @@ import { toast } from '@/components/common/Toast/toast';
 import useClickOutside from '@/utils/useClickOutside';
 import type { User } from '@supabase/supabase-js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, Link, Outlet, redirect } from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 import { useContext, useRef, useState } from 'react';
 import { FaPen, FaRightFromBracket, FaUser } from 'react-icons/fa6';
 
 export const Route = createFileRoute('/(private)')({
   component: RouteComponent,
-  beforeLoad: ({ context }) => {
-    const { user, loading } = context.auth;
-
-    if (loading) {
-      // supabase session has not been read yet.a
-      return;
-    }
-
-    if (!user) {
-      return redirect({ to: '/signin' });
-    }
-  },
 });
 
 function RouteComponent() {
