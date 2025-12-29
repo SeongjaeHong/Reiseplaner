@@ -12,15 +12,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const wasAlive = sessionStorage.getItem('app-alive');
 
     const init = async () => {
+      // Ignore when the app starts by the page refresh
+      if (!wasAlive) {
+        // Sign out a local session as the app starts.
+        await signOut().catch();
+      }
+
       const {
         data: { session },
       } = await supabase.auth.getSession();
-
-      // Ignore when the app starts by the page refresh
-      if (!wasAlive && session) {
-        // Sign out a local session as the app starts.
-        await signOut();
-      }
 
       sessionStorage.setItem('app-alive', 'true');
 
