@@ -42,8 +42,11 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
       if (contents.length) {
         const saveContents = await Promise.all(
           contents.map(async (content) => {
-            const res = editorContentSchema.safeParse(JSON.parse(content.data));
+            if (!content) {
+              return null;
+            }
 
+            const res = editorContentSchema.safeParse(JSON.parse(content.data));
             if (res.error) {
               throw new ApiError('VALIDATION', { cause: res.error });
             }
