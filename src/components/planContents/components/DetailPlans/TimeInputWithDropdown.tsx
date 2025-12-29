@@ -43,6 +43,16 @@ export default function TimeInputWithDropdown({ type, value, onChange, disabled 
     setIsDropdownOpen(false);
   };
 
+  const toggleDropDown = () => !disabled && setIsDropdownOpen((prev) => !prev);
+  const handleChangeTime = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isNumber = /^\d*$/.test(e.target.value);
+    const isDoubleDigit = e.target.value.length <= 2;
+
+    if (isNumber && isDoubleDigit) {
+      setInputValue(e.target.value);
+    }
+  };
+
   const options = [
     '--',
     ...Array.from({ length: type === 'hour' ? 24 : 60 }, (_, i) => String(i).padStart(2, '0')),
@@ -53,12 +63,8 @@ export default function TimeInputWithDropdown({ type, value, onChange, disabled 
       <input
         type='text'
         value={isDropdownOpen ? inputValue : value === null ? '--' : String(value).padStart(2, '0')}
-        onChange={(e) =>
-          /^\d*$/.test(e.target.value) &&
-          e.target.value.length <= 2 &&
-          setInputValue(e.target.value)
-        }
-        onClick={() => !disabled && setIsDropdownOpen((prev) => !prev)}
+        onChange={handleChangeTime}
+        onClick={toggleDropDown}
         onBlur={handleBlur}
         readOnly={disabled}
         placeholder='--'
