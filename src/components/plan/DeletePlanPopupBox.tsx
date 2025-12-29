@@ -3,6 +3,7 @@ import Popupbox from '@/components/common/popupBoxes/Popupbox';
 import { deletePlan } from '@/apis/supabase/plans';
 import { useSuspenseQueryLocalContents } from '../planContents/utils/contents';
 import { deleteEditorImagesFromDB } from '../planContents/utils/image';
+import { toast } from '../common/Toast/toast';
 
 type DeletePlanPopupBoxParam = {
   planId: number;
@@ -14,23 +15,30 @@ export default function DeletePlanPopupBox({ planId, onClose, refetch }: DeleteP
   const { data } = useSuspenseQueryLocalContents(planId);
 
   const { mutate } = useMutation({
-    mutationFn: () => {
-      data?.contents.forEach((content) => {
-        void deleteEditorImagesFromDB(content.data);
-      });
-      return deletePlan(planId);
+    mutationFn: async () => {
+      const contents = data?.contents ?? [];
+
+      await Promise.all(
+        contents.map(async (content) => {
+          await deleteEditorImagesFromDB(content.data);
+        })
+      );
+
+      return await deletePlan(planId);
     },
     onSuccess: async (res) => {
       {
         if (res) {
           await refetch();
         } else {
-          console.log('Fail to delete the plan');
+          toast.error('Fail to delete a plan');
         }
         onClose();
       }
     },
-    throwOnError: true,
+    onError: () => {
+      toast.error('Failed to delete a plan');
+    },
   });
 
   const handleClickCancel = () => {
