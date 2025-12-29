@@ -101,7 +101,7 @@ const useTimeChange: UseTimeChange =
   (time, setTime, setTimeActive) =>
   (timeType: TimeType) =>
   (option: string): boolean => {
-    const newTime = { ...time };
+    const newTime = structuredClone(time);
     const isStart = timeType.startsWith('start');
     const unit = timeType.toLowerCase().includes('hour') ? 'hour' : 'minute';
     const otherUnit = unit === 'hour' ? 'minute' : 'hour';
