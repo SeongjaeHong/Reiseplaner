@@ -5,6 +5,8 @@ import { signIn } from './auth';
 import { GuestError, type GuestGuardErrorType } from '@/errors/GuestError';
 
 export const updateUserName = async (id: string, name: string) => {
+  _guestGuard('UPDATE');
+
   const { error } = await supabase.from('users').update({ name }).eq('user_id', id);
   if (error) {
     throw error;

@@ -2,8 +2,11 @@ import supabase from '@/supabaseClient';
 import { planArrayResponseSchema, planSchema } from './plans.types';
 import z from 'zod';
 import { ApiError } from '@/errors/ApiError';
+import { _guestGuard } from './users';
 
 export const createPlan = async (groupId: number, title: string) => {
+  _guestGuard('CREATE', "Guest can't create a plan.");
+
   const insert = planSchema.parse({ group_id: groupId, title: title });
 
   const { error, status } = await supabase.from('plans').insert(insert);
@@ -31,6 +34,8 @@ export const getPlansByGroupId = async (groupId: number) => {
 };
 
 export const deletePlan = async (planId: number) => {
+  _guestGuard('DELETE', "Guest can't delete a plan.");
+
   const { status, error } = await supabase.from('plans').delete().eq('id', planId);
 
   if (error) {
@@ -45,6 +50,8 @@ export const deletePlan = async (planId: number) => {
 
 const renamePlanByPlanIdInput = z.tuple([z.number(), z.string().min(1)]);
 export const renamePlanByPlanId = async (planId: number, newTitle: string) => {
+  _guestGuard('UPDATE', "Guest can't change a name.");
+
   const [validatedId, validatedTitle] = renamePlanByPlanIdInput.parse([planId, newTitle]);
 
   const { status, error } = await supabase

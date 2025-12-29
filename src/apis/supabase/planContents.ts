@@ -2,9 +2,12 @@ import supabase from '@/supabaseClient';
 import { z } from 'zod';
 import { ContentSchema, planContentsResponseSchema, type Content } from './planContents.types';
 import { ApiError } from '@/errors/ApiError';
+import { _guestGuard } from './users';
 
 const InsertPlanContentsInput = z.tuple([z.number(), z.array(ContentSchema)]);
 export const insertPlanContents = async (plansId: number, contents: Content[]) => {
+  _guestGuard('UPDATE', "Guest can't write contents.");
+
   const validation = InsertPlanContentsInput.safeParse([plansId, contents]);
 
   if (!validation.success) {
@@ -59,6 +62,8 @@ export const getPlanContentsById = async (planId: number) => {
 };
 
 export const deletePlanContentsById = async (planId: number) => {
+  _guestGuard('DELETE', "Guest can't delete contents.");
+
   const { status, error } = await supabase.from('planContents').delete().eq('plans_id', planId);
 
   if (error) {

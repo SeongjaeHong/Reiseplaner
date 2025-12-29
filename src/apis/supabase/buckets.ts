@@ -2,6 +2,7 @@ import { v4 as uuid } from 'uuid';
 import supabase from '@/supabaseClient';
 import { imageSchema } from './buckets.types';
 import { ApiError } from '@/errors/ApiError';
+import { _guestGuard } from './users';
 
 const EMPTY_IMAGE_NAME = 'empty-image.png' as const;
 
@@ -9,6 +10,8 @@ const getFileName = (path: string) => path.split('/').pop() ?? '';
 export const isDefaultImage = (name: string) => name === EMPTY_IMAGE_NAME;
 
 export const uploadImage = async (file: File) => {
+  _guestGuard('CREATE', "Guest can't upload an image.");
+
   const ext = file.name.split('.').pop();
   const name = uuid();
   const filePath = `${name}.${ext}`;
@@ -31,6 +34,8 @@ export const uploadImage = async (file: File) => {
 };
 
 export const deleteImage = async (filePath: string | string[]) => {
+  _guestGuard('DELETE', "Guest can't delete an image.");
+
   let paths: string[];
   if (typeof filePath === 'string') {
     paths = [filePath];

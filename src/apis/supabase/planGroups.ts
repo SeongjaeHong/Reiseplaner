@@ -1,8 +1,11 @@
 import supabase from '@/supabaseClient';
 import { planGroupArrayResponseSchema, planGroupSchema } from './planGroups.types';
 import { ApiError } from '@/errors/ApiError';
+import { _guestGuard } from './users';
 
 export const createPlanGroup = async (title: string) => {
+  _guestGuard('CREATE', "Guest can't create a plan group.");
+
   const { status, error } = await supabase.from('plangroups').insert([{ title }]);
 
   if (error) {
@@ -31,6 +34,8 @@ export const getPlanGroups = async () => {
 };
 
 export const deletePlanGroups = async (planGroupId: number) => {
+  _guestGuard('DELETE', "Guest can't delete a plan group.");
+
   const { status, error } = await supabase.from('plangroups').delete().eq('id', planGroupId);
 
   if (error) {
@@ -50,6 +55,8 @@ export const updatePlanGroupByGroupId = async (
   startTime: string | null,
   endTime: string | null
 ) => {
+  _guestGuard('UPDATE');
+
   const update = planGroupSchema.parse({
     title,
     thumbnailURL,
