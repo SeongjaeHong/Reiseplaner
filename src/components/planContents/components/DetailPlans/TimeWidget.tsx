@@ -86,7 +86,7 @@ const isTimeValid = (start: PlanTime['start'], end: PlanTime['end']) => {
   }
   const startTime = start.hour * 60 + start.minute;
   const endTime = end.hour * 60 + end.minute;
-  return startTime < endTime;
+  return startTime <= endTime;
 };
 
 type TimeType = 'startHour' | 'startMinute' | 'endHour' | 'endMinute';
