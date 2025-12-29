@@ -22,7 +22,7 @@ export default function TimeInputWithDropdown({ type, value, onChange, disabled 
   const refClickOutside = useClickOutside();
   const triggerWarning = useTriggerWarning(setIsWarning);
 
-  // In case a user typed the time manually
+  // Check time validity
   const handleBlur = () => {
     if (inputValue === '' || inputValue === '--') {
       onChange('--');
