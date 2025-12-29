@@ -12,7 +12,7 @@ import { ImageNode } from './ImageNode';
 import { deleteEditorImagesFromDB, useAddImage } from '../../utils/image';
 import { toast } from '@/components/common/Toast/toast';
 import { FaImage, FaTag } from 'react-icons/fa6';
-import type { Content } from '@/apis/supabase/planContents.types';
+import type { Content, PlanTime } from '@/apis/supabase/planContents.types';
 
 const editorConfig = {
   namespace: 'MyEditor',
@@ -64,7 +64,7 @@ export default function EditorMode({
       title: titleRef.current?.value || '',
       data: editorState,
       time,
-      isTimeActive: timeActive,
+      isTimeActive: timeActive && isTimeNotNull(time),
       box: isNoteBox ? 'note' : 'plain',
     });
     setEditingId(null);
@@ -129,6 +129,13 @@ export default function EditorMode({
     </div>
   );
 }
+
+const isTimeNotNull = (time: PlanTime) => {
+  const isStartTimeSet = time.start.hour !== null && time.start.minute !== null;
+  const isEndTimeSet = time.end.hour !== null && time.end.minute !== null;
+
+  return isStartTimeSet || isEndTimeSet;
+};
 
 type ImageUploadHandler = {
   setIsUploading: React.Dispatch<React.SetStateAction<boolean>>;
