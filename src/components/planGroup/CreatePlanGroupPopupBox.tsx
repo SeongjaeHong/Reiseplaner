@@ -19,7 +19,7 @@ export default function CreatePlanGroupPopupBox({
       await refetch();
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error('Failed to create a plan group.');
       throw error;
     },
   });
