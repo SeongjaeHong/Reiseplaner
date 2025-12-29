@@ -15,19 +15,14 @@ export default function TimeInputWithDropdown({ type, value, onChange, disabled 
     value === null ? '' : String(value).padStart(2, '0')
   );
 
-  const timeoutRef = useRef<number | null>(null);
-  const refClickOutside = useClickOutside();
-
   useEffect(() => {
     setInputValue(value === null ? '' : String(value).padStart(2, '0'));
   }, [value]);
 
-  const triggerWarning = () => {
-    setIsWarning(true);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setIsWarning(false), 1000);
-  };
+  const refClickOutside = useClickOutside();
+  const triggerWarning = useTriggerWarning(setIsWarning);
 
+  // In case a user typed the time manually
   const handleBlur = () => {
     if (inputValue === '' || inputValue === '--') {
       onChange('--');
@@ -72,7 +67,7 @@ export default function TimeInputWithDropdown({ type, value, onChange, disabled 
         } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
       />
       {isDropdownOpen && !disabled && (
-        <ul className='no-scrollbar absolute top-full left-0 z-20 mt-1 max-h-40 w-12 overflow-y-auto rounded border border-zinc-300 bg-white shadow-lg'>
+        <ul className='no-scrollbar absolute z-1 mt-1 max-h-40 w-10 overflow-y-auto rounded-sm border border-zinc-300 bg-white'>
           {options.map((opt) => (
             <li
               key={opt}
@@ -91,3 +86,17 @@ export default function TimeInputWithDropdown({ type, value, onChange, disabled 
     </div>
   );
 }
+
+const useTriggerWarning = (setIsWarning: (arg: boolean) => void) => {
+  const timeoutRef = useRef<number | null>(null);
+
+  return () => {
+    setIsWarning(true);
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => setIsWarning(false), 1000);
+  };
+};
