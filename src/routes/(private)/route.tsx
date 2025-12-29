@@ -27,7 +27,7 @@ function RouteComponent() {
       return;
     }
 
-    setShowBox(true);
+    setShowNameBox(true);
   };
 
   const refOutsideClick = useClickOutside();
