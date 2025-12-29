@@ -13,6 +13,7 @@ import { deleteEditorImagesFromDB, useAddImage } from '../../utils/image';
 import { toast } from '@/components/common/Toast/toast';
 import { FaImage, FaTag } from 'react-icons/fa6';
 import type { Content, PlanTime } from '@/apis/supabase/planContents.types';
+import { GuestError } from '@/errors/GuestError';
 
 const editorConfig = {
   namespace: 'MyEditor',
@@ -56,17 +57,26 @@ export default function EditorMode({
       return;
     }
 
-    // If images were removed from the editor, it deletes the same images from DB
-    void deleteEditorImagesFromDB(initialState, editorState);
+    try {
+      // If images were removed from the editor, it deletes the same images from DB
+      void deleteEditorImagesFromDB(initialState, editorState);
 
-    updateContents({
-      ...content,
-      title: titleRef.current?.value || '',
-      data: editorState,
-      time,
-      isTimeActive: timeActive && isTimeNotNull(time),
-      box: isNoteBox ? 'note' : 'plain',
-    });
+      updateContents({
+        ...content,
+        title: titleRef.current?.value || '',
+        data: editorState,
+        time,
+        isTimeActive: timeActive && isTimeNotNull(time),
+        box: isNoteBox ? 'note' : 'plain',
+      });
+    } catch (error) {
+      if (error instanceof GuestError) {
+        toast.error("Guest can't change contents");
+      } else {
+        toast.error('Failed to update contents.');
+      }
+    }
+
     setEditingId(null);
   };
 

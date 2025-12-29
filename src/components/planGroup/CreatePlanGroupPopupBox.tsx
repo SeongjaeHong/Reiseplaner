@@ -2,6 +2,7 @@ import { createPlanGroup } from '@/apis/supabase/planGroups';
 import { useMutation } from '@tanstack/react-query';
 import InputPopupBox from '@/components/common/popupBoxes/InputPopupBox';
 import { toast } from '../common/Toast/toast';
+import { GuestError } from '@/errors/GuestError';
 
 type createPlanGroupPopupBoxParam = {
   onClose: () => void;
@@ -19,8 +20,11 @@ export default function CreatePlanGroupPopupBox({
       await refetch();
     },
     onError: (error) => {
-      toast.error('Failed to create a plan group.');
-      throw error;
+      if (error instanceof GuestError) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to create a plan group.');
+      }
     },
   });
 

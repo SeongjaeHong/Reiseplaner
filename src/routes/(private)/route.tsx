@@ -3,6 +3,7 @@ import { getUser, isGuestId, updateUserName } from '@/apis/supabase/users';
 import { useAuth } from '@/components/auth/AuthContext';
 import InputPopupBox from '@/components/common/popupBoxes/InputPopupBox';
 import { toast } from '@/components/common/Toast/toast';
+import { GuestError } from '@/errors/GuestError';
 import useClickOutside from '@/utils/useClickOutside';
 import type { User } from '@supabase/supabase-js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -24,7 +25,7 @@ function RouteComponent() {
   const { data: user } = useGetUser(session);
   const [showBox, setShowBox] = useState(false);
   const [showNameBox, setShowNameBox] = useState(false);
-  const isGuest = isGuestId(user?.user_id);
+  const isGuest = isGuestId();
 
   const handleChangeName = useChangeUserName(user?.user_id);
   const handleShowNameBox = () => {
@@ -121,8 +122,12 @@ const useChangeUserName = (id: string | undefined) => {
       return await updateUserName(id, newName);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['user', id] }),
-    onError: () => {
-      toast.error('Failed to change a name.');
+    onError: (error) => {
+      if (error instanceof GuestError) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to change a name.');
+      }
     },
   });
 

@@ -10,6 +10,7 @@ import { toast } from '@/components/common/Toast/toast';
 import { isBase64DataUrl } from './image';
 import { editorContentSchema, type NODE } from '../components/Editor/editor.types';
 import { ApiError } from '@/errors/ApiError';
+import { GuestError } from '@/errors/GuestError';
 
 export const getContentsQueryKey = (planId: number) => ['DetailPlans', planId];
 
@@ -79,8 +80,11 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
       }
     },
     onError: (error) => {
-      toast.error('Failed to save plan contents.');
-      console.error(error);
+      if (error instanceof GuestError) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to save plan contents.');
+      }
     },
   });
 

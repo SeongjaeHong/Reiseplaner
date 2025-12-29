@@ -5,6 +5,7 @@ import ViewerMode from './ViewerMode';
 import type { Content } from '@/apis/supabase/planContents.types';
 import { editorContentSchema } from './editor.types';
 import { deleteEditorImagesFromDB } from '../../utils/image';
+import { toast } from '@/components/common/Toast/toast';
 
 const EMPTY_CONTENT =
   '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
@@ -57,9 +58,13 @@ export default function PlanEditor({
 
   const initialState = getSafeEditorState(content.data);
   const handleDelete = () => {
-    // If images were removed from the editor, it deletes the same images from DB
-    void deleteEditorImagesFromDB(initialState);
-    deleteContents(content);
+    try {
+      // If images were removed from the editor, it deletes the same images from DB
+      void deleteEditorImagesFromDB(initialState);
+      deleteContents(content);
+    } catch {
+      toast.error('Failed to delete a plan.');
+    }
   };
 
   return (

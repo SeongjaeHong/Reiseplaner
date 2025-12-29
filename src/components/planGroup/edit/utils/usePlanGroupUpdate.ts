@@ -3,6 +3,7 @@ import { deleteImage, uploadImage } from '@/apis/supabase/buckets';
 import { updatePlanGroupByGroupId } from '@/apis/supabase/planGroups';
 import type { PlanGroupForm } from '../PlanGroupEdit';
 import { toast } from '@/components/common/Toast/toast';
+import { GuestError } from '@/errors/GuestError';
 
 type UsePlanGroupUpdate = {
   planGroupId: number;
@@ -52,8 +53,11 @@ export function usePlanGroupUpdate({
       onClose();
     },
     onError: (error) => {
-      toast.error('Failed to update a plan group.');
-      console.error(error);
+      if (error instanceof GuestError) {
+        toast.error("Guest can't update a plan group.");
+      } else {
+        toast.error('Failed to update a plan group.');
+      }
     },
   });
 }

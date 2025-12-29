@@ -4,6 +4,7 @@ import Popupbox from '@/components/common/popupBoxes/Popupbox';
 import { deleteImage } from '@/apis/supabase/buckets';
 import { toast } from '../common/Toast/toast';
 import { ApiError } from '@/errors/ApiError';
+import { GuestError } from '@/errors/GuestError';
 
 type DeletePlanGroupPopupBoxParam = {
   planGroupId: number;
@@ -39,8 +40,11 @@ export default function DeletePlanGroupPopupBox({
       onClose();
     },
     onError: (error) => {
-      toast.error(error.message);
-      throw error;
+      if (error instanceof GuestError) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to delete a plan group.');
+      }
     },
   });
 

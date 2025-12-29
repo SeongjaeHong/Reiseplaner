@@ -1,6 +1,8 @@
 import { createPlan } from '@/apis/supabase/plans';
 import { useMutation } from '@tanstack/react-query';
 import InputPopupBox from '@/components/common/popupBoxes/InputPopupBox';
+import { GuestError } from '@/errors/GuestError';
+import { toast } from '../common/Toast/toast';
 
 type createPlanPopupBoxParam = {
   groupId: number;
@@ -14,7 +16,13 @@ export default function CreatePlanPopupBox({ groupId, onClose, refetch }: create
     onSuccess: async () => {
       await refetch();
     },
-    throwOnError: true,
+    onError: (error) => {
+      if (error instanceof GuestError) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to create a plan');
+      }
+    },
   });
 
   return (
