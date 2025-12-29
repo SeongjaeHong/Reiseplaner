@@ -1,18 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { FaClock } from 'react-icons/fa6';
 import type { PlanTime } from '@/apis/supabase/planContents.types';
 import TimeInputWithDropdown from './TimeInputWithDropdown';
-
-const isTimeValid = (start: PlanTime['start'], end: PlanTime['end']) => {
-  if (start.hour === null || start.minute === null || end.hour === null || end.minute === null) {
-    return true;
-  }
-  const startTime = start.hour * 60 + start.minute;
-  const endTime = end.hour * 60 + end.minute;
-  return startTime < endTime;
-};
-
-type TimeType = 'startHour' | 'startMinute' | 'endHour' | 'endMinute';
 
 interface TimeWidgetProps {
   time: PlanTime;
@@ -34,43 +23,7 @@ export default function TimeWidget({ time, setTime, timeActive, setTimeActive }:
     }
   };
 
-  const handleTimeChange = useCallback(
-    (timeType: TimeType) =>
-      (option: string): boolean => {
-        const newTime = { ...time };
-        const isStart = timeType.startsWith('start');
-        const unit = timeType.toLowerCase().includes('hour') ? 'hour' : 'minute';
-        const otherUnit = unit === 'hour' ? 'minute' : 'hour';
-
-        if (option === '--' || option === '') {
-          if (isStart) {
-            newTime.start = { hour: null, minute: null };
-            newTime.end = { hour: null, minute: null };
-          } else {
-            newTime.end = { hour: null, minute: null };
-          }
-        } else {
-          const newValue = Number(option);
-          if (isStart) {
-            newTime.start[unit] = newValue;
-            if (newTime.start[otherUnit] === null) newTime.start[otherUnit] = 0;
-          } else {
-            newTime.end[unit] = newValue;
-            if (newTime.end[otherUnit] === null) newTime.end[otherUnit] = 0;
-          }
-        }
-
-        if (!isTimeValid(newTime.start, newTime.end)) {
-          return false;
-        }
-
-        setTime(newTime);
-        setTimeActive(true);
-        return true;
-      },
-    [time, setTime, setTimeActive]
-  );
-
+  const handleTimeChange = useTimeChange(time, setTime, setTimeActive);
   const isEndDisabled = time.start.hour === null || time.start.minute === null;
 
   return (
@@ -126,3 +79,56 @@ export default function TimeWidget({ time, setTime, timeActive, setTimeActive }:
     </div>
   );
 }
+
+const isTimeValid = (start: PlanTime['start'], end: PlanTime['end']) => {
+  if (start.hour === null || start.minute === null || end.hour === null || end.minute === null) {
+    return true;
+  }
+  const startTime = start.hour * 60 + start.minute;
+  const endTime = end.hour * 60 + end.minute;
+  return startTime < endTime;
+};
+
+type TimeType = 'startHour' | 'startMinute' | 'endHour' | 'endMinute';
+
+type UseTimeChange = (
+  time: PlanTime,
+  setTime: (time: PlanTime) => void,
+  setTimeActive: (state: boolean) => void
+) => (timeType: TimeType) => (option: string) => boolean;
+
+const useTimeChange: UseTimeChange =
+  (time, setTime, setTimeActive) =>
+  (timeType: TimeType) =>
+  (option: string): boolean => {
+    const newTime = { ...time };
+    const isStart = timeType.startsWith('start');
+    const unit = timeType.toLowerCase().includes('hour') ? 'hour' : 'minute';
+    const otherUnit = unit === 'hour' ? 'minute' : 'hour';
+
+    if (option === '--' || option === '') {
+      if (isStart) {
+        newTime.start = { hour: null, minute: null };
+        newTime.end = { hour: null, minute: null };
+      } else {
+        newTime.end = { hour: null, minute: null };
+      }
+    } else {
+      const newValue = Number(option);
+      if (isStart) {
+        newTime.start[unit] = newValue;
+        if (newTime.start[otherUnit] === null) newTime.start[otherUnit] = 0;
+      } else {
+        newTime.end[unit] = newValue;
+        if (newTime.end[otherUnit] === null) newTime.end[otherUnit] = 0;
+      }
+    }
+
+    if (!isTimeValid(newTime.start, newTime.end)) {
+      return false;
+    }
+
+    setTime(newTime);
+    setTimeActive(true);
+    return true;
+  };
