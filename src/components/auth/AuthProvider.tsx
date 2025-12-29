@@ -7,13 +7,12 @@ import { signOut } from '@/apis/supabase/auth';
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const isInitialLoad = !sessionStorage.getItem('app-alive');
 
   useEffect(() => {
-    const wasAlive = sessionStorage.getItem('app-alive');
-
     const init = async () => {
       // Ignore when the app starts by the page refresh
-      if (!wasAlive) {
+      if (isInitialLoad) {
         // Sign out a local session as the app starts.
         await signOut().catch();
       }
