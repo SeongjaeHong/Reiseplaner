@@ -10,7 +10,7 @@ import { AuthProvider } from './components/auth/AuthProvider';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import PageNotFound from './errors/PageNotFound';
 import { routeTree } from './routeTree.gen';
-import { AuthContext, type AuthState } from './components/auth/AuthContext';
+import { useAuth, type AuthState } from './components/auth/AuthContext';
 
 const queryClient = new QueryClient({
   mutationCache: new MutationCache({
@@ -36,7 +36,7 @@ const router = createRouter({
 });
 
 export function RouterContextProvider() {
-  const auth = useContext(AuthContext);
+  const auth = useAuth();
 
   return <RouterProvider router={router} context={{ auth }} />;
 }

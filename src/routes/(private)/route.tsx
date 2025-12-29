@@ -1,13 +1,13 @@
 import { signOut } from '@/apis/supabase/auth';
 import { getUser, isGuestId, updateUserName } from '@/apis/supabase/users';
-import { AuthContext } from '@/components/auth/AuthContext';
+import { useAuth } from '@/components/auth/AuthContext';
 import InputPopupBox from '@/components/common/popupBoxes/InputPopupBox';
 import { toast } from '@/components/common/Toast/toast';
 import useClickOutside from '@/utils/useClickOutside';
 import type { User } from '@supabase/supabase-js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
-import { useContext, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { FaPen, FaRightFromBracket, FaUser } from 'react-icons/fa6';
 
 export const Route = createFileRoute('/(private)')({
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/(private)')({
 });
 
 function RouteComponent() {
-  const { user: session } = useContext(AuthContext);
+  const { user: session } = useAuth();
   const { data: user } = useGetUser(session);
   const [showBox, setShowBox] = useState(false);
   const [showNameBox, setShowNameBox] = useState(false);

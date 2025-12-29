@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 import type { User } from '@supabase/supabase-js';
 
 export type AuthState = {
@@ -6,7 +6,13 @@ export type AuthState = {
   loading: boolean;
 };
 
-export const AuthContext = createContext<AuthState>({
-  user: null,
-  loading: true,
-});
+export const AuthContext = createContext<AuthState | null>(null);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+
+  return context;
+};
