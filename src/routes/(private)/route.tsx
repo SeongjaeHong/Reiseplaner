@@ -12,6 +12,11 @@ import { FaPen, FaRightFromBracket, FaUser } from 'react-icons/fa6';
 
 export const Route = createFileRoute('/(private)')({
   component: RouteComponent,
+  beforeLoad: () => {
+    // Remove 'initial-sign-in' to prevent to come back to '/'
+    // by a page refresh or a tab transition.
+    sessionStorage.removeItem('initial-sign-in');
+  },
 });
 
 function RouteComponent() {

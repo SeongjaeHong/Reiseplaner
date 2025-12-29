@@ -28,6 +28,8 @@ export const signIn = async (email: string, password: string) => {
   if (error) {
     throw error;
   }
+
+  sessionStorage.setItem('initial-sign-in', 'true');
 };
 
 export const signInWithOAuth = async (provider: Provider = 'google') => {
@@ -41,6 +43,8 @@ export const signInWithOAuth = async (provider: Provider = 'google') => {
   if (error) {
     throw error;
   }
+
+  sessionStorage.setItem('initial-sign-in', 'true');
 };
 
 export const signOut = async () => {
