@@ -2,6 +2,7 @@ import supabase from '@/supabaseClient';
 import { usersSchema } from './users.types';
 import { ApiError } from '@/errors/ApiError';
 import { signIn } from './auth';
+import { GuestError, type GuestGuardErrorType } from '@/errors/GuestError';
 
 export const updateUserName = async (id: string, name: string) => {
   const { error } = await supabase.from('users').update({ name }).eq('user_id', id);
@@ -25,12 +26,6 @@ export const getUser = async () => {
   return res.data;
 };
 
-export const isGuestId = (id: string | undefined) => {
-  const guestId = (import.meta.env.VITE_GUEST_ID as string) ?? '';
-
-  return id === guestId;
-};
-
 export const signInGuestId = async () => {
   const email = import.meta.env.VITE_GUEST_EMAIL as string;
   const password = import.meta.env.VITE_GUEST_PASSWORD as string;
@@ -40,4 +35,20 @@ export const signInGuestId = async () => {
   }
 
   await signIn(email, password);
+};
+
+export const isGuestId = () => {
+  const userId = _userId.userId;
+  const guestId = (import.meta.env.VITE_GUEST_ID as string) ?? '';
+
+  return userId === guestId;
+};
+
+// userId is set in AuthProvider component
+export const _userId = { userId: null as string | null };
+
+export const _guestGuard = (type: GuestGuardErrorType, message?: string) => {
+  if (isGuestId()) {
+    throw new GuestError(type, message);
+  }
 };

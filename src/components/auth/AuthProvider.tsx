@@ -3,6 +3,7 @@ import supabase from '@/supabaseClient';
 import { AuthContext } from './AuthContext';
 import type { User } from '@supabase/supabase-js';
 import { signOut } from '@/apis/supabase/auth';
+import { _userId } from '@/apis/supabase/users';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -34,6 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
+      _userId.userId = session?.user?.id ?? null;
     });
 
     return () => subscription.unsubscribe();
