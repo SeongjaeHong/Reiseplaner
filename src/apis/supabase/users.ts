@@ -1,6 +1,7 @@
 import supabase from '@/supabaseClient';
 import { usersSchema } from './users.types';
 import { ApiError } from '@/errors/ApiError';
+import { signIn } from './auth';
 
 export const updateUserName = async (id: string, name: string) => {
   const { error } = await supabase.from('users').update({ name }).eq('user_id', id);
@@ -28,4 +29,15 @@ export const isGuestId = (id: string | undefined) => {
   const guestId = (import.meta.env.VITE_GUEST_ID as string) ?? '';
 
   return id === guestId;
+};
+
+export const signInGuestId = async () => {
+  const email = import.meta.env.VITE_GUEST_EMAIL as string;
+  const password = import.meta.env.VITE_GUEST_PASSWORD as string;
+
+  if (!email || !password) {
+    throw new Error('Guest information is missing.');
+  }
+
+  await signIn(email, password);
 };

@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import { signIn, signInWithOAuth } from '@/apis/supabase/auth';
 import z from 'zod';
 import { FcGoogle } from 'react-icons/fc';
+import { signInGuestId } from '@/apis/supabase/users';
+import { toast } from '@/components/common/Toast/toast';
 
 export const Route = createFileRoute('/(public)/signin/')({
   component: RouteComponent,
@@ -115,8 +117,26 @@ function RouteComponent() {
             </span>
             <span className='w-full'>Sign in with Google</span>
           </button>
+          <button
+            type='button'
+            onClick={() => void handleSigninGuestId()}
+            className='relative flex w-full items-center rounded-md border-1 border-zinc-300 py-1 hover:border-zinc-400'
+          >
+            <span className='absolute left-3 text-lg'>
+              <FcGoogle />
+            </span>
+            <span className='w-full'>Sign in as a Guest</span>
+          </button>
         </div>
       </div>
     </div>
   );
 }
+
+const handleSigninGuestId = async () => {
+  try {
+    await signInGuestId();
+  } catch {
+    toast.error('Guest sign-in is temporarily unavailable.');
+  }
+};
