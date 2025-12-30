@@ -16,7 +16,7 @@ export function useAddText({ updateLocalContents, setEditingId }: UseAddText) {
       id: uuid(),
       type: 'text',
       title: '',
-      data: '',
+      data: EMPTY_CONTENT,
       box: 'plain',
       time: defaultTime,
       isTimeActive: false,
@@ -26,3 +26,6 @@ export function useAddText({ updateLocalContents, setEditingId }: UseAddText) {
     updateLocalContents(newContent);
   };
 }
+
+const EMPTY_CONTENT =
+  '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
