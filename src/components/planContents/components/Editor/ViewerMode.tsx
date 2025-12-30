@@ -26,8 +26,9 @@ type ViewerMode = {
 export default function ViewerMode({ title, initialState, isNoteBox }: ViewerMode) {
   return (
     <div className={`px-2 py-1 ${isNoteBox ? 'text-white' : 'text-black'}`}>
-      <div className='mb-1 truncate border-b-1 text-xl font-semibold'>
-        {title || <span className='text-zinc-300'>Titel</span>}
+      {isNoteBox && <h1 className='mb-2 text-xl font-bold text-white'>NOTE</h1>}
+      <div className='mb-1 truncate border-b-1 text-xl'>
+        {title || <span className={`${isNoteBox ? 'text-red-200' : 'text-zinc-300'}`}>Titel</span>}
       </div>
 
       <div className='lexical-viewer'>
