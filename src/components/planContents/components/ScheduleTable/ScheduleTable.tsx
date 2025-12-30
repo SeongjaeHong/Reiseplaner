@@ -10,7 +10,7 @@ export default function ScheduleTable({ planId, focusedId, onSelectContent }: Sc
   const { data } = useSuspenseQueryLocalContents(planId);
 
   return (
-    <div className='flex flex-col'>
+    <div className='sticky top-4 flex flex-col'>
       <div className='mb-2 pt-1'>
         <h1 className='text-xl font-bold text-black max-[412px]:text-sm'>Schedule</h1>
       </div>

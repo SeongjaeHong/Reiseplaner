@@ -24,7 +24,7 @@ export default function PlanContents({ planId, detailPlansRef }: PlanContents) {
   return (
     <Suspense fallback={<PlanContentsSkeleton />}>
       <div className='flex min-h-30 gap-1 py-1'>
-        <div className='border-reiseorange w-1/3 border-1 bg-white px-2 pb-2 2xl:w-1/5'>
+        <div className='border-reiseorange w-1/3 items-start border-1 bg-white px-2 pb-2 2xl:w-1/5'>
           <ScheduleTable
             planId={planId}
             focusedId={focusedId}
