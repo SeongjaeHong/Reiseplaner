@@ -8,9 +8,10 @@ import { _userId } from '@/apis/supabase/users';
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const isInitialLoad = !sessionStorage.getItem('app-alive');
 
   useEffect(() => {
+    const isInitialLoad = !sessionStorage.getItem('app-alive');
+
     const init = async () => {
       // Ignore when the app starts by the page refresh
       if (isInitialLoad) {
