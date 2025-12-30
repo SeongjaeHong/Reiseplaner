@@ -6,21 +6,7 @@ import type { Content } from '@/apis/supabase/planContents.types';
 import { editorContentSchema } from './editor.types';
 import { deleteEditorImagesFromDB } from '../../utils/image';
 import { toast } from '@/components/common/Toast/toast';
-
-const EMPTY_CONTENT =
-  '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
-
-const getSafeEditorState = (data: string) => {
-  if (!data || data.trim() === '' || data === '{}') return EMPTY_CONTENT;
-
-  const res = editorContentSchema.safeParse(JSON.parse(data));
-
-  if (res.success) {
-    return JSON.stringify(res.data);
-  }
-
-  return EMPTY_CONTENT;
-};
+import { EMPTY_CONTENT } from '../../utils/text';
 
 export type PlanEditorHandle = {
   scrollIntoView: (options?: ScrollIntoViewOptions) => void;
@@ -36,6 +22,7 @@ type PlanEditor = {
   deleteContents: (content: Content) => void;
   ref: React.Ref<PlanEditorHandle>;
 };
+
 export default function PlanEditor({
   content,
   isEdit,
@@ -100,3 +87,15 @@ export default function PlanEditor({
     </div>
   );
 }
+
+const getSafeEditorState = (data: string) => {
+  if (!data || data.trim() === '' || data === '{}') return EMPTY_CONTENT;
+
+  const res = editorContentSchema.safeParse(JSON.parse(data));
+
+  if (res.success) {
+    return JSON.stringify(res.data);
+  }
+
+  return EMPTY_CONTENT;
+};
