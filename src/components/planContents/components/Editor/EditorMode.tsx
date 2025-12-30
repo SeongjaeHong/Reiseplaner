@@ -115,24 +115,24 @@ export default function EditorMode({
           </div>
 
           {/* Toolbar layer */}
-          <div className='flex flex-row-reverse items-center gap-3 pb-2'>
-            <button
-              onClick={toggleIsNoteBox}
-              className={`flex items-center gap-1 rounded-xl px-3 py-1 text-sm ${
-                isNoteBox ? 'bg-reiseorange text-white' : 'bg-zinc-300 text-black'
-              }`}
-            >
-              <FaTag /> NOTE
-            </button>
-
-            <ImageUploadHandler setIsUploading={setIsUploading} />
-
+          <div className='flex justify-end gap-1 text-sm max-[860px]:flex-col max-[860px]:items-end'>
             <TimeWidget
               time={time}
               setTime={setTime}
               timeActive={timeActive}
               setTimeActive={setTimeActive}
             />
+
+            <ImageUploadHandler setIsUploading={setIsUploading} />
+
+            <button
+              onClick={toggleIsNoteBox}
+              className={`flex w-[81px] items-center gap-1 rounded-xl px-3 py-1 text-sm ${
+                isNoteBox ? 'bg-reiseorange text-white' : 'bg-zinc-300 text-black'
+              }`}
+            >
+              <FaTag /> NOTE
+            </button>
           </div>
         </div>
       </LexicalComposer>
@@ -174,7 +174,7 @@ function ImageUploadHandler({ setIsUploading }: ImageUploadHandler) {
   return (
     <label
       onMouseDown={(e) => e.preventDefault()}
-      className='flex cursor-pointer items-center gap-1 rounded-xl bg-zinc-200 px-3 py-1 text-sm hover:bg-zinc-300'
+      className='flex w-[81px] cursor-pointer items-center gap-1 rounded-xl bg-zinc-200 px-3 py-1 text-sm hover:bg-zinc-300'
     >
       <FaImage />
       <span>Image</span>

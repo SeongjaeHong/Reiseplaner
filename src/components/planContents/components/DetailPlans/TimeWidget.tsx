@@ -27,56 +27,56 @@ export default function TimeWidget({ time, setTime, timeActive, setTimeActive }:
   const isEndDisabled = time.start.hour === null || time.start.minute === null;
 
   return (
-    <div className='flex items-center gap-2'>
-      <button
-        onClick={handleToggle}
-        className={`flex h-8 items-center gap-2 rounded-xl px-3 transition-all duration-300 ${
-          isOpen
-            ? 'bg-reiseorange text-white hover:bg-orange-300'
-            : 'w-21 bg-zinc-300 hover:bg-zinc-200'
-        }`}
-      >
+    <button
+      onClick={handleToggle}
+      className={`flex items-center gap-2 rounded-xl px-3 py-1 transition-all duration-300 max-[550px]:w-[81px] max-[550px]:flex-col max-[550px]:justify-center ${
+        isOpen
+          ? 'bg-reiseorange text-white hover:bg-orange-300'
+          : 'w-20 w-[81px] bg-zinc-300 hover:bg-zinc-200'
+      }`}
+    >
+      <span className='flex items-center gap-2'>
         <FaClock />
-        <span>Time</span>
+        Time
+      </span>
 
-        {isOpen && (
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className='animate-in fade-in ml-auto flex items-center duration-500'
-          >
-            <div className='flex items-center text-black'>
-              <TimeInputWithDropdown
-                type='hour'
-                value={time.start.hour}
-                onChange={handleTimeChange('startHour')}
-              />
-              <span className='mx-0.5 text-white'>:</span>
-              <TimeInputWithDropdown
-                type='minute'
-                value={time.start.minute}
-                onChange={handleTimeChange('startMinute')}
-              />
-            </div>
-            <span className='mx-1 text-white'>-</span>
-            <div className='flex items-center text-black'>
-              <TimeInputWithDropdown
-                type='hour'
-                value={time.end.hour}
-                onChange={handleTimeChange('endHour')}
-                disabled={isEndDisabled}
-              />
-              <span className='mx-0.5 text-white'>:</span>
-              <TimeInputWithDropdown
-                type='minute'
-                value={time.end.minute}
-                onChange={handleTimeChange('endMinute')}
-                disabled={isEndDisabled}
-              />
-            </div>
+      {isOpen && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className='animate-in fade-in ml-auto flex items-center duration-500 max-[550px]:flex-col'
+        >
+          <div className='flex items-center text-black'>
+            <TimeInputWithDropdown
+              type='hour'
+              value={time.start.hour}
+              onChange={handleTimeChange('startHour')}
+            />
+            <span className='mx-0.5 text-white'>:</span>
+            <TimeInputWithDropdown
+              type='minute'
+              value={time.start.minute}
+              onChange={handleTimeChange('startMinute')}
+            />
           </div>
-        )}
-      </button>
-    </div>
+          <span className='mx-1 text-white'>-</span>
+          <div className='flex items-center text-black'>
+            <TimeInputWithDropdown
+              type='hour'
+              value={time.end.hour}
+              onChange={handleTimeChange('endHour')}
+              disabled={isEndDisabled}
+            />
+            <span className='mx-0.5 text-white'>:</span>
+            <TimeInputWithDropdown
+              type='minute'
+              value={time.end.minute}
+              onChange={handleTimeChange('endMinute')}
+              disabled={isEndDisabled}
+            />
+          </div>
+        </div>
+      )}
+    </button>
   );
 }
 

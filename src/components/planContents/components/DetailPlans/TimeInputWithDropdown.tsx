@@ -59,7 +59,7 @@ export default function TimeInputWithDropdown({ type, value, onChange, disabled 
   ];
 
   return (
-    <div className='relative inline-block' ref={refClickOutside(() => setIsDropdownOpen(false))}>
+    <div ref={refClickOutside(() => setIsDropdownOpen(false))} className='relative inline-block'>
       <input
         type='text'
         value={isDropdownOpen ? inputValue : value === null ? '--' : String(value).padStart(2, '0')}
@@ -68,7 +68,7 @@ export default function TimeInputWithDropdown({ type, value, onChange, disabled 
         onBlur={handleBlur}
         readOnly={disabled}
         placeholder='--'
-        className={`w-9 rounded-md border py-0.5 text-center text-xs ${
+        className={`w-9 rounded-md border py-0.5 text-center text-xs max-[550px]:w-6 ${
           isWarning ? 'border-red-500 bg-red-200 text-red-600' : 'border-zinc-200 text-white'
         } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
       />
