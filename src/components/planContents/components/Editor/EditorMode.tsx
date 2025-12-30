@@ -89,7 +89,7 @@ export default function EditorMode({
             ref={titleRef}
             defaultValue={content.title}
             placeholder='Titel'
-            className={`w-full border-b-1 border-red-300 bg-transparent px-2 text-xl outline-0 ${
+            className={`w-full border-b-1 border-red-300 bg-transparent px-2 text-xl outline-0 max-[600px]:text-sm max-[600px]:font-bold ${
               isNoteBox ? 'text-white placeholder-red-200' : 'text-black'
             }`}
           />
@@ -98,7 +98,7 @@ export default function EditorMode({
             <RichTextPlugin
               contentEditable={
                 <ContentEditable
-                  className={`min-h-[100px] outline-none ${isNoteBox ? 'text-white' : 'text-black'}`}
+                  className={`min-h-[100px] outline-none max-[600px]:text-sm ${isNoteBox ? 'text-white' : 'text-black'}`}
                 />
               }
               placeholder={<div className='absolute top-1 text-zinc-400'>Inhalt eingeben</div>}

@@ -12,7 +12,7 @@ export default function ScheduleTable({ planId, focusedId, onSelectContent }: Sc
   return (
     <div className='flex flex-col'>
       <div className='mb-2 pt-1'>
-        <h1 className='text-xl font-bold text-black'>Schedule</h1>
+        <h1 className='text-xl font-bold text-black max-[412px]:text-sm'>Schedule</h1>
       </div>
 
       <div className='relative flex flex-1 flex-col justify-between'>
@@ -45,7 +45,7 @@ export default function ScheduleTable({ planId, focusedId, onSelectContent }: Sc
                   e.stopPropagation();
                   onSelectContent(content.id);
                 }}
-                className={`relative mb-2 flex cursor-pointer rounded-lg p-1 text-black transition-all hover:bg-orange-300 hover:text-white ${
+                className={`mb-2 flex cursor-pointer rounded-lg p-1 text-black transition-all hover:bg-orange-300 hover:text-white ${
                   isFocused && 'bg-orange-400 text-white ring-2 ring-orange-400'
                 }`}
               >
