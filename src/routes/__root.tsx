@@ -1,8 +1,8 @@
 import { createRootRouteWithContext, Outlet, useNavigate } from '@tanstack/react-router';
 import PageNotFound from '@/errors/PageNotFound';
 import type { RouterContext } from '@/main';
-import { useContext, useEffect } from 'react';
-import { AuthContext } from '@/components/auth/AuthContext';
+import { useEffect } from 'react';
+import { useAuth } from '@/components/auth/AuthContext';
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
@@ -10,7 +10,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootLayout() {
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
