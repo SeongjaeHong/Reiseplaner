@@ -15,8 +15,9 @@ function Index() {
   const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer((prev) => !prev, false);
   const { user } = useAuth();
   const { data: planGroups, refetch } = useQuery({
-    queryKey: ['getPlanGroups', user],
+    queryKey: ['getPlanGroups', user?.id],
     queryFn: getPlanGroups,
+    enabled: !!user,
     staleTime: Infinity,
     throwOnError: true,
   });
