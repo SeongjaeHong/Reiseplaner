@@ -105,8 +105,9 @@ function RouteComponent() {
 const useGetUser = (session: User | null) => {
   return useQuery({
     queryKey: ['user', session?.id],
-    queryFn: getUser,
+    queryFn: () => getUser(session?.id ?? ''),
     enabled: !!session,
+    staleTime: Infinity,
   });
 };
 
@@ -116,7 +117,7 @@ const useChangeUserName = (id: string | undefined) => {
   const { mutate } = useMutation({
     mutationFn: async (newName: string) => {
       if (!id) {
-        throw new Error('User ID is required');
+        throw new Error('User ID is required.');
       }
 
       return await updateUserName(id, newName);
