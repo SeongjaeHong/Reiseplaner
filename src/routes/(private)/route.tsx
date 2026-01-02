@@ -38,23 +38,22 @@ function RouteComponent() {
 
   const refOutsideClick = useClickOutside();
   const refProfile = useRef<HTMLButtonElement>(null);
-
   return (
     <>
-      <div className='bg-reiseblue flex h-20 items-center justify-between px-5'>
+      <div className='flex h-20 items-center justify-between bg-white px-5'>
         <Link to={'/'}>
-          <h1 className='text-5xl font-bold max-[540px]:text-4xl'>Reiseplaner</h1>
+          <h1 className='text-4xl font-bold text-black'>REISERPLANER</h1>
         </Link>
         <div>
           {user && (
             <div className='relative flex items-center justify-end gap-2'>
-              <p className='max w-50 truncate text-right font-bold text-orange-500 max-[570px]:w-40 max-[540px]:text-sm max-[470px]:w-30 max-[420px]:hidden'>
+              <p className='max w-50 truncate text-right font-bold text-slate-800 max-[570px]:w-40 max-[540px]:text-sm max-[470px]:w-30 max-[420px]:hidden'>
                 {user.name}
               </p>
               <button
                 ref={refProfile}
                 onClick={() => setShowBox((prev) => !prev)}
-                className='bg-reiseorange rounded-full p-2 text-lg'
+                className='bg-primary rounded-full p-2 text-lg'
               >
                 <FaUser />
               </button>
