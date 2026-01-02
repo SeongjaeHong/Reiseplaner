@@ -1,6 +1,6 @@
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useReducer } from 'react';
+import { useMemo, useState } from 'react';
 import type { Database } from '@/database.types';
 import ThumbnailEdit from './ThumbnailEdit';
 import Calendar from './Calendar';
@@ -9,6 +9,8 @@ import z from 'zod';
 import type { DateRange } from 'react-day-picker';
 import { usePlanGroupUpdate } from './utils/usePlanGroupUpdate';
 import { isDefaultImage } from '@/apis/supabase/buckets';
+import { FaCalendar } from 'react-icons/fa6';
+import { IoClose } from 'react-icons/io5';
 
 const planGroupEditFormSchema = z.object({
   title: z.string().trim().min(1, 'Enter a title.'),
@@ -70,7 +72,7 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
     );
   }, [watchedThumbnail, thumbnail]);
 
-  const [showCalendar, toggleShowCalendar] = useReducer((prev) => !prev, false);
+  const [showCalendar, setShowCalendar] = useState(false);
   const scheduleText = getSchedule(watchedSchedule);
 
   const { mutate: submit, isPending } = usePlanGroupUpdate({
@@ -90,87 +92,104 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
   };
 
   const isDirty = isThumbnailChanged || !!dirtyFields.schedule || !!dirtyFields.title;
-  const isSubmitDisabled = !isDirty || !isValid || isPending;
+  const isSubmitDisabled = !isDirty || !isValid || isPending || showCalendar;
 
   return (
-    <div className='fixed z-1 h-screen w-screen'>
+    <div className='fixed inset-0 z-1 flex justify-center pt-20'>
+      <div className='absolute inset-0 bg-slate-900/30 backdrop-blur-xs' onClick={onClose}></div>
       <form
         onSubmit={onFormSubmit}
-        className='bg-reiseorange fixed top-50 left-1/2 flex h-70 w-3/5 -translate-x-1/2 rounded-sm p-2 xl:w-1/3'
+        className='animate-in relative h-fit w-3/5 max-w-lg rounded-3xl bg-white shadow-2xl duration-200'
       >
-        {/* Thumbnail area */}
-        <Controller
-          name='thumbnail'
-          control={control}
-          render={({ field: { value, onChange } }) => (
-            <ThumbnailEdit
-              image={value ?? null}
-              onChange={(file: File | null) => {
-                onChange(file);
-                void trigger('thumbnail');
-              }}
-            />
-          )}
-        />
-        <div className='flex w-1/2 flex-col justify-between'>
-          <div>
-            <div className='relative mb-10'>
-              <div className='rounded-sm border-1'>
-                {/* Title input area */}
-                <input
-                  type='text'
-                  defaultValue={planGroup.title}
-                  {...register('title')}
-                  className='w-full px-1 text-lg font-bold'
+        <div className='p-8'>
+          <div className='mb-6 flex items-center justify-between'>
+            <h2 className='text-2xl font-bold text-slate-800'>Reiseinformationen bearbeiten</h2>
+            <button
+              onClick={onClose}
+              className='rounded-full p-2 text-xl text-slate-400 transition-colors hover:bg-slate-100'
+            >
+              <IoClose />
+            </button>
+          </div>
+
+          {/* Thumbnail area */}
+          <div className='mb-8 h-40 w-full overflow-hidden rounded-2xl border border-slate-100 bg-slate-50'>
+            <Controller
+              name='thumbnail'
+              control={control}
+              render={({ field: { value, onChange } }) => (
+                <ThumbnailEdit
+                  image={value ?? null}
+                  onChange={(file: File | null) => {
+                    onChange(file);
+                    void trigger('thumbnail');
+                  }}
                 />
-              </div>
-              {errors.title && (
-                <div className='absolute'>
-                  <span className='text-rose-500'>{errors.title.message}</span>
-                </div>
               )}
+            />
+          </div>
+
+          <div className='space-y-5'>
+            {/* Reisetitel */}
+            <div>
+              <p className='mb-2 ml-1 block text-sm font-bold text-slate-700'>Reisetitel</p>
+              <input
+                type='text'
+                defaultValue={planGroup.title}
+                {...register('title')}
+                className='w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none'
+              />
             </div>
 
-            {/* Plan schedule area */}
-            <div className='inline rounded-lg border-1 hover:bg-zinc-300'>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  toggleShowCalendar();
-                }}
-                disabled={showCalendar}
-                className='inline-flex gap-1 px-3 py-1 text-xs'
+            {/* Schedule area */}
+            <div>
+              <p className='mb-2 ml-1 block text-sm font-bold text-slate-700'>Reisezeitraum</p>
+              <div
+                onClick={() => setShowCalendar(true)}
+                className='flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800'
               >
+                <FaCalendar />
                 <span>{scheduleText}</span>
-              </button>
-            </div>
-            {showCalendar && (
-              <div className='absolute top-27 left-1/2 z-1 -translate-x-1/2'>
-                <Controller
-                  name='schedule'
-                  control={control}
-                  render={({ field: { onChange } }) => (
-                    <Calendar
-                      range={watchedSchedule}
-                      setRange={onChange}
-                      onClose={toggleShowCalendar}
+
+                {showCalendar && (
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowCalendar(false);
+                    }}
+                    className='fixed inset-0 z-1 flex justify-center pt-30'
+                  >
+                    <Controller
+                      name='schedule'
+                      control={control}
+                      render={({ field: { onChange } }) => (
+                        <Calendar
+                          range={watchedSchedule}
+                          setRange={onChange}
+                          onClose={() => setShowCalendar(false)}
+                        />
+                      )}
                     />
-                  )}
-                />
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           {/* Botton button area */}
-          <div className='flex justify-center gap-2'>
-            <button type='button' onClick={onClose} className='rounded-lg bg-red-400 px-2 py-1'>
+          <div className='mt-10 flex gap-3'>
+            <button
+              type='button'
+              onClick={onClose}
+              className='flex-1 rounded-2xl bg-slate-100 px-6 py-4 font-bold text-slate-600 transition-colors hover:bg-slate-200'
+            >
               Zurück
             </button>
             <button
               type='submit'
               disabled={isSubmitDisabled}
-              className={`rounded-lg bg-green-300 px-2 py-1 ${
-                isSubmitDisabled ? 'cursor-not-allowed opacity-50' : ''
+              className={`bg-primary hover:bg-primary-strong flex flex-1 items-center justify-center gap-2 rounded-2xl px-6 py-4 font-bold text-white transition-all ${
+                isSubmitDisabled ? 'cursor-not-allowed opacity-30' : ''
               }`}
             >
               Speichern

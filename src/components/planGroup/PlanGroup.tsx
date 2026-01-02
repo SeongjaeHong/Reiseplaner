@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { useReducer, useRef, useState } from 'react';
-import { FaEllipsisVertical } from 'react-icons/fa6';
+import { FaCalendar, FaEllipsisVertical } from 'react-icons/fa6';
 import DeletePlanGroupPopupBox from './DeletePlanGroupPopupBox';
 import PlanGroupEdit from './edit/PlanGroupEdit';
 import type { Database } from '@/database.types';
@@ -15,6 +15,8 @@ type typePlanGroup = {
 };
 
 export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
+  // const { data: plans, isLoading, refetch } = useFetchPlans(groupId);  // TODO: Get number of plans later
+  const numOfPlans = 99;
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteBox, toggleShowDeleteBox] = useReducer((prev) => {
     setShowMenu(false);
@@ -52,13 +54,13 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
   return (
     <>
       <Link to={'/plangroup'} search={{ group_id: planGroup.id, group_title: planGroup.title }}>
-        <div className='group bg-reisered relative flex h-60 truncate'>
-          <div className='w-1/3 flex-shrink-0'>
+        <div className='group relative h-80 cursor-pointer overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm hover:shadow-xl'>
+          <div className='h-3/5'>
             {thumbnail && (
               <img
                 src={URL.createObjectURL(thumbnail)}
                 alt='A thumbnail of a plan group'
-                className='h-full w-full object-fill'
+                className='h-full w-full object-cover transition-transform duration-50 group-hover:scale-105'
               />
             )}
             {!thumbnail && (
@@ -67,22 +69,25 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
               </div>
             )}
           </div>
-          <div className='mx-2 flex-1 font-bold'>
-            <div className='py-2'>
-              <h1
-                title={planGroup.title}
-                className='line-clamp-2 text-2xl break-all whitespace-normal max-md:text-xl'
-              >
-                {planGroup.title}
-              </h1>
+          <div className='px-6 py-3'>
+            <h1
+              title={planGroup.title}
+              className='line-clamp-2 text-2xl break-all whitespace-normal text-slate-800 max-md:text-xl'
+            >
+              {planGroup.title}
+            </h1>
+            <div className='mb-4 flex items-center gap-2 text-sm text-slate-400'>
+              <FaCalendar />
+              <span className='whitespace-normal max-md:text-xs'>{schedule}</span>
             </div>
-            <div className='inline-block rounded-lg border-1 px-2'>
-              <span className='text-sm whitespace-normal max-md:text-xs'>{schedule}</span>
+            <div className='flex items-center border-t border-slate-50 pt-3'>
+              <span className='text-xs text-slate-400'>N {numOfPlans > 1 ? 'Pläne' : 'Plan'}</span>
             </div>
           </div>
-          <div className='invisible absolute right-1 overflow-visible group-hover:visible'>
+
+          <div className='invisible absolute top-1 right-2 z-5 overflow-visible rounded-full bg-slate-300/50 group-hover:visible'>
             <button
-              className='rounded-full p-2 hover:bg-green-300'
+              className='rounded-full p-2 hover:bg-slate-500/50'
               onMouseEnter={handleMenuMouseEnter}
               onMouseLeave={handleMenuMouseLeave}
               onClick={(e) => e.preventDefault()}
