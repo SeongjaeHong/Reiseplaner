@@ -14,7 +14,7 @@ import type { AuthState } from './components/auth/AuthContext';
 
 const queryClient = new QueryClient({
   mutationCache: new MutationCache({
-    onError: (error, _, _, mutation) => {
+    onError: (error, _variables, _onMutateResult, mutation) => {
       console.error('Mutation Error:', error);
       console.error(mutation);
     },
