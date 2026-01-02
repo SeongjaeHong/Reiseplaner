@@ -42,6 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
        * If a user didn't sign out last session, an auto-sign-out triggers on revisit.
        * Before sign-out is done, the "getUser" function will be executed concurrently from routes/route.tsx.
        * This race condition may lead a failure in searching the user account from Supabase because the user session will become NULL.
+       * And the user will see an empty page after sign-in.
        * To resolve this, the user session should not be set before sign-out is complete.
        */
       if (refSignOut.current) {
