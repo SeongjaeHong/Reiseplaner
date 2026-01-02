@@ -1,6 +1,6 @@
 import { getPlansByGroupId } from '@/apis/supabase/plans';
 import { useQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { FaAngleLeft, FaPenToSquare } from 'react-icons/fa6';
 import { useReducer } from 'react';
 import { z } from 'zod';
@@ -21,13 +21,14 @@ export const Route = createFileRoute('/(private)/plangroup/')({
 function Index() {
   const { group_id: groupId, group_title: groupTitle } = Route.useSearch();
   const { data: plans, isLoading, refetch } = useFetchPlans(groupId);
+  const navigate = useNavigate();
 
   const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer((prev) => !prev, false);
 
   return (
     <div className='mx-auto max-w-[1600px]'>
       <div className='bg-reiseorange flex min-h-20 items-center p-2'>
-        <button onClick={() => window.history.back()} className='px-1 py-2'>
+        <button onClick={() => void navigate({ to: '/' })} className='px-1 py-2'>
           <span className='text-2xl'>
             <FaAngleLeft />
           </span>
