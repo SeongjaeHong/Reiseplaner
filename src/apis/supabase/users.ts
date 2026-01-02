@@ -13,11 +13,15 @@ export const updateUserName = async (id: string, name: string) => {
   }
 };
 
-export const getUser = async () => {
-  const { data, error } = await supabase.from('users').select().single();
+export const getUser = async (id: string) => {
+  const { data, error } = await supabase.from('users').select().eq('user_id', id).maybeSingle();
 
   if (error) {
     throw error;
+  }
+
+  if (!data) {
+    throw new ApiError('DATABASE', { message: `No matches found in the DB: ${id}` });
   }
 
   const res = usersSchema.safeParse(data);
