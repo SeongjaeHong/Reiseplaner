@@ -20,14 +20,14 @@ export default function CreatePlanPopupBox({ groupId, onClose, refetch }: create
       if (error instanceof GuestError) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to create a plan');
+        toast.error('Fehler beim Erstellen der Planung.');
       }
     },
   });
 
   return (
     <InputPopupBox
-      title='Create a new plan'
+      title='Neue Planung erstellen.'
       placeholder='Titel'
       onAccept={(title: string) => mutate(title)}
       onClose={onClose}

@@ -28,7 +28,7 @@ export const useSuspenseQueryLocalContents = (planId: number) =>
 
         return { ...data, contents: getSortedContents(data.contents) };
       } catch (error) {
-        toast.error('Failed to load contents.');
+        toast.error('Fehler beim Laden der Inhalte.');
         console.error(error);
         return null;
       }
@@ -83,7 +83,7 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
       if (error instanceof GuestError) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to save plan contents.');
+        toast.error('Fehler beim Speichern der Planungsinhalte.');
       }
     },
   });
@@ -106,7 +106,7 @@ export const useSaveChanges = (queryClient: QueryClient, planId: number) => {
 
   const handleSave = async () => {
     if (isPending) {
-      console.warn('Save operation already in progress. Ignoring new request.');
+      console.warn('Speichervorgang läuft bereits. Neue Anfrage wird ignoriert.');
       return false;
     }
 

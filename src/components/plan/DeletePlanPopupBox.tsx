@@ -31,19 +31,15 @@ export default function DeletePlanPopupBox({ planId, onClose, refetch }: DeleteP
         if (res) {
           await refetch();
         } else {
-          toast.error('Fail to delete a plan');
+          toast.error('Fehler beim Löschen der Planung');
         }
         onClose();
       }
     },
     onError: () => {
-      toast.error('Failed to delete a plan');
+      toast.error('Fehler beim Löschen der Planung');
     },
   });
 
-  const handleClickCancel = () => {
-    onClose();
-  };
-
-  return <Popupbox text='Remove this plan.' onAccept={mutate} onCancel={handleClickCancel} />;
+  return <Popupbox text='Diesen Plan löschen.' onAccept={mutate} onCancel={onClose} />;
 }

@@ -24,14 +24,14 @@ export default function ChangePlanNamePopupBox({
       if (error instanceof GuestError) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to rename a plan');
+        toast.error('Fehler beim Umbenennen des Plans');
       }
     },
   });
 
   return (
     <InputPopupBox
-      title='Change the title'
+      title='Titel ändern'
       placeholder='Neu Titel'
       onAccept={changePlanName}
       onClose={onClose}

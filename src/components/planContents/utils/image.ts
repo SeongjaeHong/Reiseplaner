@@ -26,7 +26,7 @@ function readFileAsDataURL(file: File): Promise<string> {
       if (e.target && typeof e.target.result === 'string') {
         resolve(e.target.result);
       } else {
-        reject(new Error('Fail to read a file as a Data URL.'));
+        reject(new Error('Fehler beim Lesen der Datei als Data-URL'));
       }
     };
     reader.onerror = (e) => reject(new Error(e.target?.error?.message));
@@ -45,7 +45,7 @@ function getImageDimensions(src: string): Promise<{ width: number; height: numbe
       if (typeof event === 'string') {
         errorMessage = event;
       } else {
-        errorMessage = 'Fail to load an image.';
+        errorMessage = 'Fehler beim Laden des Bildes.';
       }
       reject(new Error(errorMessage));
     };
