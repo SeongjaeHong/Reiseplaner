@@ -107,6 +107,7 @@ const useGetUser = (session: User | null) => {
     queryFn: () => getUser(session?.id ?? ''),
     enabled: !!session,
     staleTime: Infinity,
+    gcTime: Infinity,
   });
 };
 

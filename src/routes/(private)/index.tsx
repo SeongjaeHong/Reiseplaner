@@ -19,6 +19,7 @@ function Index() {
     queryFn: getPlanGroups,
     enabled: !!user,
     staleTime: Infinity,
+    gcTime: Infinity,
     throwOnError: true,
   });
 
