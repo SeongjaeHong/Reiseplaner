@@ -4,7 +4,7 @@ import { imageSchema } from './buckets.types';
 import { ApiError } from '@/errors/ApiError';
 import { _guestGuard } from './users';
 
-const EMPTY_IMAGE_NAME = 'empty-image.png' as const;
+const EMPTY_IMAGE_NAME = 'empty-image.webp' as const;
 
 const getFileName = (path: string) => path.split('/').pop() ?? '';
 export const isDefaultImage = (name: string) => name === EMPTY_IMAGE_NAME;
@@ -12,11 +12,17 @@ export const isDefaultImage = (name: string) => name === EMPTY_IMAGE_NAME;
 export const uploadImage = async (file: File) => {
   _guestGuard('CREATE', "Guest can't upload an image.");
 
-  const ext = file.name.split('.').pop();
+  let ext = file.name.split('.').pop() ?? '';
+  let processedFile = file;
+  if (file.type !== 'image/webp') {
+    processedFile = await convertToWebP(file).catch(() => file);
+    ext = processedFile.type === 'image/webp' ? 'webp' : ext;
+  }
+
   const name = uuid();
   const filePath = `${name}.${ext}`;
 
-  const { data, error } = await supabase.storage.from('images').upload(filePath, file);
+  const { data, error } = await supabase.storage.from('images').upload(filePath, processedFile);
 
   if (error) {
     throw new ApiError('DATABASE', {
@@ -85,4 +91,49 @@ export const downloadImage = async (filePath: string | null) => {
 export const getImageURL = (url: string) => {
   const projectId = import.meta.env.VITE_PROJECT_ID as string;
   return `https://${projectId}.supabase.co/storage/v1/object/public/${url}`;
+};
+
+const convertToWebP = async (file: File): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      if (!e.target || typeof e.target.result !== 'string') {
+        return reject(new Error('Fehler beim Lesen der Datei als Data-URL.'));
+      }
+
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const context = canvas.getContext('2d');
+        if (!context) {
+          return reject(new Error('Canvas-Kontext kann nicht erzeugt werden.'));
+        }
+        context.drawImage(img, 0, 0);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const newFileName = file.name.replace(/\.[^/.]+$/, '') + '.webp';
+              const webpFile = new File([blob], newFileName, {
+                type: 'image/webp',
+                lastModified: Date.now(),
+              });
+
+              resolve(webpFile);
+            } else {
+              reject(new Error('WebP-Konvertierungsfehler.'));
+            }
+          },
+          'image/webp',
+          0.8
+        );
+      };
+    };
+    reader.onerror = reject;
+  });
 };
