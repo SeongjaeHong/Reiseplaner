@@ -5,10 +5,9 @@ import DeletePlanGroupPopupBox from './DeletePlanGroupPopupBox';
 import PlanGroupEdit from './edit/PlanGroupEdit';
 import type { Database } from '@/database.types';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { downloadImage } from '@/apis/supabase/buckets';
 import { getSchedule } from './utils/time';
-import { toast } from '../common/Toast/toast';
 import { getPlansCount } from '@/apis/supabase/plans';
+import { useFetchImage } from '@/utils/useFetchImage';
 
 type typePlanGroup = {
   planGroup: Database['public']['Tables']['plangroups']['Row'];
@@ -139,30 +138,11 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
   );
 }
 
-type UseFetchImage = {
-  imageURL: string | null;
-};
-function useFetchImage({ imageURL }: UseFetchImage) {
-  const { data } = useSuspenseQuery({
-    queryKey: [imageURL],
-    queryFn: () => {
-      try {
-        return downloadImage(imageURL);
-      } catch {
-        toast.error('Failed to download an image from the server.');
-        return null;
-      }
-    },
-    staleTime: Infinity,
-  });
-
-  return data;
-}
-
 function useGetPlansCounts(groupId: number) {
   return useSuspenseQuery({
     queryKey: ['useGetPlansCounts', groupId],
     queryFn: () => getPlansCount(groupId),
     staleTime: Infinity,
+    gcTime: Infinity,
   });
 }
