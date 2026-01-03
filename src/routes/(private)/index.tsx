@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getPlanGroups } from '@/apis/supabase/planGroups';
 import PlanGroup from '@/components/planGroup/PlanGroup';
 import { useAuth } from '@/components/auth/AuthContext';
+import { setPlanGroupsFetchKey } from '@/utils/fetchKeys';
 
 export const Route = createFileRoute('/(private)/')({
   component: Index,
@@ -15,7 +16,7 @@ function Index() {
   const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer((prev) => !prev, false);
   const { user } = useAuth();
   const { data: planGroups, refetch } = useQuery({
-    queryKey: ['getPlanGroups', user?.id],
+    queryKey: setPlanGroupsFetchKey(user?.id),
     queryFn: getPlanGroups,
     enabled: !!user,
     staleTime: Infinity,
@@ -43,7 +44,7 @@ function Index() {
           className='group flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-slate-200 p-10 transition-colors hover:border-indigo-300 hover:bg-indigo-50'
         >
           <div className='mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition-colors group-hover:bg-indigo-100 group-hover:text-indigo-600'>
-            <FaPlus className='text-3xl' />
+            <FaPlus size={32} />
           </div>
           <p className='group-hover:text-primary font-medium text-slate-400'>
             Neue Reise hinzufügen
