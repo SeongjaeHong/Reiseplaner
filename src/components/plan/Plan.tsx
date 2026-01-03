@@ -7,11 +7,12 @@ import type { Database } from '@/database.types';
 
 type Plan = {
   plan: Database['public']['Tables']['plans']['Row'];
+  groupId: number;
   groupTitle: string;
   refetch: () => Promise<unknown>;
 };
 
-export default function Plan({ plan, groupTitle, refetch }: Plan) {
+export default function Plan({ plan, groupId, groupTitle, refetch }: Plan) {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteBox, toggleShowDeleteBox] = useReducer((prev) => !prev, false);
   const [showChangeNameBox, toggleShowChangeNameBox] = useReducer((prev) => !prev, false);
@@ -39,6 +40,7 @@ export default function Plan({ plan, groupTitle, refetch }: Plan) {
       <Link
         to={'/plangroup/plan'}
         search={{
+          group_id: groupId,
           group_title: groupTitle,
           plan_id: plan.id,
           plan_title: plan.title,
