@@ -61,9 +61,9 @@ export default function PlanEditor({
         onFocus();
         if (!isEdit) setEditingId(content.id);
       }}
-      className={`group relative mb-2 rounded-md px-2 py-1 transition-all ${
-        isFocused ? 'ring-reiseorange shadow-lg ring-2' : ''
-      } ${isNoteBox ? 'bg-reisered min-h-5' : 'border-reiseyellow min-h-2 border-2'}`}
+      className={`group relative mb-2 rounded-md px-2 py-1 shadow-md transition-all ${
+        isFocused && 'ring-secondary ring-2'
+      } ${isNoteBox ? 'bg-accent min-h-5' : 'min-h-2 border-2 bg-white'}`}
     >
       {isEdit ? (
         <EditorMode
@@ -78,10 +78,10 @@ export default function PlanEditor({
         <ViewerMode title={content.title} initialState={initialState} isNoteBox={isNoteBox} />
       )}
 
-      {/* 삭제 버튼 */}
-      <div className='bg-reiseorange invisible absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full group-hover:visible'>
-        <button onClick={handleDelete} className='text-xs text-white'>
-          <FaRegTrashCan />
+      {/* Delete button */}
+      <div className='invisible absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-slate-500/30 group-hover:visible hover:bg-slate-500'>
+        <button onClick={handleDelete}>
+          <FaRegTrashCan className='text-bold text-white' />
         </button>
       </div>
     </div>

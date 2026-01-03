@@ -89,7 +89,7 @@ export default function EditorMode({
             ref={titleRef}
             defaultValue={content.title}
             placeholder='Titel'
-            className={`w-full border-b-1 border-red-300 bg-transparent px-2 text-xl outline-0 max-[600px]:text-sm max-[600px]:font-bold ${
+            className={`w-full border-b-1 border-red-300 px-2 text-xl outline-0 max-[600px]:text-sm max-[600px]:font-bold ${
               isNoteBox ? 'text-white placeholder-red-200' : 'text-black'
             }`}
           />
@@ -128,7 +128,7 @@ export default function EditorMode({
             <button
               onClick={toggleIsNoteBox}
               className={`flex w-[81px] items-center gap-1 rounded-xl px-3 py-1 text-sm ${
-                isNoteBox ? 'bg-reiseorange text-white' : 'bg-zinc-300 text-black'
+                isNoteBox ? 'bg-secondary text-white' : 'bg-zinc-300 text-black'
               }`}
             >
               <FaTag /> NOTE
