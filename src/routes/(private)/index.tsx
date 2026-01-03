@@ -60,5 +60,5 @@ function Index() {
 }
 
 const PlanGroupSkeleton = () => (
-  <div className='h-80 animate-pulse cursor-pointer rounded-3xl border border-slate-100 bg-white bg-zinc-300 shadow-sm' />
+  <div className='h-80 animate-pulse cursor-pointer rounded-3xl border border-slate-100 bg-zinc-300 shadow-sm' />
 );
