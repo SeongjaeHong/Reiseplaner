@@ -8,6 +8,7 @@ export const planSchema = z.object({
 export const planResponseSchema = planSchema.extend({
   id: z.number(),
   created_at: z.string(),
+  owner: z.string(),
 });
 
 export const planArrayResponseSchema = z.array(planResponseSchema).nullable();
