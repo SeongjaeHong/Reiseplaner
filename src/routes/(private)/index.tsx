@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { FaCirclePlus, FaPlus } from 'react-icons/fa6';
+import { FaPlus } from 'react-icons/fa6';
 import { Suspense, useReducer } from 'react';
 import CreatePlanGroupPopupBox from '@/components/planGroup/CreatePlanGroupPopupBox';
 import { useQuery } from '@tanstack/react-query';
