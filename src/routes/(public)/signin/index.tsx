@@ -4,7 +4,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { signIn, signInWithOAuth } from '@/apis/supabase/auth';
 import z from 'zod';
-import { FcGoogle } from 'react-icons/fc';
+import { FcGoogle, FcSportsMode } from 'react-icons/fc';
 import { signInGuestId } from '@/apis/supabase/users';
 import { toast } from '@/components/common/Toast/toast';
 
@@ -47,7 +47,7 @@ function RouteComponent() {
         {signinFailed && (
           <div className='my-5 bg-red-100 p-3'>
             <span className='text-sm'>
-              That email and password combination didn't work. Try again.
+              Diese Kombination aus E-Mail und Passwort ist ungültig. Bitte versuchen Sie es erneut.
             </span>
           </div>
         )}
@@ -91,7 +91,7 @@ function RouteComponent() {
             type='submit'
             className='bg-secondary flex w-full items-center justify-center gap-2 rounded-md py-1 hover:bg-orange-400'
           >
-            <span className='text-white'>Sign in</span>
+            <span className='text-white'>Einloggen</span>
             {isSubmitting && (
               <div className='size-4 animate-spin rounded-full border-[2px] border-t-transparent text-white' />
             )}
@@ -105,7 +105,7 @@ function RouteComponent() {
             to='/signup'
             className='block w-full rounded-md border-1 border-zinc-300 py-1 text-center hover:border-zinc-400'
           >
-            <span className='w-full'>Create a new Reiseplaner accout </span>
+            <span className='w-full'>Konto erstellen</span>
           </Link>
           <button
             type='button'
@@ -115,7 +115,7 @@ function RouteComponent() {
             <span className='absolute left-3 text-lg'>
               <FcGoogle />
             </span>
-            <span className='w-full'>Sign in with Google</span>
+            <span className='w-full'>Mit Google anmelden</span>
           </button>
           <button
             type='button'
@@ -123,9 +123,9 @@ function RouteComponent() {
             className='relative flex w-full items-center rounded-md border-1 border-zinc-300 py-1 hover:border-zinc-400'
           >
             <span className='absolute left-3 text-lg'>
-              <FcGoogle />
+              <FcSportsMode />
             </span>
-            <span className='w-full'>Sign in as a Guest</span>
+            <span className='w-full'>Als Gast anmelden</span>
           </button>
         </div>
       </div>

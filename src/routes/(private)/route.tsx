@@ -69,7 +69,7 @@ function RouteComponent() {
                       className={`flex items-center gap-2 px-2 py-1 ${isGuest ? 'text-zinc-500' : 'cursor-pointer hover:bg-zinc-400'}`}
                     >
                       <FaPen />
-                      Change name
+                      Name ändern
                     </li>
                     <li className='flex justify-end px-2 py-1'>
                       <div
@@ -77,7 +77,7 @@ function RouteComponent() {
                         className='flex cursor-pointer items-center gap-2 rounded-lg px-2 hover:bg-zinc-400'
                       >
                         <FaRightFromBracket />
-                        Sign out
+                        Abmelden
                       </div>
                     </li>
                   </ul>
