@@ -1,6 +1,7 @@
 import { DecoratorNode, type NodeKey, type Spread, type SerializedLexicalNode } from 'lexical';
 import ImageComponent from './ImageComponent';
 import { isBase64DataUrl } from '../../utils/image';
+import { getImageURL } from '@/apis/supabase/buckets';
 
 type SerializedImageNode = Spread<
   {
@@ -12,8 +13,6 @@ type SerializedImageNode = Spread<
   },
   SerializedLexicalNode
 >;
-
-const PROJECT_ID = import.meta.env.VITE_PROJECT_ID as string;
 
 export class ImageNode extends DecoratorNode<React.ReactNode> {
   __src: string;
@@ -53,7 +52,7 @@ export class ImageNode extends DecoratorNode<React.ReactNode> {
     if (isBase64DataUrl(this.__src)) {
       imgSrc = this.__src;
     } else {
-      imgSrc = `https://${PROJECT_ID}.supabase.co/storage/v1/object/public/${this.__src}`;
+      imgSrc = getImageURL(this.__src);
     }
 
     return (

@@ -81,3 +81,8 @@ export const downloadImage = async (filePath: string | null) => {
 
   return new File([data], fileName, { type: data.type });
 };
+
+export const getImageURL = (url: string) => {
+  const projectId = import.meta.env.VITE_PROJECT_ID as string;
+  return `https://${projectId}.supabase.co/storage/v1/object/public/${url}`;
+};
