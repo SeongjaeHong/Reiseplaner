@@ -1,5 +1,9 @@
 import supabase from '@/supabaseClient';
-import { planGroupArrayResponseSchema, planGroupSchema } from './planGroups.types';
+import {
+  planGroupArrayResponseSchema,
+  planGroupResponseSchema,
+  planGroupSchema,
+} from './planGroups.types';
 import { ApiError } from '@/errors/ApiError';
 import { _guestGuard } from './users';
 
@@ -26,6 +30,26 @@ export const getPlanGroups = async () => {
     .throwOnError();
 
   const res = planGroupArrayResponseSchema.safeParse(data);
+  if (!res.success) {
+    throw new ApiError('VALIDATION', { cause: res.error });
+  }
+
+  return res.data;
+};
+
+export const getPlanGroupById = async (groupId: number) => {
+  const { data } = await supabase
+    .from('plangroups')
+    .select()
+    .eq('id', groupId)
+    .maybeSingle()
+    .throwOnError();
+
+  if (!data) {
+    throw new Error(`PlanGroup of Id(${groupId}) not exists.`);
+  }
+
+  const res = planGroupResponseSchema.safeParse(data);
   if (!res.success) {
     throw new ApiError('VALIDATION', { cause: res.error });
   }
