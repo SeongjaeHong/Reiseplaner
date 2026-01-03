@@ -32,7 +32,11 @@ function Index() {
 
   return (
     <div className='mx-auto max-w-[1600px]'>
-      {planGroup ? <PlanGroupHead planGroup={planGroup} refetch={planGroupRefetch} /> : <div></div>}
+      {planGroup ? (
+        <PlanGroupHead planGroup={planGroup} refetch={planGroupRefetch} />
+      ) : (
+        <div className='mb-12 h-80 animate-pulse rounded-[40px] bg-zinc-300 shadow-2xl' />
+      )}
 
       {isPlansLoading && <PlansSkeleton />}
       {plans && (
