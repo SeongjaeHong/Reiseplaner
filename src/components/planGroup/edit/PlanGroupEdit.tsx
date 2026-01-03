@@ -36,7 +36,7 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
     handleSubmit,
     control,
     trigger,
-    formState: { dirtyFields, errors, isValid },
+    formState: { dirtyFields, isValid },
   } = useForm<PlanGroupForm>({
     resolver: zodResolver(planGroupEditFormSchema),
     mode: 'onChange',
@@ -101,12 +101,14 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
         onSubmit={onFormSubmit}
         className='animate-in relative h-fit w-3/5 max-w-lg rounded-3xl bg-white shadow-2xl duration-200'
       >
-        <div className='p-8'>
+        <div className='p-8 max-[600px]:text-sm max-[504px]:text-xs'>
           <div className='mb-6 flex items-center justify-between'>
-            <h2 className='text-2xl font-bold text-slate-800'>Reiseinformationen bearbeiten</h2>
+            <h1 className='text-2xl font-bold text-slate-800 max-[600px]:text-sm max-[504px]:text-xs'>
+              Reiseinformationen bearbeiten
+            </h1>
             <button
               onClick={onClose}
-              className='rounded-full p-2 text-xl text-slate-400 transition-colors hover:bg-slate-100'
+              className='absolute top-3 right-3 rounded-full p-2 text-xl text-slate-400 transition-colors hover:bg-slate-100'
             >
               <IoClose />
             </button>
@@ -130,23 +132,27 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
           </div>
 
           <div className='space-y-5'>
-            {/* Reisetitel */}
+            {/* Title area */}
             <div>
-              <p className='mb-2 ml-1 block text-sm font-bold text-slate-700'>Reisetitel</p>
+              <p className='mb-2 ml-1 block text-sm font-bold text-slate-700 max-[504px]:text-xs'>
+                Reisetitel
+              </p>
               <input
                 type='text'
                 defaultValue={planGroup.title}
                 {...register('title')}
-                className='w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none'
+                className='w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none max-[504px]:text-xs'
               />
             </div>
 
             {/* Schedule area */}
             <div>
-              <p className='mb-2 ml-1 block text-sm font-bold text-slate-700'>Reisezeitraum</p>
+              <p className='mb-2 ml-1 block text-sm font-bold text-slate-700 max-[504px]:text-xs'>
+                Reisezeitraum
+              </p>
               <div
                 onClick={() => setShowCalendar(true)}
-                className='flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800'
+                className='flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 max-[504px]:text-xs'
               >
                 <FaCalendar />
                 <span>{scheduleText}</span>
@@ -177,7 +183,7 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
           </div>
 
           {/* Botton button area */}
-          <div className='mt-10 flex gap-3'>
+          <div className='mt-10 flex gap-3 max-[500px]:flex-col'>
             <button
               type='button'
               onClick={onClose}
