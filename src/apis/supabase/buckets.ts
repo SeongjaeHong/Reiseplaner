@@ -53,13 +53,15 @@ export const deleteImage = async (filePath: string | string[]) => {
     })
     .filter((name) => name !== null);
 
-  const { error } = await supabase.storage.from('images').remove(fileNames);
+  if (fileNames.length) {
+    const { error } = await supabase.storage.from('images').remove(fileNames);
 
-  if (error) {
-    throw new ApiError('DATABASE', {
-      message: 'Failed to delete an image from the server.',
-      cause: error,
-    });
+    if (error) {
+      throw new ApiError('DATABASE', {
+        message: 'Failed to delete an image from the server.',
+        cause: error,
+      });
+    }
   }
 
   return null;
