@@ -82,9 +82,5 @@ export const getPlansCount = async (group_id: number) => {
     .eq('group_id', group_id)
     .throwOnError();
 
-  if (!count) {
-    throw new Error('Failed to get a number of Plans');
-  }
-
-  return count;
+  return count ?? 0;
 };
