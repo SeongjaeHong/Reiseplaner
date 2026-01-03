@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { useReducer, useRef, useState } from 'react';
-import { FaCalendar, FaEllipsisVertical } from 'react-icons/fa6';
+import { FaCalendar, FaPen } from 'react-icons/fa6';
 import DeletePlanGroupPopupBox from './DeletePlanGroupPopupBox';
 import PlanGroupEdit from './edit/PlanGroupEdit';
 import type { Database } from '@/database.types';
@@ -92,15 +92,21 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
               onMouseLeave={handleMenuMouseLeave}
               onClick={(e) => e.preventDefault()}
             >
-              <FaEllipsisVertical />
+              <FaPen />
             </button>
-            <PlanGroupMenuUI
-              showMenu={showMenu}
+            <ul
               onMouseEnter={handleMenuMouseEnter}
               onMouseLeave={handleMenuMouseLeave}
-              toggleshowEditBox={toggleshowEditBox}
-              toggleShowDeleteBox={toggleShowDeleteBox}
-            />
+              onClick={(e) => e.preventDefault()}
+              className={`invisible absolute top-[-30px] left-[-90px] divide-y divide-zinc-600 overflow-hidden rounded-md bg-zinc-500/0 text-center opacity-0 duration-200 ease-out ${showMenu && 'visible !top-0 !bg-zinc-500 !opacity-100'}`}
+            >
+              <li className='w-full px-2 py-1 hover:bg-zinc-700' onClick={toggleshowEditBox}>
+                <span>Bearbeiten</span>
+              </li>
+              <li className='w-full px-2 py-1 hover:bg-zinc-700' onClick={toggleShowDeleteBox}>
+                <span>Löschen</span>
+              </li>
+            </ul>
           </div>
         </div>
       </Link>
@@ -123,45 +129,6 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
         />
       )}
     </>
-  );
-}
-
-const StyleMenuGroup = (showMenu: boolean) => `absolute invisible left-[-90px] top-[-30px]
-      duration-200 ease-out opacity-0 bg-zinc-500/0
-      text-center
-      divide-y divide-zinc-600
-      ${showMenu && 'visible !top-0 !bg-zinc-500 !opacity-100'}`;
-
-const StyleMenuItem = 'w-full px-2 py-1 hover:bg-zinc-700';
-
-type PlanGroupMenuUIParams = {
-  showMenu: boolean;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-  toggleshowEditBox: () => void;
-  toggleShowDeleteBox: () => void;
-};
-function PlanGroupMenuUI({
-  showMenu,
-  onMouseEnter,
-  onMouseLeave,
-  toggleshowEditBox,
-  toggleShowDeleteBox,
-}: PlanGroupMenuUIParams) {
-  return (
-    <ul
-      className={StyleMenuGroup(showMenu)}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onClick={(e) => e.preventDefault()}
-    >
-      <li className={StyleMenuItem} onClick={toggleshowEditBox}>
-        <span>Bearbeiten</span>
-      </li>
-      <li className={StyleMenuItem} onClick={toggleShowDeleteBox}>
-        <span>Löschen</span>
-      </li>
-    </ul>
   );
 }
 
