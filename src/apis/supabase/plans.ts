@@ -30,7 +30,12 @@ export const getPlansByGroupId = async (groupId: number) => {
     });
   }
 
-  return planArrayResponseSchema.parse(data);
+  const res = planArrayResponseSchema.safeParse(data);
+  if (!res.success) {
+    throw new ApiError('VALIDATION', { cause: res.error });
+  }
+
+  return res.data;
 };
 
 export const deletePlan = async (planId: number) => {
