@@ -85,7 +85,7 @@ function RouteComponent() {
               )}
               {showNameBox && (
                 <InputPopupBox
-                  title='Change name'
+                  title='Name ändern'
                   onAccept={handleChangeName}
                   onClose={() => setShowNameBox(false)}
                 />
