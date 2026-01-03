@@ -1,13 +1,15 @@
 import { Link } from '@tanstack/react-router';
-import { useReducer, useRef, useState } from 'react';
+import { useReducer, useRef, useState, lazy } from 'react';
 import { FaCalendar, FaPen } from 'react-icons/fa6';
-import DeletePlanGroupPopupBox from './DeletePlanGroupPopupBox';
-import PlanGroupEdit from './edit/PlanGroupEdit';
 import type { Database } from '@/database.types';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getSchedule } from './utils/time';
 import { getPlansCount } from '@/apis/supabase/plans';
 import { useFetchImage } from '@/utils/useFetchImage';
+import { getImageURL } from '@/apis/supabase/buckets';
+
+const PlanGroupEdit = lazy(() => import('./edit/PlanGroupEdit'));
+const DeletePlanGroupPopupBox = lazy(() => import('./DeletePlanGroupPopupBox'));
 
 type typePlanGroup = {
   planGroup: Database['public']['Tables']['plangroups']['Row'];
@@ -60,14 +62,16 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
       <Link to={'/plangroup'} search={{ group_id: planGroup.id, group_title: planGroup.title }}>
         <div className='group relative h-80 cursor-pointer overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm hover:shadow-xl'>
           <div className='h-3/5'>
-            {thumbnail && (
+            {planGroup.thumbnailURL && (
               <img
-                src={URL.createObjectURL(thumbnail)}
+                src={getImageURL(planGroup.thumbnailURL)}
                 alt='A thumbnail of a plan group'
+                fetchPriority='high'
+                loading='eager'
                 className='h-full w-full object-cover transition-transform duration-50 group-hover:scale-105'
               />
             )}
-            {!thumbnail && (
+            {!planGroup.thumbnailURL && (
               <div className='h-full w-full bg-zinc-500 object-fill'>
                 <p className='text-white'>Fehler beim Laden des Bildes.</p>
               </div>
