@@ -12,5 +12,6 @@ export const planGroupResponseSchema = planGroupSchema.extend({
   created_at: z.string(),
   owner: z.string().nullable(),
 });
+export type PlanGroupResponseSchema = z.infer<typeof planGroupResponseSchema>;
 
 export const planGroupArrayResponseSchema = z.array(planGroupResponseSchema).nullable();
