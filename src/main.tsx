@@ -4,13 +4,13 @@ import './index.css';
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from './components/common/Toast/ToastContainer';
 import { ErrorBoundary } from 'react-error-boundary';
-import UnhandledError from './errors/UnhandledError';
 import { logError } from './errors/log';
 import { AuthProvider } from './components/auth/AuthProvider';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import PageNotFound from './errors/PageNotFound';
 import { routeTree } from './routeTree.gen';
 import type { AuthState } from './components/auth/AuthContext';
+import { UnhandledError } from './errors/UnhandledError';
 
 const queryClient = new QueryClient({
   mutationCache: new MutationCache({
@@ -39,7 +39,7 @@ const router = createRouter({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ErrorBoundary fallback={<UnhandledError />} onError={logError}>
+    <ErrorBoundary FallbackComponent={UnhandledError} onError={logError}>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
