@@ -1,49 +1,18 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from './components/common/Toast/ToastContainer';
 import { ErrorBoundary } from 'react-error-boundary';
 import { logError } from './errors/log';
 import { AuthProvider } from './components/auth/AuthProvider';
-import { createRouter, RouterProvider } from '@tanstack/react-router';
-import PageNotFound from './errors/PageNotFound';
-import { routeTree } from './routeTree.gen';
-import type { AuthState } from './components/auth/AuthContext';
 import { UnhandledError } from './errors/UnhandledError';
-
-const queryClient = new QueryClient({
-  mutationCache: new MutationCache({
-    onError: (error, _variables, _onMutateResult, mutation) => {
-      console.error('Mutation Error:', error);
-      console.error(mutation);
-    },
-  }),
-  queryCache: new QueryCache({
-    onError: (error, query) => {
-      console.error('Query Error:', error);
-      console.error(query);
-    },
-  }),
-});
-
-export type RouterContext = {
-  auth: AuthState;
-};
-
-const router = createRouter({
-  routeTree,
-  context: { auth: undefined as unknown as RouterContext['auth'] },
-  defaultNotFoundComponent: () => <PageNotFound />,
-});
+import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary FallbackComponent={UnhandledError} onError={logError}>
       <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-        </QueryClientProvider>
+        <App />
       </AuthProvider>
       <ToastContainer />
     </ErrorBoundary>
