@@ -69,3 +69,17 @@ export const renamePlanByPlanId = async (planId: number, newTitle: string) => {
 
   return status === 204 ? true : false;
 };
+
+export const getPlansCount = async (group_id: number) => {
+  const { count } = await supabase
+    .from('plans')
+    .select('*', { count: 'exact', head: true })
+    .eq('group_id', group_id)
+    .throwOnError();
+
+  if (!count) {
+    throw new Error('Failed to get a number of Plans');
+  }
+
+  return count;
+};
