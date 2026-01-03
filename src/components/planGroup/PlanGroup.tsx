@@ -8,6 +8,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { downloadImage } from '@/apis/supabase/buckets';
 import { getSchedule } from './utils/time';
 import { toast } from '../common/Toast/toast';
+import { getPlansCount } from '@/apis/supabase/plans';
 
 type typePlanGroup = {
   planGroup: Database['public']['Tables']['plangroups']['Row'];
@@ -15,8 +16,6 @@ type typePlanGroup = {
 };
 
 export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
-  // const { data: plans, isLoading, refetch } = useFetchPlans(groupId);  // TODO: Get number of plans later
-  const numOfPlans = 99;
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteBox, toggleShowDeleteBox] = useReducer((prev) => {
     setShowMenu(false);
@@ -51,6 +50,12 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
     to: planGroup.end_time ? new Date(planGroup.end_time) : undefined,
   });
 
+  const { data: numPlanGroups, refetch: plansRefetch } = useGetPlansCounts(planGroup.id);
+  const handleRefetch = async () => {
+    await refetch();
+    await plansRefetch();
+  };
+
   return (
     <>
       <Link to={'/plangroup'} search={{ group_id: planGroup.id, group_title: planGroup.title }}>
@@ -81,7 +86,9 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
               <span className='whitespace-normal max-md:text-xs'>{schedule}</span>
             </div>
             <div className='flex items-center border-t border-slate-50 pt-3'>
-              <span className='text-xs text-slate-400'>N {numOfPlans > 1 ? 'Pläne' : 'Plan'}</span>
+              <span className='text-xs text-slate-400'>
+                {numPlanGroups} {numPlanGroups > 1 ? 'Pläne' : 'Plan'}
+              </span>
             </div>
           </div>
 
@@ -116,7 +123,7 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
           planGroup={planGroup}
           thumbnail={thumbnail}
           onClose={toggleshowEditBox}
-          refetch={refetch}
+          refetch={handleRefetch}
         />
       )}
 
@@ -125,7 +132,7 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
           planGroupId={planGroup.id}
           thumbnail={thumbnail}
           onClose={toggleShowDeleteBox}
-          refetch={refetch}
+          refetch={handleRefetch}
         />
       )}
     </>
@@ -150,4 +157,12 @@ function useFetchImage({ imageURL }: UseFetchImage) {
   });
 
   return data;
+}
+
+function useGetPlansCounts(groupId: number) {
+  return useSuspenseQuery({
+    queryKey: ['useGetPlansCounts', groupId],
+    queryFn: () => getPlansCount(groupId),
+    staleTime: Infinity,
+  });
 }
