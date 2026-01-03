@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { createFileRoute, useBlocker, useRouter } from '@tanstack/react-router';
+import { createFileRoute, useBlocker, useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
-import { FaAngleLeft } from 'react-icons/fa6';
+import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6';
 import { toast } from '@/components/common/Toast/toast';
 import type { DetailPlansHandle } from '@/components/planContents/components/DetailPlans/DetailPlans';
 import PlanContents from '@/components/planContents/PlanContents';
 
 const planParam = z.object({
+  group_id: z.number(),
   group_title: z.string(),
   plan_id: z.coerce.number(),
   plan_title: z.string(),
@@ -20,9 +21,14 @@ export const Route = createFileRoute('/(private)/plangroup/plan')({
 });
 
 function Plan() {
-  const { group_title: groupTitle, plan_id: planId, plan_title: planTitle } = Route.useSearch();
+  const {
+    group_title: groupTitle,
+    plan_id: planId,
+    plan_title: planTitle,
+    group_id: groupId,
+  } = Route.useSearch();
   const [isSaving, setIsSaving] = useState(false);
-  const router = useRouter();
+  const navigate = useNavigate();
   const detailPlansRef = useRef<DetailPlansHandle>(null);
   const { status, proceed, reset } = useBlocker({
     shouldBlockFn: () => detailPlansRef.current?.contentsStatus === 'Dirty',
@@ -78,18 +84,27 @@ function Plan() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
+  const handleMoveToPlanGroup = () =>
+    void navigate({ to: '/plangroup', search: { group_id: groupId, group_title: groupTitle } });
+
   return (
     <div className='mx-auto max-w-[1600px]'>
-      <div className='bg-reiseorange flex justify-between'>
-        <div className='flex items-center'>
-          <button onClick={() => router.history.back()} className='px-1 py-2'>
-            <span className='text-2xl'>
-              <FaAngleLeft />
-            </span>
-          </button>
-          <div className='pb-2 leading-none'>
-            <small className='text-sm'>{groupTitle}</small>
-            <h1 className='text-2xl leading-none break-all'>{planTitle}</h1>
+      <div className='mb-3 flex justify-between'>
+        <div>
+          <div className='ml-8 flex items-center gap-1 text-sm font-bold text-slate-400'>
+            <button onClick={handleMoveToPlanGroup} className='hover:text-indigo-600'>
+              {groupTitle}
+            </button>
+            <FaAngleRight size={12} className='text-slate-400' />
+            <small className='text-sm font-bold text-slate-400'>{planTitle}</small>
+          </div>
+          <div className='flex'>
+            <button onClick={handleMoveToPlanGroup} className='px-1 py-2'>
+              <FaAngleLeft size={24} className='text-slate-400 hover:text-indigo-600' />
+            </button>
+            <h1 className='pb-2 text-4xl leading-none font-black break-all text-slate-900'>
+              {planTitle}
+            </h1>
           </div>
         </div>
         {isSaving && (
