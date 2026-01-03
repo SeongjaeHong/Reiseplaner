@@ -7,9 +7,28 @@ import { getPlanGroups } from '@/apis/supabase/planGroups';
 import PlanGroup from '@/components/planGroup/PlanGroup';
 import { useAuth } from '@/components/auth/AuthContext';
 import { setPlanGroupsFetchKey } from '@/utils/fetchKeys';
+import { getPlansCount } from '@/apis/supabase/plans';
 
 export const Route = createFileRoute('/(private)/')({
   component: Index,
+  loader: async ({ context }) => {
+    const queryClient = context.queryClient;
+    const planGroups = await queryClient.ensureQueryData({
+      queryKey: setPlanGroupsFetchKey(context.auth.user?.id),
+      queryFn: getPlanGroups,
+    });
+
+    // Plan count is not important. Do not wait here.
+    if (planGroups) {
+      planGroups.forEach((group) => {
+        void queryClient.prefetchQuery({
+          queryKey: ['useGetPlansCounts', group.id],
+          queryFn: () => getPlansCount(group.id),
+          staleTime: Infinity,
+        });
+      });
+    }
+  },
 });
 
 function Index() {
