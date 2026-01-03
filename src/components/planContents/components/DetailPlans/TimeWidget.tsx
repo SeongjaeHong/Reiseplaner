@@ -31,7 +31,7 @@ export default function TimeWidget({ time, setTime, timeActive, setTimeActive }:
       onClick={handleToggle}
       className={`flex items-center gap-2 rounded-xl px-3 py-1 transition-all duration-300 max-[550px]:w-[81px] max-[550px]:flex-col max-[550px]:justify-center ${
         isOpen
-          ? 'bg-reiseorange text-white hover:bg-orange-300'
+          ? 'bg-secondary text-white hover:bg-orange-300'
           : 'w-20 w-[81px] bg-zinc-300 hover:bg-zinc-200'
       }`}
     >

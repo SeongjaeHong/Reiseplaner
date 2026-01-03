@@ -16,7 +16,7 @@ export default function ScheduleTable({ planId, focusedId, onSelectContent }: Sc
       </div>
 
       <div className='relative flex flex-1 flex-col justify-between'>
-        <div className='bg-reiseorange absolute left-[46px] h-full w-[2px] max-sm:hidden' />
+        <div className='bg-secondary absolute left-[46px] h-full w-[2px] max-sm:hidden' />
         {data?.contents.map((content) => {
           if (content.type === 'text' && content.isTimeActive) {
             const contentBody = editorContentSchema.safeParse(JSON.parse(content.data));
@@ -46,7 +46,7 @@ export default function ScheduleTable({ planId, focusedId, onSelectContent }: Sc
                   onSelectContent(content.id);
                 }}
                 className={`mb-2 flex cursor-pointer rounded-lg p-1 text-black transition-all hover:bg-orange-300 hover:text-white ${
-                  isFocused && 'bg-orange-400 text-white ring-2 ring-orange-400'
+                  isFocused && 'bg-secondary ring-secondary text-white ring-2'
                 }`}
               >
                 <h1 className='text-center max-sm:w-full'>{startTime}</h1>

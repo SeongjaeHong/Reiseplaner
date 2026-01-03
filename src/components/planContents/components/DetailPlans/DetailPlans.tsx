@@ -120,7 +120,7 @@ export default function DetailPlans({ planId, ref, focusedId, setFocusedId }: De
       {/* A function layer at the bottom*/}
       <div className='mt-5 ml-2 flex items-center gap-2'>
         <button onClick={handleAddText}>
-          <FaCirclePlus className='text-reiseorange text-3xl hover:text-orange-400' />
+          <FaCirclePlus className='hover:text-primary text-3xl text-slate-400' />
         </button>
       </div>
     </>

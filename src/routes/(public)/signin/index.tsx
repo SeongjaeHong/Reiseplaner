@@ -41,7 +41,7 @@ function RouteComponent() {
 
   return (
     <div className='fixed top-30 left-1/2 -translate-x-1/2'>
-      <h1 className='text-reisered mb-8 text-center text-5xl font-bold text-black'>Reiseplaner</h1>
+      <h1 className='text-accent mb-8 text-center text-5xl font-bold text-black'>Reiseplaner</h1>
       <div className='w-100 rounded-md bg-white p-8 text-black max-[430px]:w-80'>
         <h1 className='text-center text-xl font-bold'>Sign in to Reiseplaner</h1>
         {signinFailed && (
@@ -61,7 +61,7 @@ function RouteComponent() {
               type='email'
               {...register('email', { required: 'Email is empty.' })}
               autoFocus
-              className='transition-ring w-full rounded-sm border-1 border-zinc-500 leading-7 duration-300 ease-in outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500'
+              className='transition-ring focus:border-secondary-strong focus:ring-secondary-strong w-full rounded-sm border-1 border-zinc-500 leading-7 duration-300 ease-in outline-none focus:ring-2'
             />
             {errors.email && (
               <div className='absolute'>
@@ -78,7 +78,7 @@ function RouteComponent() {
               type='password'
               autoComplete='off'
               {...register('password', { required: 'Password is empty.' })}
-              className='transition-ring w-full rounded-sm border-1 border-zinc-500 leading-7 duration-300 ease-in outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500'
+              className='transition-ring focus:border-secondary-strong focus:ring-secondary-strong w-full rounded-sm border-1 border-zinc-500 leading-7 duration-300 ease-in outline-none focus:ring-2'
             />
             {errors.password && (
               <div className='absolute'>
@@ -89,7 +89,7 @@ function RouteComponent() {
 
           <button
             type='submit'
-            className='bg-reiseorange flex w-full items-center justify-center gap-2 rounded-md py-1 hover:bg-orange-400'
+            className='bg-secondary flex w-full items-center justify-center gap-2 rounded-md py-1 hover:bg-orange-400'
           >
             <span className='text-white'>Sign in</span>
             {isSubmitting && (

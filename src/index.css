@@ -1,13 +1,11 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-reiseblue: oklch(0.8728 0.0925 219.56);
-  --color-reiseyellow: oklch(0.9421 0.1152 99.72);
-  --color-reiseorange: oklch(0.7895 0.1576 64.32);
-  --color-reisered: oklch(0.6834 0.2053 24.36);
-
   --color-primary-strong: oklch(45.7% 0.24 277.023);
   --color-primary: oklch(51.1% 0.262 276.966);
+  --color-secondary-strong: oklch(70.5% 0.213 47.604);
+  --color-secondary: oklch(0.7895 0.1576 64.32);
+  --color-accent: oklch(0.6834 0.2053 24.36);
   --color-background: oklch(0.9842 0.0034 247.86);
 }
 
