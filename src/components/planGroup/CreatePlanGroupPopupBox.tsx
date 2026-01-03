@@ -16,21 +16,21 @@ export default function CreatePlanGroupPopupBox({
   const { mutate } = useMutation({
     mutationFn: (title: string) => createPlanGroup(title),
     onSuccess: async () => {
-      toast.success('A plan group has been created.');
+      toast.success('Planungsgruppe wurde erstellt.');
       await refetch();
     },
     onError: (error) => {
       if (error instanceof GuestError) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to create a plan group.');
+        toast.error('Fehler beim Erstellen der Planungsgruppe.');
       }
     },
   });
 
   return (
     <InputPopupBox
-      title='Create a new plan group'
+      title='Neue Planungsgruppe erstellen'
       placeholder='Titel'
       onAccept={(title: string) => mutate(title)}
       onClose={onClose}

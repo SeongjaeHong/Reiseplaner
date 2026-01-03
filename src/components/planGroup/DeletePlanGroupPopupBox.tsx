@@ -25,13 +25,13 @@ export default function DeletePlanGroupPopupBox({
         try {
           await deleteImage(thumbnail.name);
         } catch {
-          console.error('Failed to delete an image from the server.');
+          console.error('Fehler beim Löschen des Bildes vom Server.');
         }
       }
       const success = await deletePlanGroups(planGroupId);
       if (!success) {
         throw new ApiError('DATABASE', {
-          message: `Failed to delete the plan group: ${planGroupId}`,
+          message: `Fehler beim Löschen der Planungsgrouppe: ${planGroupId}`,
         });
       }
     },
@@ -43,7 +43,7 @@ export default function DeletePlanGroupPopupBox({
       if (error instanceof GuestError) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to delete a plan group.');
+        toast.error('Fehler beim Löschen der Planungsgruppe.');
       }
     },
   });
@@ -52,5 +52,5 @@ export default function DeletePlanGroupPopupBox({
     onClose();
   };
 
-  return <Popupbox text='Remove this plan.' onAccept={mutate} onCancel={handleClickCancel} />;
+  return <Popupbox text='Diesen Plan löschen.' onAccept={mutate} onCancel={handleClickCancel} />;
 }

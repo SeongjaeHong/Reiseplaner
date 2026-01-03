@@ -69,7 +69,7 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
             )}
             {!thumbnail && (
               <div className='h-full w-full bg-zinc-500 object-fill'>
-                <p className='text-white'>Failed to load an image.</p>
+                <p className='text-white'>Fehler beim Laden des Bildes.</p>
               </div>
             )}
           </div>

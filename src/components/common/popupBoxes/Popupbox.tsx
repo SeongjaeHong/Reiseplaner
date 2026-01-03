@@ -18,11 +18,11 @@ export default function Popupbox({ text, onAccept, onCancel }: PopupboxParams) {
         <span className='text-secondary text-sm font-bold'>{text}</span>
       </div>
       <div className='flex w-full justify-center pt-3'>
+        <button className='bg-accent rounded-lg px-5 py-1' onClick={onCancel}>
+          Abbrechen
+        </button>
         <button className='bg-accent mx-3 rounded-lg px-5 py-1' onClick={() => void onAccept()}>
           OK
-        </button>
-        <button className='bg-accent rounded-lg px-5 py-1' onClick={onCancel}>
-          Cancel
         </button>
       </div>
     </div>
