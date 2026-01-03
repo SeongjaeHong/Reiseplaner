@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { useReducer, useRef, useState } from 'react';
-import { FaEllipsisVertical } from 'react-icons/fa6';
+import { FaPen } from 'react-icons/fa6';
 import DeletePlanPopupBox from './DeletePlanPopupBox';
 import ChangePlanNamePopupBox from './ChangePlanNamePopupBox';
 import type { Database } from '@/database.types';
@@ -46,26 +46,35 @@ export default function Plan({ plan, groupTitle, refetch }: Plan) {
         key={plan.id}
       >
         <div
-          className='group bg-reisered relative my-1 flex h-20 justify-between p-3'
+          className='group relative mb-2 flex cursor-pointer items-center justify-between rounded-3xl border border-slate-100 bg-white p-7 transition-all hover:-translate-x-1 hover:border-indigo-200 hover:shadow-xl'
           id={plan.id.toString()}
         >
-          <h1 className='truncate font-bold'>{plan.title}</h1>
-          <div className='invisible absolute right-1 group-hover:visible'>
+          <h1 className='mb-1 truncate text-xl font-bold text-slate-800'>{plan.title}</h1>
+          <div className='invisible absolute top-6 right-10 rounded-full bg-slate-500/30 group-hover:visible'>
             <button
-              className='rounded-full p-2 hover:bg-green-300'
+              className='rounded-full p-2 hover:bg-slate-500'
               onMouseEnter={handleMenuMouseEnter}
               onMouseLeave={handleMenuMouseLeave}
               onClick={(e) => e.preventDefault()}
             >
-              <FaEllipsisVertical />
+              <FaPen />
             </button>
-            <PlanMenuUI
-              showMenu={showMenu}
+            <div
+              className={`invisible absolute top-[-30px] left-[-115px] overflow-hidden rounded-md opacity-0 duration-200 ease-out ${showMenu && 'visible !top-[-5px] !bg-zinc-500 !opacity-100'}`}
               onMouseEnter={handleMenuMouseEnter}
               onMouseLeave={handleMenuMouseLeave}
-              toggleShowChangeNameBox={toggleShowChangeNameBox}
-              toggleShowDeleteBox={toggleShowDeleteBox}
-            />
+              onClick={(e) => e.preventDefault()}
+            >
+              <div
+                className='border-b-1 border-zinc-600 px-2 py-1 hover:bg-zinc-700'
+                onClick={toggleShowChangeNameBox}
+              >
+                <span>Umbenennen</span>
+              </div>
+              <div className='px-2 py-1 hover:bg-zinc-700' onClick={toggleShowDeleteBox}>
+                <span>Löschen</span>
+              </div>
+            </div>
           </div>
         </div>
       </Link>
@@ -82,44 +91,5 @@ export default function Plan({ plan, groupTitle, refetch }: Plan) {
         <DeletePlanPopupBox planId={plan.id} onClose={toggleShowDeleteBox} refetch={refetch} />
       )}
     </>
-  );
-}
-
-const StyleMenuClick = (
-  showMenu: boolean
-) => `absolute invisible left-[-85px] top-[-30px] bg-zinc-500/0
-      duration-200 ease-out opacity-0
-      ${showMenu && 'visible !top-0 !bg-zinc-500 !opacity-100'}`;
-
-const StyleMenu = 'px-2 py-1 hover:bg-zinc-700';
-
-type PlanMenuUIParams = {
-  showMenu: boolean;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-  toggleShowChangeNameBox: () => void;
-  toggleShowDeleteBox: () => void;
-};
-function PlanMenuUI({
-  showMenu,
-  onMouseEnter,
-  onMouseLeave,
-  toggleShowChangeNameBox,
-  toggleShowDeleteBox,
-}: PlanMenuUIParams) {
-  return (
-    <div
-      className={StyleMenuClick(showMenu)}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onClick={(e) => e.preventDefault()}
-    >
-      <div className={`${StyleMenu} border-b-1 border-zinc-600`} onClick={toggleShowChangeNameBox}>
-        <span>이름 변경</span>
-      </div>
-      <div className={StyleMenu} onClick={toggleShowDeleteBox}>
-        <span>삭제</span>
-      </div>
-    </div>
   );
 }
