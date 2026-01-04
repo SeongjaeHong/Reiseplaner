@@ -7,7 +7,7 @@ import { GuestError } from '@/errors/GuestError';
 import useClickOutside from '@/utils/useClickOutside';
 import type { User } from '@supabase/supabase-js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, Link, Outlet, redirect } from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet, redirect, useNavigate } from '@tanstack/react-router';
 import { useRef, useState } from 'react';
 import { FaPen, FaRightFromBracket, FaUser } from 'react-icons/fa6';
 
@@ -38,6 +38,12 @@ function RouteComponent() {
     }
 
     setShowNameBox(true);
+  };
+
+  const navigate = useNavigate();
+  const handleSignOut = async () => {
+    await signOut();
+    void navigate({ to: '/signin' });
   };
 
   const refOutsideClick = useClickOutside();
@@ -77,7 +83,7 @@ function RouteComponent() {
                     </li>
                     <li className='flex justify-end px-2 py-1'>
                       <div
-                        onClick={() => void signOut()}
+                        onClick={() => void handleSignOut()}
                         className='flex cursor-pointer items-center gap-2 rounded-lg px-2 hover:bg-zinc-400'
                       >
                         <FaRightFromBracket />
