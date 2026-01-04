@@ -138,7 +138,12 @@ const Base64ToURL = async (content: string) => {
   const res = await fetch(content);
   const blob = await res.blob();
 
-  const file = new File([blob], 'png', { type: blob.type });
+  const ext = blob.type.split('/').pop();
+  if (!ext) {
+    throw new Error('File is not an image.');
+  }
+
+  const file = new File([blob], ext, { type: blob.type });
   const { fullPath: filePath } = await uploadImage(file);
   return filePath;
 };
