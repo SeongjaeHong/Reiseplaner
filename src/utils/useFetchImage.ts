@@ -1,12 +1,12 @@
 import { downloadImage } from '@/apis/supabase/buckets';
 import { toast } from '@/components/common/Toast/toast';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 type UseFetchImage = {
   imageURL: string | null;
 };
 export function useFetchImage({ imageURL }: UseFetchImage) {
-  const { data } = useSuspenseQuery({
+  const { data } = useQuery({
     queryKey: [imageURL],
     queryFn: () => {
       try {
