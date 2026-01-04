@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 import { signIn, signInWithOAuth } from '@/apis/supabase/auth';
 import z from 'zod';
@@ -37,6 +37,16 @@ function RouteComponent() {
         setSigninFailed(true);
       }
     })(e);
+  };
+
+  const navigate = useNavigate();
+  const handleSigninGuestId = async () => {
+    try {
+      await signInGuestId();
+      void navigate({ to: '/' });
+    } catch {
+      toast.error('Guest sign-in is temporarily unavailable.');
+    }
   };
 
   return (
@@ -132,11 +142,3 @@ function RouteComponent() {
     </div>
   );
 }
-
-const handleSigninGuestId = async () => {
-  try {
-    await signInGuestId();
-  } catch {
-    toast.error('Guest sign-in is temporarily unavailable.');
-  }
-};
