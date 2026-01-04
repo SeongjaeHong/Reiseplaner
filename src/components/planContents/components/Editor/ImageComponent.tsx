@@ -59,13 +59,6 @@ export default function ImageComponent({
           />
         </>
       )}
-
-      {/* {imgSrc && (
-        <div
-          className='invisible absolute right-0 bottom-0 h-4 w-4 translate-1/3 cursor-se-resize rounded-full bg-blue-500 group-hover/img:visible'
-          onMouseDown={(e) => startResize(e, width, height, onResize)}
-        />
-      )} */}
     </div>
   );
 }
