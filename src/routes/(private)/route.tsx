@@ -7,13 +7,17 @@ import { GuestError } from '@/errors/GuestError';
 import useClickOutside from '@/utils/useClickOutside';
 import type { User } from '@supabase/supabase-js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet, redirect } from '@tanstack/react-router';
 import { useRef, useState } from 'react';
 import { FaPen, FaRightFromBracket, FaUser } from 'react-icons/fa6';
 
 export const Route = createFileRoute('/(private)')({
   component: RouteComponent,
-  beforeLoad: () => {
+  beforeLoad: ({ context }) => {
+    if (!context.auth.user) {
+      throw redirect({ to: '/signin' });
+    }
+
     // Remove 'initial-sign-in' to prevent to come back to '/'
     // by a page refresh or a tab transition.
     sessionStorage.removeItem('initial-sign-in');
