@@ -6,7 +6,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { getSchedule } from './utils/time';
 import { getPlansCount } from '@/apis/supabase/plans';
 import { useFetchImage } from '@/utils/useFetchImage';
-import { getImageURL } from '@/apis/supabase/buckets';
+import { EMPTY_IMAGE_NAME, getImageURL } from '@/apis/supabase/buckets';
 
 const PlanGroupEdit = lazy(() => import('./edit/PlanGroupEdit'));
 const DeletePlanGroupPopupBox = lazy(() => import('./DeletePlanGroupPopupBox'));
@@ -62,20 +62,13 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
       <Link to={'/plangroup'} search={{ group_id: planGroup.id, group_title: planGroup.title }}>
         <div className='group relative h-80 cursor-pointer overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm hover:shadow-xl'>
           <div className='h-3/5'>
-            {planGroup.thumbnailURL && (
-              <img
-                src={getImageURL(planGroup.thumbnailURL)}
-                alt='A thumbnail of a plan group'
-                fetchPriority='high'
-                loading='eager'
-                className='h-full w-full object-cover transition-transform duration-50 group-hover:scale-105'
-              />
-            )}
-            {!planGroup.thumbnailURL && (
-              <div className='h-full w-full bg-zinc-500 object-fill'>
-                <p className='text-white'>Fehler beim Laden des Bildes.</p>
-              </div>
-            )}
+            <img
+              src={getImageURL(planGroup.thumbnailURL ?? `images/${EMPTY_IMAGE_NAME}`)}
+              alt='A thumbnail of a plan group'
+              fetchPriority='high'
+              loading='eager'
+              className='h-full w-full object-cover transition-transform duration-50 group-hover:scale-105'
+            />
           </div>
           <div className='px-6 py-3'>
             <h1
