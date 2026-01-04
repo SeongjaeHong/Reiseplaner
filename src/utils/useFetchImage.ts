@@ -17,7 +17,7 @@ export function useFetchImage({ imageURL }: UseFetchImage) {
       }
     },
     staleTime: Infinity,
-    gcTime: Infinity,
+    gcTime: 3600 * 1000,
   });
 
   return data;
