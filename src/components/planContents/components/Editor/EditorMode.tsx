@@ -115,7 +115,7 @@ export default function EditorMode({
           </div>
 
           {/* Toolbar layer */}
-          <div className='flex justify-end gap-1 text-sm max-[860px]:flex-col max-[860px]:items-end'>
+          <div className='flex justify-end gap-1 text-sm text-white max-[860px]:flex-col max-[860px]:items-end'>
             <TimeWidget
               time={time}
               setTime={setTime}
@@ -128,7 +128,7 @@ export default function EditorMode({
             <button
               onClick={toggleIsNoteBox}
               className={`flex w-[81px] items-center gap-1 rounded-xl px-3 py-1 text-sm ${
-                isNoteBox ? 'bg-secondary text-white' : 'bg-zinc-300 text-black'
+                isNoteBox ? 'bg-secondary' : 'bg-zinc-500'
               }`}
             >
               <FaTag /> NOTE
@@ -174,7 +174,7 @@ function ImageUploadHandler({ setIsUploading }: ImageUploadHandler) {
   return (
     <label
       onMouseDown={(e) => e.preventDefault()}
-      className='flex w-[81px] cursor-pointer items-center gap-1 rounded-xl bg-zinc-200 px-3 py-1 text-sm hover:bg-zinc-300'
+      className='flex w-[81px] cursor-pointer items-center gap-1 rounded-xl bg-zinc-500 px-3 py-1 text-sm hover:bg-zinc-700'
     >
       <FaImage />
       <span>Image</span>
