@@ -4,6 +4,7 @@ import { useAuth } from '@/components/auth/AuthContext';
 import InputPopupBox from '@/components/common/popupBoxes/InputPopupBox';
 import { toast } from '@/components/common/Toast/toast';
 import { GuestError } from '@/errors/GuestError';
+import supabase from '@/supabaseClient';
 import useClickOutside from '@/utils/useClickOutside';
 import type { User } from '@supabase/supabase-js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -13,8 +14,14 @@ import { FaPen, FaRightFromBracket, FaUser } from 'react-icons/fa6';
 
 export const Route = createFileRoute('/(private)')({
   component: RouteComponent,
-  beforeLoad: ({ context }) => {
-    if (!context.auth.user) {
+  beforeLoad: async ({ context }) => {
+    if (context.auth.user) return;
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user) {
       throw redirect({ to: '/signin' });
     }
 
