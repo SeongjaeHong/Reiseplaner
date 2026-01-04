@@ -11,6 +11,7 @@ import { isBase64DataUrl } from './image';
 import { editorContentSchema, type NODE } from '../components/Editor/editor.types';
 import { ApiError } from '@/errors/ApiError';
 import { GuestError } from '@/errors/GuestError';
+import { EMPTY_CONTENT } from './text';
 
 export const getContentsQueryKey = (planId: number) => ['DetailPlans', planId];
 
@@ -159,7 +160,7 @@ export const useUpdateLocalContents = (queryClient: QueryClient, planId: number)
       updatedList = prevContents
         .map((item) => (item.id === updatedContent.id ? updatedContent : item))
         .filter((item) => {
-          if (item.type === 'text') return item.title !== '' || item.data !== '';
+          if (item.type === 'text') return item.title !== '' || item.data !== EMPTY_CONTENT;
           return item.data !== '';
         });
     } else {
