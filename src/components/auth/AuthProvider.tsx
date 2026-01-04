@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      let currentUser = session?.user ?? null;
+      let currentUser: User | null;
 
       /**
        * NOTE: Prevent a race condition on revisit.
@@ -50,6 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         currentUser = session?.user ?? null;
       }
+
       refSignOut.current = false;
       setUser(currentUser);
       setLoading(false);
