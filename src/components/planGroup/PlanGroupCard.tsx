@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { useReducer, useRef, useState, lazy } from 'react';
+import { useReducer, useRef, useState, lazy, Suspense, useEffect } from 'react';
 import { FaCalendar, FaPen } from 'react-icons/fa6';
 import type { Database } from '@/database.types';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -16,7 +16,7 @@ type typePlanGroup = {
   refetch: () => Promise<unknown>;
 };
 
-export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
+export default function PlanGroupCard({ planGroup, refetch }: typePlanGroup) {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteBox, toggleShowDeleteBox] = useReducer((prev) => {
     setShowMenu(false);
@@ -46,6 +46,20 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
   };
 
   const thumbnail = useFetchImage({ imageURL: planGroup.thumbnailURL });
+  const [imgSrc, setImgSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!thumbnail) return;
+
+    const objectUrl = URL.createObjectURL(thumbnail);
+    setImgSrc(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+      setImgSrc(null);
+    };
+  }, [thumbnail]);
+
   const schedule = getSchedule({
     from: planGroup.start_time ? new Date(planGroup.start_time) : undefined,
     to: planGroup.end_time ? new Date(planGroup.end_time) : undefined,
@@ -62,13 +76,19 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
       <Link to={'/plangroup'} search={{ group_id: planGroup.id, group_title: planGroup.title }}>
         <div className='group relative h-80 cursor-pointer overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm hover:shadow-xl'>
           <div className='h-3/5'>
-            <img
-              src={getImageURL(planGroup.thumbnailURL ?? `images/${EMPTY_IMAGE_NAME}`)}
-              alt='A thumbnail of a plan group'
-              fetchPriority='high'
-              loading='eager'
-              className='h-full w-full object-cover transition-transform duration-50 group-hover:scale-105'
-            />
+            {imgSrc ? (
+              <img
+                src={imgSrc}
+                alt='A thumbnail of a plan group'
+                className='h-full w-full object-cover transition-transform duration-50 group-hover:scale-105'
+              />
+            ) : (
+              <img
+                src={getImageURL(`images/${EMPTY_IMAGE_NAME}`)}
+                alt='A thumbnail of a plan group'
+                className='h-full w-full object-cover transition-transform duration-50 group-hover:scale-105'
+              />
+            )}
           </div>
           <div className='px-6 py-3'>
             <h1
@@ -115,21 +135,25 @@ export default function PlanGroup({ planGroup, refetch }: typePlanGroup) {
       </Link>
 
       {showEditBox && (
-        <PlanGroupEdit
-          planGroup={planGroup}
-          thumbnail={thumbnail}
-          onClose={toggleshowEditBox}
-          refetch={handleRefetch}
-        />
+        <Suspense>
+          <PlanGroupEdit
+            planGroup={planGroup}
+            thumbnail={thumbnail}
+            onClose={toggleshowEditBox}
+            refetch={handleRefetch}
+          />
+        </Suspense>
       )}
 
       {showDeleteBox && (
-        <DeletePlanGroupPopupBox
-          planGroupId={planGroup.id}
-          thumbnail={thumbnail}
-          onClose={toggleShowDeleteBox}
-          refetch={handleRefetch}
-        />
+        <Suspense>
+          <DeletePlanGroupPopupBox
+            planGroupId={planGroup.id}
+            thumbnail={thumbnail}
+            onClose={toggleShowDeleteBox}
+            refetch={handleRefetch}
+          />
+        </Suspense>
       )}
     </>
   );

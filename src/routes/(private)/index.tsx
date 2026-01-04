@@ -4,10 +4,10 @@ import { Suspense, useReducer } from 'react';
 import CreatePlanGroupPopupBox from '@/components/planGroup/CreatePlanGroupPopupBox';
 import { useQuery } from '@tanstack/react-query';
 import { getPlanGroups } from '@/apis/supabase/planGroups';
-import PlanGroup from '@/components/planGroup/PlanGroup';
 import { useAuth } from '@/components/auth/AuthContext';
 import { setPlanGroupsFetchKey } from '@/utils/fetchKeys';
 import { getPlansCount } from '@/apis/supabase/plans';
+import PlanGroupCard from '@/components/planGroup/PlanGroupCard';
 
 export const Route = createFileRoute('/(private)/')({
   component: Index,
@@ -55,7 +55,7 @@ function Index() {
       <div className='grid grid-cols-2 gap-2 p-2 max-md:grid-cols-1 xl:grid-cols-3'>
         {planGroups?.map((planGroup) => (
           <Suspense fallback={<PlanGroupSkeleton />} key={planGroup.id}>
-            <PlanGroup planGroup={planGroup} refetch={() => refetch()} />
+            <PlanGroupCard planGroup={planGroup} refetch={() => refetch()} />
           </Suspense>
         ))}
         <div
