@@ -4,7 +4,7 @@ import { imageSchema } from './buckets.types';
 import { ApiError } from '@/errors/ApiError';
 import { _guestGuard } from './users';
 
-const EMPTY_IMAGE_NAME = 'empty-image.webp' as const;
+export const EMPTY_IMAGE_NAME = 'empty-image.webp' as const;
 
 const getFileName = (path: string) => path.split('/').pop() ?? '';
 export const isDefaultImage = (name: string) => name === EMPTY_IMAGE_NAME;
@@ -12,11 +12,14 @@ export const isDefaultImage = (name: string) => name === EMPTY_IMAGE_NAME;
 export const uploadImage = async (file: File) => {
   _guestGuard('CREATE', "Guest can't upload an image.");
 
-  let ext = file.name.split('.').pop() ?? '';
-  let processedFile = file;
-  if (file.type !== 'image/webp') {
-    processedFile = await convertToWebP(file).catch(() => file);
+  const resizedFile = await resizeImage(file).catch(() => file);
+  let ext = resizedFile.name.split('.').pop() ?? '';
+  let processedFile: File;
+  if (resizedFile.type !== 'image/webp') {
+    processedFile = await convertToWebP(resizedFile).catch(() => resizedFile);
     ext = processedFile.type === 'image/webp' ? 'webp' : ext;
+  } else {
+    processedFile = resizedFile;
   }
 
   const name = uuid();
@@ -133,6 +136,66 @@ const convertToWebP = async (file: File): Promise<File> => {
           0.8
         );
       };
+    };
+    reader.onerror = reject;
+  });
+};
+
+const resizeImage = async (file: File, maxSize = 700): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) {
+      return reject(new Error('Dies ist keine Bilddatei.'));
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      if (!e.target || typeof e.target.result !== 'string') {
+        return reject(new Error('Fehler beim Lesen der Datei als Data-URL.'));
+      }
+
+      const img = new Image();
+      img.src = e.target.result;
+
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxSize || height > maxSize) {
+          if (width > height) {
+            height = Math.round((height * maxSize) / width);
+            width = maxSize;
+          } else {
+            width = Math.round((width * maxSize) / height);
+            height = maxSize;
+          }
+        } else {
+          return resolve(file);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext('2d');
+        if (!context) {
+          return reject(new Error('Canvas-Kontext kann nicht erzeugt werden.'));
+        }
+        context.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const resizedFile = new File([blob], file.name, {
+              type: file.type,
+              lastModified: Date.now(),
+            });
+            resolve(resizedFile);
+          } else {
+            return reject(new Error('Fehler beim Resizen des Fotos.'));
+          }
+        }, file.type);
+      };
+
+      img.onerror = reject;
     };
     reader.onerror = reject;
   });
