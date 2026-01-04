@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
@@ -7,6 +7,7 @@ import z from 'zod';
 import { FcGoogle, FcSportsMode } from 'react-icons/fc';
 import { signInGuestId } from '@/apis/supabase/users';
 import { toast } from '@/components/common/Toast/toast';
+import supabase from '@/supabaseClient';
 
 export const Route = createFileRoute('/(public)/signin/')({
   component: RouteComponent,
@@ -40,10 +41,22 @@ function RouteComponent() {
   };
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        void navigate({ to: '/' });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
   const handleSigninGuestId = async () => {
     try {
       await signInGuestId();
-      void navigate({ to: '/' });
     } catch {
       toast.error('Guest sign-in is temporarily unavailable.');
     }
