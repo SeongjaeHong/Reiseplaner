@@ -1,7 +1,6 @@
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
-import type { Database } from '@/database.types';
 import ThumbnailEdit from './ThumbnailEdit';
 import Calendar from './Calendar';
 import { getSchedule } from '../utils/time';
@@ -11,6 +10,7 @@ import { usePlanGroupUpdate } from './utils/usePlanGroupUpdate';
 import { isDefaultImage } from '@/apis/supabase/buckets';
 import { FaCalendar } from 'react-icons/fa6';
 import { IoClose } from 'react-icons/io5';
+import type { PlanGroupResponseSchema } from '@/apis/supabase/planGroups.types';
 
 const planGroupEditFormSchema = z.object({
   title: z.string().trim().min(1, 'Enter a title.'),
@@ -25,7 +25,7 @@ const planGroupEditFormSchema = z.object({
 export type PlanGroupForm = z.infer<typeof planGroupEditFormSchema>;
 
 type PlanGroupEdit = {
-  planGroup: Database['public']['Tables']['plangroups']['Row'];
+  planGroup: PlanGroupResponseSchema;
   thumbnail: File | null;
   onClose: () => void;
   refetch: () => Promise<unknown>;
@@ -37,40 +37,10 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
     control,
     trigger,
     formState: { dirtyFields, isValid },
-  } = useForm<PlanGroupForm>({
-    resolver: zodResolver(planGroupEditFormSchema),
-    mode: 'onChange',
-    defaultValues: {
-      title: planGroup.title,
-      thumbnail: thumbnail,
-      schedule: {
-        from: planGroup.start_time ? new Date(planGroup.start_time) : undefined,
-        to: planGroup.end_time ? new Date(planGroup.end_time) : undefined,
-      } as DateRange,
-    },
-  });
+  } = usePlanGroupEditForm(planGroup, thumbnail);
 
   const watchedThumbnail = useWatch({ control, name: 'thumbnail' });
   const watchedSchedule = useWatch({ control, name: 'schedule' });
-
-  const isThumbnailChanged = useMemo(() => {
-    if (!watchedThumbnail) {
-      if (!thumbnail) {
-        return false;
-      }
-      return !isDefaultImage(thumbnail.name);
-    }
-
-    if (!thumbnail) {
-      return true;
-    }
-
-    return (
-      watchedThumbnail.name !== thumbnail.name ||
-      watchedThumbnail.size !== thumbnail.size ||
-      watchedThumbnail.lastModified !== thumbnail.lastModified
-    );
-  }, [watchedThumbnail, thumbnail]);
 
   const [showCalendar, setShowCalendar] = useState(false);
   const scheduleText = getSchedule(watchedSchedule);
@@ -91,6 +61,7 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
     )(e);
   };
 
+  const isThumbnailChanged = useIsThumbnailChanged(watchedThumbnail, thumbnail);
   const isDirty = isThumbnailChanged || !!dirtyFields.schedule || !!dirtyFields.title;
   const isSubmitDisabled = !isDirty || !isValid || isPending || showCalendar;
 
@@ -182,7 +153,7 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
             </div>
           </div>
 
-          {/* Botton button area */}
+          {/* Bottom button area */}
           <div className='mt-10 flex gap-3 max-[500px]:flex-col'>
             <button
               type='button'
@@ -206,3 +177,39 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
     </div>
   );
 }
+
+const usePlanGroupEditForm = (planGroup: PlanGroupResponseSchema, thumbnail: File | null) => {
+  return useForm<PlanGroupForm>({
+    resolver: zodResolver(planGroupEditFormSchema),
+    mode: 'onChange',
+    defaultValues: {
+      title: planGroup.title,
+      thumbnail: thumbnail,
+      schedule: {
+        from: planGroup.start_time ? new Date(planGroup.start_time) : undefined,
+        to: planGroup.end_time ? new Date(planGroup.end_time) : undefined,
+      } as DateRange,
+    },
+  });
+};
+
+const useIsThumbnailChanged = (watchedThumbnail: File | null, thumbnail: File | null) => {
+  return useMemo(() => {
+    if (!watchedThumbnail) {
+      if (!thumbnail) {
+        return false;
+      }
+      return !isDefaultImage(thumbnail.name);
+    }
+
+    if (!thumbnail) {
+      return true;
+    }
+
+    return (
+      watchedThumbnail.name !== thumbnail.name ||
+      watchedThumbnail.size !== thumbnail.size ||
+      watchedThumbnail.lastModified !== thumbnail.lastModified
+    );
+  }, [watchedThumbnail, thumbnail]);
+};
