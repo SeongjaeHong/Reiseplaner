@@ -140,7 +140,7 @@ export default function PlanGroupCard({ planGroup, refetch }: typePlanGroup) {
         <Suspense>
           <PlanGroupEdit
             planGroup={planGroup}
-            thumbnail={thumbnail}
+            thumbnail={thumbnail ?? null}
             onClose={toggleshowEditBox}
             refetch={handleRefetch}
           />
@@ -151,7 +151,7 @@ export default function PlanGroupCard({ planGroup, refetch }: typePlanGroup) {
         <Suspense>
           <DeletePlanGroupPopupBox
             planGroupId={planGroup.id}
-            thumbnail={thumbnail}
+            thumbnail={thumbnail ?? null}
             onClose={toggleShowDeleteBox}
             refetch={handleRefetch}
           />

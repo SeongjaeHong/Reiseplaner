@@ -84,7 +84,7 @@ export function PlanGroupHeader({ planGroup, refetch }: PlanGroupHead) {
         <Suspense>
           <PlanGroupEdit
             planGroup={planGroup}
-            thumbnail={thumbnail}
+            thumbnail={thumbnail ?? null}
             onClose={toggleshowEditBox}
             refetch={handleRefetch}
           />
