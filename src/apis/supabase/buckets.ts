@@ -7,7 +7,7 @@ import { _guestGuard } from './users';
 export const EMPTY_IMAGE_NAME = 'empty-image.webp' as const;
 
 const getFileName = (path: string) => path.split('/').pop() ?? '';
-export const isDefaultImage = (name: string) => name === EMPTY_IMAGE_NAME;
+export const isDefaultImage = (name: string) => getFileName(name) === EMPTY_IMAGE_NAME;
 
 export const uploadImage = async (file: File) => {
   _guestGuard('CREATE', "Guest can't upload an image.");
