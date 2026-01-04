@@ -108,9 +108,9 @@ function Plan() {
           </div>
         </div>
         {isSaving && (
-          <div className='mr-5 flex items-center'>
+          <div className='mr-5 flex items-center text-slate-800'>
             <p>saving...</p>
-            <div className='size-4 animate-spin rounded-full border-[2px] border-t-transparent text-white' />
+            <div className='size-3 animate-spin rounded-full border-[1px] border-t-transparent' />
           </div>
         )}
       </div>
