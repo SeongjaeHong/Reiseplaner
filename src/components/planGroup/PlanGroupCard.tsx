@@ -82,12 +82,14 @@ export default function PlanGroupCard({ planGroup, refetch }: typePlanGroup) {
                 alt='A thumbnail of a plan group'
                 className='h-full w-full object-cover transition-transform duration-50 group-hover:scale-105'
               />
-            ) : (
+            ) : thumbnail === null ? (
               <img
                 src={getImageURL(`images/${EMPTY_IMAGE_NAME}`)}
-                alt='A thumbnail of a plan group'
-                className='h-full w-full object-cover transition-transform duration-50 group-hover:scale-105'
+                alt='Default thumbnail'
+                className='h-full w-full object-cover'
               />
+            ) : (
+              <div className='h-full w-full animate-pulse bg-zinc-300' />
             )}
           </div>
           <div className='px-6 py-3'>
