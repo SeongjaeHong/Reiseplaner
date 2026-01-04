@@ -38,7 +38,7 @@ export default function InputPopupBox({
   };
 
   return (
-    <div className='fixed inset-0'>
+    <div className='fixed inset-0 z-1'>
       <div className='absolute inset-0 bg-slate-500/50 backdrop-blur-xs' onClick={onClose}></div>
       <div className='fixed top-50 left-1/2 z-1 w-70 -translate-x-1/2 rounded-md border-2 bg-slate-100 bg-white px-3 py-2'>
         <div className='mb-2'>
