@@ -51,3 +51,11 @@ export const signOut = async () => {
     throw error;
   }
 };
+
+export const deleteAccount = async () => {
+  const { error } = await supabase.rpc('delete_user');
+
+  if (error) {
+    throw error;
+  }
+};
