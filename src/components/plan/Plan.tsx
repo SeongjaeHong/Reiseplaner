@@ -9,10 +9,9 @@ type Plan = {
   plan: Database['public']['Tables']['plans']['Row'];
   groupId: number;
   groupTitle: string;
-  refetch: () => Promise<unknown>;
 };
 
-export default function Plan({ plan, groupId, groupTitle, refetch }: Plan) {
+export default function Plan({ plan, groupId, groupTitle }: Plan) {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteBox, toggleShowDeleteBox] = useReducer((prev) => !prev, false);
   const [showChangeNameBox, toggleShowChangeNameBox] = useReducer((prev) => !prev, false);
@@ -90,7 +89,7 @@ export default function Plan({ plan, groupId, groupTitle, refetch }: Plan) {
       )}
 
       {showDeleteBox && (
-        <DeletePlanPopupBox planId={plan.id} onClose={toggleShowDeleteBox} refetch={refetch} />
+        <DeletePlanPopupBox groupId={groupId} planId={plan.id} onClose={toggleShowDeleteBox} />
       )}
     </>
   );
