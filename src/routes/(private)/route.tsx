@@ -45,7 +45,6 @@ function RouteComponent() {
     if (isGuest) {
       return;
     }
-
     setShowNameBox(true);
   };
 
@@ -53,6 +52,13 @@ function RouteComponent() {
   const handleSignOut = async () => {
     await signOut();
     void navigate({ to: '/signin' });
+  };
+
+  const handleShowDeleteAccountBox = () => {
+    if (isGuest) {
+      return;
+    }
+    setShowDeleteAccountBox(true);
   };
 
   const handleDeleteAccount = async () => {
@@ -105,8 +111,8 @@ function RouteComponent() {
                     </li>
                     <li className='my-2 flex justify-end px-2 py-1'>
                       <div
-                        onClick={() => setShowDeleteAccountBox(true)}
-                        className='flex cursor-pointer items-center gap-2 rounded-lg px-2 hover:bg-red-500'
+                        onClick={handleShowDeleteAccountBox}
+                        className={`flex items-center gap-2 rounded-lg px-2 ${isGuest ? 'text-zinc-500' : 'cursor-pointer hover:bg-red-500'}`}
                       >
                         <FaRightFromBracket />
                         Konto löschen
