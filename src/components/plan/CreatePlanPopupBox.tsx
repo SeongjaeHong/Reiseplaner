@@ -1,20 +1,25 @@
 import { createPlan } from '@/apis/supabase/plans';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import InputPopupBox from '@/components/common/popupBoxes/InputPopupBox';
 import { GuestError } from '@/errors/GuestError';
 import { toast } from '../common/Toast/toast';
+import { plansCountsFetchKey } from '../planGroup/utils/fetchPlanGroups';
+import { plansFetchKey } from './utils/fetchPlans';
 
 type createPlanPopupBoxParam = {
   groupId: number;
   onClose: () => void;
-  refetch: () => Promise<unknown>;
 };
 
-export default function CreatePlanPopupBox({ groupId, onClose, refetch }: createPlanPopupBoxParam) {
+export default function CreatePlanPopupBox({ groupId, onClose }: createPlanPopupBoxParam) {
+  const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationFn: (title: string) => createPlan(groupId, title),
     onSuccess: async () => {
-      await refetch();
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: plansCountsFetchKey(groupId) }),
+        queryClient.invalidateQueries({ queryKey: plansFetchKey(groupId) }),
+      ]);
     },
     onError: (error) => {
       if (error instanceof GuestError) {

@@ -1,23 +1,22 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteImage, uploadImage } from '@/apis/supabase/buckets';
 import { updatePlanGroupByGroupId } from '@/apis/supabase/planGroups';
 import type { PlanGroupForm } from '../PlanGroupEdit';
 import { toast } from '@/components/common/Toast/toast';
 import { GuestError } from '@/errors/GuestError';
+import { useAuth } from '@/components/auth/AuthContext';
+import { plangroupsFetchKey } from '../../utils/fetchPlanGroups';
 
 type UsePlanGroupUpdate = {
   planGroupId: number;
   prevThumbnail: File | null;
   onClose: () => void;
-  refetch: () => Promise<unknown>;
 };
 // Update a plan group
-export function usePlanGroupUpdate({
-  planGroupId,
-  prevThumbnail,
-  onClose,
-  refetch,
-}: UsePlanGroupUpdate) {
+export function usePlanGroupUpdate({ planGroupId, prevThumbnail, onClose }: UsePlanGroupUpdate) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
   return useMutation({
     mutationFn: async (data: PlanGroupForm) => {
       let thumbnailPath: string | null = null;
@@ -49,7 +48,7 @@ export function usePlanGroupUpdate({
       );
     },
     onSuccess: async () => {
-      await refetch();
+      await queryClient.invalidateQueries({ queryKey: plangroupsFetchKey(user!.id) });
       onClose();
     },
     onError: (error) => {

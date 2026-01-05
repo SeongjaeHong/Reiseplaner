@@ -1,24 +1,27 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deletePlanGroups } from '@/apis/supabase/planGroups';
 import Popupbox from '@/components/common/popupBoxes/Popupbox';
 import { deleteImage } from '@/apis/supabase/buckets';
 import { toast } from '../common/Toast/toast';
 import { ApiError } from '@/errors/ApiError';
 import { GuestError } from '@/errors/GuestError';
+import { useAuth } from '../auth/AuthContext';
+import { plangroupsFetchKey } from './utils/fetchPlanGroups';
 
 type DeletePlanGroupPopupBoxParam = {
   planGroupId: number;
   thumbnail: File | null;
   onClose: () => void;
-  refetch: () => Promise<unknown>;
 };
 
 export default function DeletePlanGroupPopupBox({
   planGroupId,
   thumbnail,
   onClose,
-  refetch,
 }: DeletePlanGroupPopupBoxParam) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
   const { mutate } = useMutation({
     mutationFn: async () => {
       if (thumbnail) {
@@ -36,7 +39,7 @@ export default function DeletePlanGroupPopupBox({
       }
     },
     onSuccess: async () => {
-      await refetch();
+      await queryClient.refetchQueries({ queryKey: plangroupsFetchKey(user!.id) });
       onClose();
     },
     onError: (error) => {

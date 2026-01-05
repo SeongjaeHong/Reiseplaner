@@ -28,9 +28,8 @@ type PlanGroupEdit = {
   planGroup: PlanGroupResponseSchema;
   thumbnail: File | null;
   onClose: () => void;
-  refetch: () => Promise<unknown>;
 };
-export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }: PlanGroupEdit) {
+export default function PlanGroupEdit({ planGroup, thumbnail, onClose }: PlanGroupEdit) {
   const {
     register,
     handleSubmit,
@@ -49,7 +48,6 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
     planGroupId: planGroup.id,
     prevThumbnail: thumbnail,
     onClose,
-    refetch,
   });
 
   const onFormSubmit = (e: React.FormEvent) => {
@@ -78,6 +76,7 @@ export default function PlanGroupEdit({ planGroup, thumbnail, onClose, refetch }
               Reiseinformationen bearbeiten
             </h1>
             <button
+              type='button'
               onClick={onClose}
               className='absolute top-3 right-3 rounded-full p-2 text-xl text-slate-400 transition-colors hover:bg-slate-100'
             >

@@ -1,24 +1,26 @@
 import InputPopupBox from '@/components/common/popupBoxes/InputPopupBox';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { renamePlanByPlanId } from '@/apis/supabase/plans';
 import { GuestError } from '@/errors/GuestError';
 import { toast } from '../common/Toast/toast';
+import { plansFetchKey } from './utils/fetchPlans';
 
 type ChangePlanNamePopupBoxParams = {
+  groupId: number;
   planId: number;
   onClose: () => void;
-  refetch: () => Promise<unknown>;
 };
 
 export default function ChangePlanNamePopupBox({
+  groupId,
   planId,
   onClose,
-  refetch,
 }: ChangePlanNamePopupBoxParams) {
+  const queryClient = useQueryClient();
   const { mutate: changePlanName } = useMutation({
     mutationFn: (title: string) => renamePlanByPlanId(planId, title),
     onSuccess: async () => {
-      await refetch();
+      await queryClient.invalidateQueries({ queryKey: plansFetchKey(groupId) });
     },
     onError: (error) => {
       if (error instanceof GuestError) {

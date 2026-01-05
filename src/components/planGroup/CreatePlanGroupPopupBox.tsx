@@ -1,23 +1,24 @@
 import { createPlanGroup } from '@/apis/supabase/planGroups';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import InputPopupBox from '@/components/common/popupBoxes/InputPopupBox';
 import { toast } from '../common/Toast/toast';
 import { GuestError } from '@/errors/GuestError';
+import { useAuth } from '../auth/AuthContext';
+import { plangroupsFetchKey } from './utils/fetchPlanGroups';
 
 type createPlanGroupPopupBoxParam = {
   onClose: () => void;
-  refetch: () => Promise<unknown>;
 };
 
-export default function CreatePlanGroupPopupBox({
-  onClose,
-  refetch,
-}: createPlanGroupPopupBoxParam) {
+export default function CreatePlanGroupPopupBox({ onClose }: createPlanGroupPopupBoxParam) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
   const { mutate } = useMutation({
     mutationFn: (title: string) => createPlanGroup(title),
     onSuccess: async () => {
       toast.success('Planungsgruppe wurde erstellt.');
-      await refetch();
+      await queryClient.refetchQueries({ queryKey: plangroupsFetchKey(user!.id) });
     },
     onError: (error) => {
       if (error instanceof GuestError) {

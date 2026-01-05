@@ -8,6 +8,7 @@ import CreatePlanPopupBox from '@/components/plan/CreatePlanPopupBox';
 import Plan from '@/components/plan/Plan';
 import { PlanGroupHeader } from '@/components/planGroup/PlanGroupHeader';
 import { useFetchPlanGroupByGroupId } from '@/components/planGroup/utils/fetchPlanGroups';
+import { useFetchPlans } from '@/components/plan/utils/fetchPlans';
 
 const planGroupParam = z.object({
   group_id: z.coerce.number(),
@@ -62,27 +63,10 @@ function Index() {
       )}
 
       {showCreatePlanBox && (
-        <CreatePlanPopupBox
-          groupId={groupId}
-          onClose={toggleShowCreatePlanBox}
-          refetch={plansRefetch}
-        />
+        <CreatePlanPopupBox groupId={groupId} onClose={toggleShowCreatePlanBox} />
       )}
     </div>
   );
-}
-
-function useFetchPlans(groupId: number) {
-  return useQuery({
-    queryKey: ['fetchPlans', groupId],
-    queryFn: async () => {
-      const data = await getPlansByGroupId(groupId);
-      return data ?? [];
-    },
-    staleTime: Infinity,
-    gcTime: Infinity,
-    throwOnError: true,
-  });
 }
 
 function PlansSkeleton() {

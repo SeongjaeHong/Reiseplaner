@@ -1,12 +1,9 @@
 import { lazy, Suspense, useEffect, useReducer, useState } from 'react';
 import { useFetchImage } from '@/utils/useFetchImage';
-import { useQueryClient } from '@tanstack/react-query';
 import { getSchedule } from './utils/time';
 import { EMPTY_IMAGE_NAME, getImageURL } from '@/apis/supabase/buckets';
 import { FaCalendar, FaPen } from 'react-icons/fa6';
 import type { PlanGroupResponseSchema } from '@/apis/supabase/planGroups.types';
-import { plangroupsFetchKey } from './utils/fetchPlanGroups';
-import { useAuth } from '../auth/AuthContext';
 
 const PlanGroupEdit = lazy(() => import('@/components/planGroup/edit/PlanGroupEdit'));
 
@@ -16,11 +13,6 @@ type PlanGroupHead = {
 
 export function PlanGroupHeader({ planGroup }: PlanGroupHead) {
   const [showEditBox, toggleshowEditBox] = useReducer((prev) => !prev, false);
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-  const handleRefetch = async () => {
-    await queryClient.refetchQueries({ queryKey: plangroupsFetchKey(user!.id) });
-  };
 
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const thumbnail = useFetchImage({ imageURL: planGroup?.thumbnailURL });
@@ -85,7 +77,6 @@ export function PlanGroupHeader({ planGroup }: PlanGroupHead) {
             planGroup={planGroup}
             thumbnail={thumbnail ?? null}
             onClose={toggleshowEditBox}
-            refetch={handleRefetch}
           />
         </Suspense>
       )}

@@ -83,9 +83,9 @@ export default function Plan({ plan, groupId, groupTitle, refetch }: Plan) {
 
       {showChangeNameBox && (
         <ChangePlanNamePopupBox
+          groupId={groupId}
           planId={plan.id}
           onClose={toggleShowChangeNameBox}
-          refetch={refetch}
         />
       )}
 

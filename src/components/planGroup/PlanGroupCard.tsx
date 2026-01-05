@@ -2,21 +2,19 @@ import { Link } from '@tanstack/react-router';
 import { useReducer, useRef, useState, lazy, Suspense, useEffect } from 'react';
 import { FaCalendar, FaPen } from 'react-icons/fa6';
 import type { Database } from '@/database.types';
-import { useSuspenseQuery } from '@tanstack/react-query';
 import { getSchedule } from './utils/time';
-import { getPlansCount } from '@/apis/supabase/plans';
 import { useFetchImage } from '@/utils/useFetchImage';
 import { EMPTY_IMAGE_NAME, getImageURL } from '@/apis/supabase/buckets';
+import { useGetPlansCounts } from './utils/fetchPlanGroups';
 
 const PlanGroupEdit = lazy(() => import('./edit/PlanGroupEdit'));
 const DeletePlanGroupPopupBox = lazy(() => import('./DeletePlanGroupPopupBox'));
 
 type typePlanGroup = {
   planGroup: Database['public']['Tables']['plangroups']['Row'];
-  refetch: () => Promise<unknown>;
 };
 
-export default function PlanGroupCard({ planGroup, refetch }: typePlanGroup) {
+export default function PlanGroupCard({ planGroup }: typePlanGroup) {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteBox, toggleShowDeleteBox] = useReducer((prev) => {
     setShowMenu(false);
@@ -65,11 +63,7 @@ export default function PlanGroupCard({ planGroup, refetch }: typePlanGroup) {
     to: planGroup.end_time ? new Date(planGroup.end_time) : undefined,
   });
 
-  const { data: numPlanGroups, refetch: plansRefetch } = useGetPlansCounts(planGroup.id);
-  const handleRefetch = async () => {
-    await refetch();
-    await plansRefetch();
-  };
+  const { data: numPlanGroups } = useGetPlansCounts(planGroup.id);
 
   return (
     <>
@@ -105,7 +99,9 @@ export default function PlanGroupCard({ planGroup, refetch }: typePlanGroup) {
             </div>
             <div className='flex items-center border-t border-slate-50 pt-3'>
               <span className='text-xs text-slate-400'>
-                {numPlanGroups} {numPlanGroups > 1 ? 'Pläne' : 'Plan'}
+                {numPlanGroups
+                  ? `${numPlanGroups} ${numPlanGroups > 1 ? 'Pläne' : 'Plan'}`
+                  : '0 Plan'}
               </span>
             </div>
           </div>
@@ -142,7 +138,6 @@ export default function PlanGroupCard({ planGroup, refetch }: typePlanGroup) {
             planGroup={planGroup}
             thumbnail={thumbnail ?? null}
             onClose={toggleshowEditBox}
-            refetch={handleRefetch}
           />
         </Suspense>
       )}
@@ -153,19 +148,9 @@ export default function PlanGroupCard({ planGroup, refetch }: typePlanGroup) {
             planGroupId={planGroup.id}
             thumbnail={thumbnail ?? null}
             onClose={toggleShowDeleteBox}
-            refetch={handleRefetch}
           />
         </Suspense>
       )}
     </>
   );
-}
-
-function useGetPlansCounts(groupId: number) {
-  return useSuspenseQuery({
-    queryKey: ['useGetPlansCounts', groupId],
-    queryFn: () => getPlansCount(groupId),
-    staleTime: Infinity,
-    gcTime: Infinity,
-  });
 }

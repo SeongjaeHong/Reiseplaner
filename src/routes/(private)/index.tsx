@@ -38,7 +38,7 @@ export const Route = createFileRoute('/(private)/')({
 
 function Index() {
   const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer((prev) => !prev, false);
-  const { data: planGroups, refetch } = useFetchPlanGroupsByUserId();
+  const { data: planGroups } = useFetchPlanGroupsByUserId();
 
   return (
     <div className='max-w-[1600px]'>
@@ -52,7 +52,7 @@ function Index() {
       <div className='grid grid-cols-2 gap-2 p-2 max-md:grid-cols-1 xl:grid-cols-3'>
         {planGroups?.map((planGroup) => (
           <Suspense fallback={<PlanGroupSkeleton />} key={planGroup.id}>
-            <PlanGroupCard planGroup={planGroup} refetch={() => refetch()} />
+            <PlanGroupCard planGroup={planGroup} />
           </Suspense>
         ))}
         <div
@@ -68,9 +68,7 @@ function Index() {
         </div>
       </div>
 
-      {showCreatePlanBox && (
-        <CreatePlanGroupPopupBox refetch={() => refetch()} onClose={toggleShowCreatePlanBox} />
-      )}
+      {showCreatePlanBox && <CreatePlanGroupPopupBox onClose={toggleShowCreatePlanBox} />}
     </div>
   );
 }
