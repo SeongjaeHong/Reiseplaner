@@ -10,7 +10,7 @@ import useClickOutside from '@/utils/useClickOutside';
 import type { User } from '@supabase/supabase-js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from '@tanstack/react-router';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaPen, FaRightFromBracket, FaUser } from 'react-icons/fa6';
 
 export const Route = createFileRoute('/(private)')({
@@ -39,6 +39,22 @@ function RouteComponent() {
   const [showDeleteAccountBox, setShowDeleteAccountBox] = useState(false);
   const [showNameBox, setShowNameBox] = useState(false);
   const isGuest = isGuestId();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const currentUser = session?.user ?? null;
+      if (!currentUser) {
+        void navigate({ to: '/signin' });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const handleChangeName = useChangeUserName(user?.user_id);
   const handleShowNameBox = () => {
@@ -48,7 +64,6 @@ function RouteComponent() {
     setShowNameBox(true);
   };
 
-  const navigate = useNavigate();
   const handleSignOut = async () => {
     await signOut();
     void navigate({ to: '/signin' });
