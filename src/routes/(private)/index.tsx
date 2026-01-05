@@ -1,20 +1,25 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { FaPlus } from 'react-icons/fa6';
 import { Suspense, useReducer } from 'react';
 import CreatePlanGroupPopupBox from '@/components/planGroup/CreatePlanGroupPopupBox';
-import { useQuery } from '@tanstack/react-query';
 import { getPlanGroups } from '@/apis/supabase/planGroups';
-import { useAuth } from '@/components/auth/AuthContext';
-import { setPlanGroupsFetchKey } from '@/utils/fetchKeys';
 import { getPlansCount } from '@/apis/supabase/plans';
 import PlanGroupCard from '@/components/planGroup/PlanGroupCard';
+import {
+  plangroupsFetchKey,
+  useFetchPlanGroupsByUserId,
+} from '@/components/planGroup/utils/fetchPlanGroups';
 
 export const Route = createFileRoute('/(private)/')({
   component: Index,
   loader: async ({ context }) => {
+    if (!context.auth.user) {
+      throw redirect({ to: '/signin' });
+    }
+
     const queryClient = context.queryClient;
     const planGroups = await queryClient.ensureQueryData({
-      queryKey: setPlanGroupsFetchKey(context.auth.user?.id),
+      queryKey: plangroupsFetchKey(context.auth.user.id),
       queryFn: getPlanGroups,
     });
 
@@ -33,15 +38,7 @@ export const Route = createFileRoute('/(private)/')({
 
 function Index() {
   const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer((prev) => !prev, false);
-  const { user } = useAuth();
-  const { data: planGroups, refetch } = useQuery({
-    queryKey: setPlanGroupsFetchKey(user?.id),
-    queryFn: getPlanGroups,
-    enabled: !!user,
-    staleTime: Infinity,
-    gcTime: Infinity,
-    throwOnError: true,
-  });
+  const { data: planGroups, refetch } = useFetchPlanGroupsByUserId();
 
   return (
     <div className='max-w-[1600px]'>

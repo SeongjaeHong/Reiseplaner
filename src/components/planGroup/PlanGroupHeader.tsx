@@ -1,26 +1,25 @@
 import { lazy, Suspense, useEffect, useReducer, useState } from 'react';
-import { getPlanGroupsFetchKey } from '@/utils/fetchKeys';
 import { useFetchImage } from '@/utils/useFetchImage';
 import { useQueryClient } from '@tanstack/react-query';
 import { getSchedule } from './utils/time';
 import { EMPTY_IMAGE_NAME, getImageURL } from '@/apis/supabase/buckets';
 import { FaCalendar, FaPen } from 'react-icons/fa6';
 import type { PlanGroupResponseSchema } from '@/apis/supabase/planGroups.types';
+import { plangroupsFetchKey } from './utils/fetchPlanGroups';
+import { useAuth } from '../auth/AuthContext';
 
 const PlanGroupEdit = lazy(() => import('@/components/planGroup/edit/PlanGroupEdit'));
 
 type PlanGroupHead = {
   planGroup: PlanGroupResponseSchema;
-  refetch: () => Promise<unknown>;
 };
 
-export function PlanGroupHeader({ planGroup, refetch }: PlanGroupHead) {
+export function PlanGroupHeader({ planGroup }: PlanGroupHead) {
   const [showEditBox, toggleshowEditBox] = useReducer((prev) => !prev, false);
   const queryClient = useQueryClient();
-  const planGroupsFetchKey = getPlanGroupsFetchKey();
+  const { user } = useAuth();
   const handleRefetch = async () => {
-    void queryClient.refetchQueries({ queryKey: [planGroupsFetchKey] });
-    await refetch();
+    await queryClient.refetchQueries({ queryKey: plangroupsFetchKey(user!.id) });
   };
 
   const [imgSrc, setImgSrc] = useState<string | null>(null);

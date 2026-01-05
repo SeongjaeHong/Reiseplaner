@@ -6,8 +6,8 @@ import { useReducer } from 'react';
 import { z } from 'zod';
 import CreatePlanPopupBox from '@/components/plan/CreatePlanPopupBox';
 import Plan from '@/components/plan/Plan';
-import { getPlanGroupById } from '@/apis/supabase/planGroups';
 import { PlanGroupHeader } from '@/components/planGroup/PlanGroupHeader';
+import { useFetchPlanGroupByGroupId } from '@/components/planGroup/utils/fetchPlanGroups';
 
 const planGroupParam = z.object({
   group_id: z.coerce.number(),
@@ -22,14 +22,14 @@ export const Route = createFileRoute('/(private)/plangroup/')({
 
 function Index() {
   const { group_id: groupId, group_title: groupTitle } = Route.useSearch();
-  const { data: planGroup, refetch: planGroupRefetch } = useFetchPlanGroup(groupId);
+  const planGroup = useFetchPlanGroupByGroupId(groupId);
   const { data: plans, isLoading: isPlansLoading, refetch: plansRefetch } = useFetchPlans(groupId);
   const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer((prev) => !prev, false);
 
   return (
     <div className='mx-auto max-w-[1600px]'>
       {planGroup ? (
-        <PlanGroupHeader planGroup={planGroup} refetch={planGroupRefetch} />
+        <PlanGroupHeader planGroup={planGroup} />
       ) : (
         <div className='mb-12 h-80 animate-pulse rounded-[40px] bg-zinc-300 shadow-2xl' />
       )}
@@ -79,16 +79,6 @@ function useFetchPlans(groupId: number) {
       const data = await getPlansByGroupId(groupId);
       return data ?? [];
     },
-    staleTime: Infinity,
-    gcTime: Infinity,
-    throwOnError: true,
-  });
-}
-
-function useFetchPlanGroup(groupId: number) {
-  return useQuery({
-    queryKey: [useFetchPlanGroup, groupId],
-    queryFn: () => getPlanGroupById(groupId),
     staleTime: Infinity,
     gcTime: Infinity,
     throwOnError: true,
