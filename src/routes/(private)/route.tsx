@@ -1,7 +1,8 @@
-import { signOut } from '@/apis/supabase/auth';
+import { deleteAccount, signOut } from '@/apis/supabase/auth';
 import { getUser, isGuestId, updateUserName } from '@/apis/supabase/users';
 import { useAuth } from '@/components/auth/AuthContext';
 import InputPopupBox from '@/components/common/popupBoxes/InputPopupBox';
+import Popupbox from '@/components/common/popupBoxes/Popupbox';
 import { toast } from '@/components/common/Toast/toast';
 import { GuestError } from '@/errors/GuestError';
 import supabase from '@/supabaseClient';
@@ -35,6 +36,7 @@ function RouteComponent() {
   const { user: session } = useAuth();
   const { data: user } = useGetUser(session);
   const [showBox, setShowBox] = useState(false);
+  const [showDeleteAccountBox, setShowDeleteAccountBox] = useState(false);
   const [showNameBox, setShowNameBox] = useState(false);
   const isGuest = isGuestId();
 
@@ -50,6 +52,12 @@ function RouteComponent() {
   const navigate = useNavigate();
   const handleSignOut = async () => {
     await signOut();
+    void navigate({ to: '/signin' });
+  };
+
+  const handleDeleteAccount = async () => {
+    await deleteAccount();
+    await signOut('global');
     void navigate({ to: '/signin' });
   };
 
@@ -88,13 +96,20 @@ function RouteComponent() {
                       <FaPen />
                       Name ändern
                     </li>
-                    <li className='flex justify-end px-2 py-1'>
+                    <li
+                      onClick={() => void handleSignOut()}
+                      className='flex cursor-pointer items-center gap-2 px-2 py-1 hover:bg-zinc-400'
+                    >
+                      <FaRightFromBracket />
+                      Abmelden
+                    </li>
+                    <li className='my-2 flex justify-end px-2 py-1'>
                       <div
-                        onClick={() => void handleSignOut()}
-                        className='flex cursor-pointer items-center gap-2 rounded-lg px-2 hover:bg-zinc-400'
+                        onClick={() => setShowDeleteAccountBox(true)}
+                        className='flex cursor-pointer items-center gap-2 rounded-lg px-2 hover:bg-red-500'
                       >
                         <FaRightFromBracket />
-                        Abmelden
+                        Konto löschen
                       </div>
                     </li>
                   </ul>
@@ -105,6 +120,13 @@ function RouteComponent() {
                   title='Name ändern'
                   onAccept={handleChangeName}
                   onClose={() => setShowNameBox(false)}
+                />
+              )}
+              {showDeleteAccountBox && (
+                <Popupbox
+                  text='Möchten Sie Ihr Konto wirklich löschen?'
+                  onAccept={() => void handleDeleteAccount()}
+                  onCancel={() => setShowDeleteAccountBox(false)}
                 />
               )}
             </div>
