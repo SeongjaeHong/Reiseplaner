@@ -3,6 +3,7 @@ import { $getNodeByKey, type NodeKey } from 'lexical';
 import { ImageNode } from './ImageNode';
 import { useEffect, useState } from 'react';
 import { useFetchImage } from '@/utils/useFetchImage';
+import { isBase64DataUrl } from '../../utils/image';
 
 export default function ImageComponent({
   src,
@@ -26,20 +27,25 @@ export default function ImageComponent({
     });
   };
 
-  const thumbnail = useFetchImage({ imageURL: src });
+  const isBase64 = isBase64DataUrl(src);
+  const thumbnail = useFetchImage({ imageURL: src, enabled: !isBase64 });
   const [imgSrc, setImgSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!thumbnail) return;
+    if (isBase64) {
+      setImgSrc(src);
+      return;
+    }
+    if (thumbnail) {
+      const objectUrl = URL.createObjectURL(thumbnail);
+      setImgSrc(objectUrl);
 
-    const objectUrl = URL.createObjectURL(thumbnail);
-    setImgSrc(objectUrl);
-
-    return () => {
-      URL.revokeObjectURL(objectUrl);
-      setImgSrc(null);
-    };
-  }, [thumbnail]);
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+        setImgSrc(null);
+      };
+    }
+  }, [thumbnail, isBase64, src]);
 
   return (
     <div className='group/img relative h-fit max-w-full'>
