@@ -1,5 +1,3 @@
-import { getPlansByGroupId } from '@/apis/supabase/plans';
-import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { FaPlus } from 'react-icons/fa6';
 import { useReducer } from 'react';
@@ -24,7 +22,7 @@ export const Route = createFileRoute('/(private)/plangroup/')({
 function Index() {
   const { group_id: groupId, group_title: groupTitle } = Route.useSearch();
   const planGroup = useFetchPlanGroupByGroupId(groupId);
-  const { data: plans, isLoading: isPlansLoading, refetch: plansRefetch } = useFetchPlans(groupId);
+  const { data: plans, isLoading: isPlansLoading } = useFetchPlans(groupId);
   const [showCreatePlanBox, toggleShowCreatePlanBox] = useReducer((prev) => !prev, false);
 
   return (
@@ -51,13 +49,7 @@ function Index() {
           </div>
 
           {plans.map((plan) => (
-            <Plan
-              plan={plan}
-              groupId={groupId}
-              groupTitle={groupTitle}
-              refetch={plansRefetch}
-              key={plan.id}
-            />
+            <Plan plan={plan} groupId={groupId} groupTitle={groupTitle} key={plan.id} />
           ))}
         </>
       )}
