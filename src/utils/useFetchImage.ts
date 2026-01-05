@@ -4,8 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 
 type UseFetchImage = {
   imageURL: string | null;
+  enabled?: boolean;
 };
-export function useFetchImage({ imageURL }: UseFetchImage) {
+export function useFetchImage({ imageURL, enabled = true }: UseFetchImage) {
   const { data } = useQuery({
     queryKey: [imageURL],
     queryFn: () => {
@@ -16,6 +17,7 @@ export function useFetchImage({ imageURL }: UseFetchImage) {
         return null;
       }
     },
+    enabled: enabled,
     staleTime: Infinity,
     gcTime: 3600 * 1000,
   });
