@@ -8,7 +8,7 @@ export default function Popupbox({ text, onAccept, onCancel }: PopupboxParams) {
   return (
     <div className='fixed inset-0 z-1 flex justify-center pt-50'>
       <div onClick={onCancel} className='fixed inset-0' />
-      <div className='z-1 h-fit w-70 rounded-md bg-white px-3 py-2'>
+      <div className='z-1 h-fit max-w-100 min-w-70 rounded-md bg-white px-3 py-2'>
         <div className='mb-2'>
           <span className='text-sm font-bold text-slate-800'>{text}</span>
         </div>
