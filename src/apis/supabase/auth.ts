@@ -44,7 +44,7 @@ export const signInWithOAuth = async (provider: Provider = 'google') => {
   sessionStorage.setItem('initial-sign-in', 'true');
 };
 
-export const signOut = async (scope?: 'local' | 'global' | 'others') => {
+export const signOut = async (scope: 'local' | 'global' | 'others' = 'local') => {
   const { error } = await supabase.auth.signOut({ scope });
 
   if (error) {
