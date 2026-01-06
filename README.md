@@ -31,55 +31,55 @@ Reiseplaner provides intuitive UX through a simple UI. Users can create a plan g
 
 ### Page Components
 
-<table style="text-align: center;">
-   <tr>
-      <td>
-         <img src='./images/pages/travels.png' height="350px">
-      </td>
-      <td>
-         <img src='./images/pages/travels_edit.png' height="350px">
-      </td>
-   </tr>
-   <tr>
-      <td>Main travel board</td>
-      <td>Edit a travel info</td>
-   </tr>
-   <tr>
-      <td>
-         <img src='./images/pages/plans.png' height="350px">
-      </td>
-      <td>
-         <img src='./images/pages/detail-plans.png' height="350px">
-      </td>
-    </tr>
-   <tr>
-      <td>Plans of a travel</td>
-      <td>Detail contents of a plan</td>
-   </tr>
-   <tr>
-      <td>
-         <img src='./images/pages/sign-in.png' height="350px">
-      </td>
-      <td>
-         <img src='./images/pages/sign-up.png' height="350px">
-      </td>
-   </tr>
-   <tr>
-      <td>Sign-in (You can use a Guest ID as well!)</td>
-      <td>Sign-up with an email</td>
-   </tr>
-   <tr>
-      <td>
-         <img src='./images/pages/Error-PageNotFound.png' height="350px" >
-      </td>
-      <td>
-         <img src='./images/pages/Error-Unhandled.png' height="350px">
-      </td>
-    </tr>
-   <tr>
-      <td>Page not found</td>
-      <td>Unhandled error</td>
-   </tr>
+<table>
+  <tr>
+    <td align="center">
+      <img src='./images/pages/travels.png' height="350px">
+    </td>
+    <td align="center">
+      <img src='./images/pages/travels_edit.png' height="350px">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">Main travel board</td>
+    <td align="center">Edit a travel info</td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src='./images/pages/plans.png' height="350px">
+    </td>
+    <td align="center">
+      <img src='./images/pages/detail-plans.png' height="350px">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">Plans of a travel</td>
+    <td align="center">Detail contents of a plan</td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src='./images/pages/sign-in.png' height="350px">
+    </td>
+    <td align="center">
+      <img src='./images/pages/sign-up.png' height="350px">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">Sign-in (You can use a Guest ID as well!)</td>
+    <td align="center">Sign-up with an email</td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src='./images/pages/Error-PageNotFound.png' height="350px" >
+    </td>
+    <td align="center">
+      <img src='./images/pages/Error-Unhandled.png' height="350px">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">Page not found</td>
+    <td align="center">Unhandled error</td>
+  </tr>
 </table>
 
 ## Tech Stacks
