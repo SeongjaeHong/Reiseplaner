@@ -31,105 +31,102 @@ Reiseplaner provides intuitive UX through a simple UI. Users can create a plan g
 
 ### Page Components
 
-<table>
-  <tr>
-    <td align="center">
-      <img src='./images/pages/travels.png' height="350px">
-    </td>
-    <td align="center">
-      <img src='./images/pages/travels_edit.png' height="350px">
-    </td>
-  </tr>
-  <tr>
-    <td align="center">Main travel board</td>
-    <td align="center">Edit a travel info</td>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src='./images/pages/plans.png' height="350px">
-    </td>
-    <td align="center">
-      <img src='./images/pages/detail-plans.png' height="350px">
-    </td>
-  </tr>
-  <tr>
-    <td align="center">Plans of a travel</td>
-    <td align="center">Detail contents of a plan</td>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src='./images/pages/sign-in.png' height="350px">
-    </td>
-    <td align="center">
-      <img src='./images/pages/sign-up.png' height="350px">
-    </td>
-  </tr>
-  <tr>
-    <td align="center">Sign-in (You can use a Guest ID as well!)</td>
-    <td align="center">Sign-up with an email</td>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src='./images/pages/Error-PageNotFound.png' height="350px" >
-    </td>
-    <td align="center">
-      <img src='./images/pages/Error-Unhandled.png' height="350px">
-    </td>
-  </tr>
-  <tr>
-    <td align="center">Page not found</td>
-    <td align="center">Unhandled error</td>
-  </tr>
-</table>
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src='./images/pages/travels.png' height="350px">
+      </td>
+      <td align="center">
+        <img src='./images/pages/travels_edit.png' height="350px">
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Main travel board</td>
+      <td align="center">Edit a travel info</td>
+    </tr>
+    <tr>
+      <td align="center">
+        <img src='./images/pages/plans.png' height="350px">
+      </td>
+      <td align="center">
+        <img src='./images/pages/detail-plans.png' height="350px">
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Plans of a travel</td>
+      <td align="center">Detail contents of a plan</td>
+    </tr>
+    <tr>
+      <td align="center">
+        <img src='./images/pages/sign-in.png' height="350px">
+      </td>
+      <td align="center">
+        <img src='./images/pages/sign-up.png' height="350px">
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Sign-in (You can use a Guest ID as well!)</td>
+      <td align="center">Sign-up with an email</td>
+    </tr>
+    <tr>
+      <td align="center">
+        <img src='./images/pages/Error-PageNotFound.png' height="350px" >
+      </td>
+      <td align="center">
+        <img src='./images/pages/Error-Unhandled.png' height="350px">
+      </td>
+    </tr>
+    <tr>
+      <td align="center">Page not found</td>
+      <td align="center">Unhandled error</td>
+    </tr>
+  </table>
+</div>
 
 ## Tech Stacks
 
 ### Frontend
 
-<div style="display: flex; flex-direction: column; gap: 10px; background-color: rgb(100, 100, 100, 0.5); border-radius: 8px; color: white; padding: 20px;">
-<div style="display: flex; justify-content: space-around;">
-<figure style="text-align: center; margin: 0;">
-<img src='./images/icons/react.svg' style="width:30px; height:30px;">
-<figcaption>React 19</figcaption>
-</figure>
-
-<figure style="text-align: center; margin: 0;">
-<img src='./images/icons/tanstack.png' style="width:30px; height:30px;">
-<figcaption>Tanstack Query 5</figcaption>
-</figure>
-
-<figure style="text-align: center; margin: 0;">
-<img src='./images/icons/tanstack.png' style="width:30px; height:30px;">
-<figcaption>Tanstack Router</figcaption>
-</figure>
-
-<figure style="text-align: center; margin: 0;">
-<img src='./images/icons/react-hook-form.svg' style="width:30px; height:30px;">
-<figcaption>React Hook Form</figcaption>
-</figure>
-
-<figure style="text-align: center; margin: 0;">
-<img src='./images/icons/lexical.svg' style="width:90px; height:30px;">
-<figcaption>Lexical</figcaption>
-</figure>
-</div>
-
-<div style="display: flex; justify-content: space-around;">
-<figure style="text-align: center; margin: 0;">
-<img src='./images/icons/typescript.svg' style="width:30px; height:30px;">
-<figcaption>Typescript</figcaption>
-</figure>
-
-<figure style="text-align: center; margin: 0;">
-<img src='./images/icons/zod.webp' style="width:30px; height:30px;">
-<figcaption>Zod</figcaption>
-</figure>
-
-<figure style="text-align: center; margin: 0;">
-<img src='./images/icons/tailwindcss.svg' style="width:30px; height:30px;">
-<figcaption>Tailwind CSS</figcaption>
-</figure>
-</div>
+<div align="center">
+  <table>
+    <tr style="background-color: rgba(100, 100, 100, 0.1);">
+      <td align="center" width="150">
+        <img src='./images/icons/react.svg' width="30" height="30"><br>
+        <sub>React 19</sub>
+      </td>
+      <td align="center" width="150">
+        <img src='./images/icons/tanstack.png' width="30" height="30"><br>
+        <sub>Tanstack Query 5</sub>
+      </td>
+      <td align="center" width="150">
+        <img src='./images/icons/tanstack.png' width="30" height="30"><br>
+        <sub>Tanstack Router</sub>
+      </td>
+      <td align="center" width="150">
+        <img src='./images/icons/react-hook-form.svg' width="30" height="30"><br>
+        <sub>React Hook Form</sub>
+      </td>      
+    </tr>
+    <tr style="background-color: rgba(100, 100, 100, 0.1);">
+      <td align="center" width="150">
+        <img src='./images/icons/lexical.svg' width="120" height="30"><br>
+        <sub>Lexical</sub>
+      </td>
+      <td align="center">
+        <img src='./images/icons/typescript.svg' width="30" height="30"><br>
+        <sub>Typescript</sub>
+      </td>
+      <td align="center">
+        <img src='./images/icons/zod.webp' width="30" height="30"><br>
+        <sub>Zod</sub>
+      </td>
+      <td align="center">
+        <img src='./images/icons/tailwindcss.svg' width="30" height="30"><br>
+        <sub>Tailwind CSS</sub>
+      </td>
+    </tr>
+  </table>
 </div>
 <br/>
 
@@ -169,21 +166,23 @@ Reiseplaner provides intuitive UX through a simple UI. Users can create a plan g
 
 ### Backend
 
-<div style="display: flex; background-color: rgb(100, 100, 100, 0.5); border-radius: 8px; color: white; padding: 20px; justify-content: space-around;">
-<figure style="text-align: center; margin: 0;">
-<img src='./images/icons/cloudfront.svg' style="width:30px; height:30px;">
-<figcaption>Amazon CloudFront</figcaption>
-</figure>
-
-<figure style="text-align: center; margin: 0;">
-<img src='./images/icons/Simple Storage Service.svg' style="width:30px; height:30px;">
-<figcaption>Amazon S3</figcaption>
-</figure>
-
-<figure style="text-align: center; margin: 0;">
-<img src='./images/icons/supabase.svg' style="width:30px; height:30px;">
-<figcaption>Supabase</figcaption>
-</figure>
+<div align="center">
+  <table>
+    <tr style="background-color: rgba(100, 100, 100, 0.1);">
+      <td align="center" width="150">
+        <img src='./images/icons/cloudfront.svg' width="30" height="30"><br>
+        <sub>Amazon CloudFront</sub>
+      </td>
+      <td align="center" width="150">
+        <img src='./images/icons/Simple Storage Service.svg' width="30" height="30"><br>
+        <sub>Amazon S3</sub>
+      </td>
+      <td align="center" width="150">
+        <img src='./images/icons/supabase.svg' width="30" height="30"><br>
+        <sub>Supabase</sub>
+      </td>     
+    </tr>
+  </table>
 </div>
 <br />
 
