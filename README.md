@@ -70,10 +70,10 @@ Reiseplaner provides intuitive UX through a simple UI. Users can create a plan g
    </tr>
    <tr>
       <td>
-         <img src='./images/pages/[Error]PageNotFound.png' height="350px" >
+         <img src='./images/pages/Error-PageNotFound.png' height="350px" >
       </td>
       <td>
-         <img src='./images/pages/[Error]Unhandled.png' height="350px">
+         <img src='./images/pages/Error-Unhandled.png' height="350px">
       </td>
     </tr>
    <tr>
